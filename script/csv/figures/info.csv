@@ -1,0 +1,7 @@
+name,id,nSteps,completeName
+car,0,6,"Car"
+tb,1,7,"Towers and Bridge"
+house,2,9,"House"
+sc,3,9,"Square and Cross"
+tc,4,9,"Towers and Cross"
+tsb,5,12,"Towers, Stairs and Bridges"
