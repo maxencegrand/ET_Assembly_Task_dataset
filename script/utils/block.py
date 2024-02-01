@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.8
 
-from conf.position import Position
+from utils.position import Position
 from enum import Enum
 
 class Shape(Enum):
