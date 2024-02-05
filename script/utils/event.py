@@ -7,11 +7,12 @@ class InstructionEvent(Enum):
 
     G{classtree}
     """
-    NEXT = 0
-    PREVIOUS = 1
-    NO_NEXT_ERROR = 2
-    EXTRA_NEXT_ERROR = 3
-    BAD_BLOCK_ID_ERROR = 4
+    START = 0
+    NEXT = 1
+    PREVIOUS = 2
+    NO_NEXT_ERROR = 3
+    EXTRA_NEXT_ERROR = 4
+    BAD_BLOCK_ID_ERROR = 5
 
 
 class Instruction():
@@ -81,6 +82,7 @@ class Event:
         """
         return [self.timestamp, \
             self.action, \
+            self.block, \
             self.position.top_left.x, \
             self.position.top_left.y, \
             self.position.top_right.x, \

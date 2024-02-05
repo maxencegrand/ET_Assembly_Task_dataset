@@ -1,0 +1,21 @@
+user=$1
+setup=$2
+position=$3
+
+echo "User = $user Setup = $setup Position = $position"
+
+raw_data=../raw_data/$setup/$position/$user
+dataset=../dataset/$setup/$position
+if [ -d "$raw_data" ]; then
+
+  mkdir $dataset/$user
+  for figure in car tb house sc tc tsb
+  do
+    mkdir $dataset/$user/$figure
+    xterm -hold -e "python3 event_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position" &
+    xterm -hold -e "python3 instruction_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position"
+  done
+else
+  echo "$raw_data doesn't exist."
+  exit 1
+fi

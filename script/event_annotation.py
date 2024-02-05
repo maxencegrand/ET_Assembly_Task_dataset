@@ -43,12 +43,12 @@ def main():
         ts = int(input("Timestamp: "))
         id = int(input("Block ID:"))
         action = int(input("Action %d:Grasp/%d:Release " % (Action.GRASP.value, Action.RELEASE.value)))
-        type = int(input("Type %d:Legal/%d:Error/%d:Bad Id/%d:Correction" % (\
+        type = int(input("Type %d:Legal/%d:Error/%d:Bad Id/%d:Correction " % (\
                 EventType.LEGAL.value,EventType.ERROR.value,EventType.BAD_ID.value,EventType.CORRECTION.value)))
         x = int(input("Top Left x: "))
         y = int(input("Top Left y: "))
-        o = int(input("Orientation 0:Vertical/1:Horizontal"))
-        shape = int(input("Shape %d:Cube/%d:Brick" % (Shape.CUBE.value, Shape.BRICK.value)))
+        o = int(input("Orientation 0:Vertical/1:Horizontal "))
+        shape = int(input("Shape %d:Cube/%d:Brick " % (Shape.CUBE.value, Shape.BRICK.value)))
         level = int(input("level: "))
 
         #Compute position
@@ -69,10 +69,10 @@ def main():
                 tr = Point(tl.x+4, tl.y)
                 br = Point(tl.x+4, tl.y+2)
                 bl = Point(tl.x, tl.y+2)
-        tl = device.get_relative_from_abstract(tl,Device.TABLE)
-        tr = device.get_relative_from_abstract(tr,Device.TABLE)
-        bl = device.get_relative_from_abstract(bl,Device.TABLE)
-        br = device.get_relative_from_abstract(br,Device.TABLE)
+        tl = device.get_relative_from_abstract(tl)
+        tr = device.get_relative_from_abstract(tr)
+        bl = device.get_relative_from_abstract(bl)
+        br = device.get_relative_from_abstract(br)
 
         position = Position(tl, tr, bl, br)
         print(position)
@@ -83,7 +83,7 @@ def main():
     with open(csvfile, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',\
             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(["timestamp", "action", \
+        spamwriter.writerow(["timestamp", "action", "block",\
                 "x0", "y0","x1", "y1","x2", "y2","x3", "y3","type"])
         for row in data:
             spamwriter.writerow(row)

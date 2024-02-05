@@ -23,7 +23,7 @@ def main():
                 args.figure))
     data = []
 
-    print("Welcome to the event annotation module")
+    print("Welcome to the instruction annotation module")
     print("User ID: %s" % args.user)
     print("Figure: %s" % args.figure)
     print("\nData will be save in the file: %s"%csvfile)
@@ -37,8 +37,8 @@ def main():
             cont = ""
             continue
         ts = int(input("Timestamp: "))
-        code = int(input("Code %d:Next/%d:Previous/%d:No Next Error/%d:Extra Next Error/%d:Bad Block ID Error" % (\
-                InstructionEvent.NEXT.value,InstructionEvent.PREVIOUS.value,InstructionEvent.NO_NEXT_ERROR.value,InstructionEvent.EXTRA_NEXT_ERROR.value, InstructionEvent.BAD_BLOCK_ID_ERROR.value)))
+        code = int(input("Code %d:Start/%d:Next/%d:Previous/%d:No Next Error/%d:Extra Next Error/%d:Bad Block ID Error " % (\
+                InstructionEvent.START.value,InstructionEvent.NEXT.value,InstructionEvent.PREVIOUS.value,InstructionEvent.NO_NEXT_ERROR.value,InstructionEvent.EXTRA_NEXT_ERROR.value, InstructionEvent.BAD_BLOCK_ID_ERROR.value)))
         data.append([ts,code])
 
     with open(csvfile, 'w', newline='') as csvfile:
