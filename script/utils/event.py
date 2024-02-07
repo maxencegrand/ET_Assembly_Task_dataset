@@ -91,4 +91,5 @@ class Event:
             self.position.bottom_right.y, \
             self.position.bottom_left.x, \
             self.position.bottom_left.y, \
+            self.position.level, \
             self.type]

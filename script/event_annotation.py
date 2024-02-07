@@ -74,7 +74,7 @@ def main():
         bl = device.get_relative_from_abstract(bl)
         br = device.get_relative_from_abstract(br)
 
-        position = Position(tl, tr, bl, br)
+        position = Position(tl, tr, bl, br, level=level)
         print(position)
         #Create event and add raw
         event = Event(ts, id, position, action, type)
@@ -84,7 +84,7 @@ def main():
         spamwriter = csv.writer(csvfile, delimiter=',',\
             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(["timestamp", "action", "block",\
-                "x0", "y0","x1", "y1","x2", "y2","x3", "y3","type"])
+                "x0", "y0","x1", "y1","x2", "y2","x3", "y3", "level", "type"])
         for row in data:
             spamwriter.writerow(row)
 
