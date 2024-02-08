@@ -3,7 +3,7 @@ import pandas as pd
 import cv2
 from utils.block import Color
 import math
-BACKGROUND = "vis/resources/background.png"
+BACKGROUND = "viz/resources/background.png"
 WIDTH=480
 HEIGHT=240
 BLACK = (0, 0, 0, 255)
@@ -68,7 +68,7 @@ class TableViz:
             y = df.loc[i, "y"]
             if(math.isnan(x) or math.isnan(y)):
                 continue
-            print([x*WIDTH,y*HEIGHT])
+            # print([x*WIDTH,y*HEIGHT])
             frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=3, color=PURPLE, thickness=-1)
         cv2.imwrite(filename=pngfile, img=frame)
 

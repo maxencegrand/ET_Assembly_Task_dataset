@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.8
 
-from vis.table import TableViz
+from viz.table import TableViz
 import sys
 from utils.user_group import Mobile
 

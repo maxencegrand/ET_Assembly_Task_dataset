@@ -14,7 +14,7 @@ def main(argv):
         # for figure in ["car"]:
         for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
             print("Extract %s" % figure)
-            # mobile_extractor.Extractor(user, figure)
+            mobile_extractor.Extractor(user, figure)
             TableState(user, figure)
 
     print("Extracting stationary data ...")

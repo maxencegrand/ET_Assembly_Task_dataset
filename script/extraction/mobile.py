@@ -80,12 +80,8 @@ class Extractor:
                         no_data = False
                         eye = Point(data.at[i, "x_norm"],data.at[i, "y_norm"])
                         eye.x = SURFACE[s]["offset"]+(eye.x * SURFACE[s]["width"])
-                        # eye = get_surface(s).get_absolute_coordinates(eye)
-                        # eye = get_surface(s).get_display_coordinates(eye)
-                        # eye = get_display(display).get_normalized_coordinates(eye)
-                        rows.append([ts, eye.x, eye.y])
+                        rows.append([ts, eye.x, 1-eye.y])
                         break
-                        # sys.exit(1)
             if(no_data):
                 rows.append([ts, float("nan"), float("nan")])
         #
