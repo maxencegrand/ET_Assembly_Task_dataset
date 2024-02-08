@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.8
 
 from viz.table import TableViz
+from viz.screen import ScreenViz
 import sys
 from utils.user_group import Mobile
 
@@ -15,6 +16,7 @@ def main(argv):
             print("Viz %s" % figure)
             # mobile_extractor.Extractor(user, figure)
             TableViz(user, figure)
+            ScreenViz(user,figure)
 
     print("Viz stationary data ...")
 

@@ -69,7 +69,7 @@ class TableViz:
             if(math.isnan(x) or math.isnan(y)):
                 continue
             # print([x*WIDTH,y*HEIGHT])
-            frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=3, color=PURPLE, thickness=-1)
+            frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=5, color=PURPLE, thickness=-1)
         cv2.imwrite(filename=pngfile, img=frame)
 
     def generate_viz(self):
