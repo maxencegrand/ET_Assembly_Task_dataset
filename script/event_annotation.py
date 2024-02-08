@@ -19,7 +19,7 @@ def main():
 
     args = parser.parse_args()
 
-    if(args.setup == "mobile":)
+    if(args.setup == "mobile"):
         csvfile = ("%s/%s/%s/%s/%s/events_frame.csv" % (\
                     args.path,\
                     args.setup,\
@@ -56,7 +56,7 @@ def main():
         x = int(input("Top Left x: "))
         y = int(input("Top Left y: "))
         o = int(input("Orientation 0:Vertical/1:Horizontal "))
-        shape = int(input("Shape %d:Cube/%d:Brick " % (Shape.CUBE.value, Shape.BRICK.value)))
+        shape = Shape(int(input("Shape %d:Cube/%d:Brick " % (Shape.CUBE.value, Shape.BRICK.value))))
         level = int(input("level: "))
 
         #Compute position
