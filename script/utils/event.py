@@ -12,7 +12,7 @@ class InstructionEvent(Enum):
     PREVIOUS = 2
     NO_NEXT_ERROR = 3
     EXTRA_NEXT_ERROR = 4
-    BAD_BLOCK_ID_ERROR = 5
+    END = 5
 
 
 class Instruction():
@@ -76,6 +76,16 @@ class Event:
         self.action = action
         self.type = type
 
+    def is_grasp(self):
+        """
+        """
+        return self.action == Action.GRASP
+
+    def is_release(self):
+        """
+        """
+        return self.action == Action.RELEASE
+        
     def get_raw(self):
         """
         Return containing the event at timestamp

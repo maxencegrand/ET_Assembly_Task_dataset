@@ -47,3 +47,9 @@ class Block:
         Check if the block is a cube
         """
         return self.shape == Shape.CUBE
+
+    def __str__(self):
+        str = "[{id}] {color} {shape} at {position}".format(\
+                id=self.id, color=self.color, shape=self.shape,\
+                position=self.position)
+        return str

@@ -1,2 +1,2 @@
-id,position,glasses,eyes,screen,calibration
-69907732,mobile,1,0,1,2
+id,position,glasses,eye0,eye1,screen,pupil
+69907732,sitting,1,0,1,1,2

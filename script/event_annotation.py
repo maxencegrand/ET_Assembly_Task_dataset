@@ -19,12 +19,20 @@ def main():
 
     args = parser.parse_args()
 
-    csvfile = ("%s/%s/%s/%s/%s/events.csv" % (\
-                args.path,\
-                args.setup,\
-                args.position,\
-                args.user,\
-                args.figure))
+    if(args.setup == "mobile":)
+        csvfile = ("%s/%s/%s/%s/%s/events_frame.csv" % (\
+                    args.path,\
+                    args.setup,\
+                    args.position,\
+                    args.user,\
+                    args.figure))
+    else:
+        csvfile = ("%s/%s/%s/%s/%s/events.csv" % (\
+                    args.path,\
+                    args.setup,\
+                    args.position,\
+                    args.user,\
+                    args.figure))
     data = []
 
     print("Welcome to the event annotation module")
@@ -69,11 +77,11 @@ def main():
                 tr = Point(tl.x+4, tl.y)
                 br = Point(tl.x+4, tl.y+2)
                 bl = Point(tl.x, tl.y+2)
+        print(f"{tl} {tr} {br} {bl}")
         tl = device.get_relative_from_abstract(tl)
         tr = device.get_relative_from_abstract(tr)
         bl = device.get_relative_from_abstract(bl)
         br = device.get_relative_from_abstract(br)
-
         position = Position(tl, tr, bl, br, level=level)
         print(position)
         #Create event and add raw

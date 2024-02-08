@@ -15,12 +15,20 @@ def main():
 
     args = parser.parse_args()
 
-    csvfile = ("%s/%s/%s/%s/%s/instruction_events.csv" % (\
-                args.path,\
-                args.setup,\
-                args.position,\
-                args.user,\
-                args.figure))
+    if(args.setup == "mobile"):
+        csvfile = ("%s/%s/%s/%s/%s/instruction_events_frame.csv" % (\
+                    args.path,\
+                    args.setup,\
+                    args.position,\
+                    args.user,\
+                    args.figure))
+    else:
+        csvfile = ("%s/%s/%s/%s/%s/instruction_events.csv" % (\
+                    args.path,\
+                    args.setup,\
+                    args.position,\
+                    args.user,\
+                    args.figure))
     data = []
 
     print("Welcome to the instruction annotation module")

@@ -88,5 +88,5 @@ class Position:
         str += f"{self.top_left},"
         str += f"{self.top_right},"
         str += f"{self.bottom_right},"
-        str += f"{self.bottom_left}"
+        str += f"{self.bottom_left}]"
         return str
