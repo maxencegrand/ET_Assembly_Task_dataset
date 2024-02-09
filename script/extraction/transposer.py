@@ -1,10 +1,11 @@
 #!/usr/bin/env python3.8
 from utils.position import Point
+import math
 
 class Transposer:
     """
     """
-    def __init__(self,no,ne,se,ne):
+    def __init__(self,no,ne,se,so):
         """
         """
         self.no = no
@@ -23,7 +24,7 @@ class Transposer:
             float((y1 - self.no.y)/(self.so.y - self.no.y))
 
         x2 = self.ne.x - (self.se.x - self.ne.x) * \
-            float((y1 - self.ne.y)/(self.se.y - self.ne.y))3
+            float((y1 - self.ne.y)/(self.se.y - self.ne.y))
 
         return Point(\
             float((point.x - x1)/(x2-x1)),\

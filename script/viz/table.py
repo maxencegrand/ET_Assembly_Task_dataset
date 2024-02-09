@@ -45,7 +45,6 @@ class TableViz:
         """
         pngfile = "%s/state_%d.png" % (self.path_viz, timestamp)
         frame = cv2.imread(BACKGROUND)
-        # print(self.blocks)
         for level in [0,1,2,3,4]:
             for block in self.blocks.keys():
                 if(self.blocks[block]["l"] != level):

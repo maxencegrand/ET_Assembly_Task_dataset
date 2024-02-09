@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.8
 
 import numpy as np
+from utils.util import min
 
 class Point:
     """
@@ -83,7 +84,24 @@ class Position:
             return False
         return True
 
+    def distance(self, point):
+        """
+        Min distance to corners
+        """
+        list_ = [\
+            self.top_left.distance(point),\
+            self.top_right.distance(point),\
+            self.bottom_left.distance(point),\
+            self.bottom_right.distance(point)]
+            
+        if(self.contains(point)):
+            return min(list_)
+        else:
+            return 0 - min(list_)
+
     def __str__(self):
+        """
+        """
         str = "["
         str += f"{self.top_left},"
         str += f"{self.top_right},"

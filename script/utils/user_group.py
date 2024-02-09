@@ -135,7 +135,7 @@ class StationaryUser(User):
         User.__init__(self, id, position, glasses)
         self.tobii = tobii
         self.fobio = fovio
-        self.setup = "stationary"
+        self.setup = "stationnary"
 
     def print_info(self):
         """

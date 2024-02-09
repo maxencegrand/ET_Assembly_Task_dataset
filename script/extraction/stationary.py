@@ -1,5 +1,5 @@
-import extractor.tobii as tb
-import extractor.fovio as fv
+import extraction.tobii as tb
+import extraction.fovio as fv
 
 class Extractor:
     """

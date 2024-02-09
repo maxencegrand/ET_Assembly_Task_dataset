@@ -29,11 +29,6 @@ class Extractor:
     def extract(self):
         """
         """
-        DATAPATH = "Documents/Eyes-of-Cobots/eye_trackers_comp/data/recordings"
-        PATH = ("%s/%s" % (str(Path.home()), DATAPATH))
-        DATAPATH2 = "Documents/Eyes-of-Cobots/eye_trackers_comp/data"
-        PATH2 = ("%s/%s" % (str(Path.home()), DATAPATH2))
-
         # Open Tobii data csv
         data = "%s/instructions.csv" % self.path_raw_data
 

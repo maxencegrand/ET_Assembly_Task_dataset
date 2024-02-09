@@ -2,10 +2,9 @@
 from utils.event import InstructionEvent
 import pandas as pd
 import csv
-import math
 from utils.util import get_coord, get_code_timestamp
 from utils.position import Point
-from util.transposer import Transposer
+from extraction.transposer import Transposer
 
 WIDTH = 1280
 HEIGHT = 720
@@ -34,7 +33,7 @@ class Extractor:
         self.write_data()
 
     def read_table_coordinates(self):
-        table_coord = "%s/table_coordinates.csv" % (self.raw_data)
+        table_coord = "%s/table_coordinates.csv" % (self.path_raw_data)
         with open(table_coord, newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in spamreader:
@@ -67,7 +66,8 @@ class Extractor:
                 c_left = self.transposer.transpose(c_left)
                 c_right = Point(float(df.at[i, "Rt X Pos"]),\
                             float(df.at[i, "Rt Y Pos"]))
-                c_right = transposer.transpose(c_right)
+                c_right = self.transposer.transpose(c_right)
+                print(f"{c_left} {c_right}")
                 val_left = int(df.at[i,"L Quality"])
                 val_right = int(df.at[i,"R Quality"])
                 if(val_left > 0 or val_right > 0):
@@ -78,13 +78,14 @@ class Extractor:
                     self.rows.append([ts, x, y])
                 else:
                     self.rows.append([ts,float("nan"),float("nan")])
-            except:
+            except Exception as inst:
+                print(inst)
                 self.rows.append([ts,float("nan"),float("nan")])
 
     def write_data(self):
         """
         """
-        data_lifted = "%s/screen.csv" % self.path_data
+        data_lifted = "%s/table.csv" % self.path_data
 
         with open(data_lifted , 'w',  newline='') as f:
             writer = csv.writer(f)
