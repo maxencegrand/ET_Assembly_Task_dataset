@@ -45,8 +45,8 @@ def main():
             cont = ""
             continue
         ts = int(input("Timestamp: "))
-        code = int(input("Code %d:Start/%d:Next/%d:Previous/%d:No Next Error/%d:Extra Next Error/%d:Bad Block ID Error " % (\
-                InstructionEvent.START.value,InstructionEvent.NEXT.value,InstructionEvent.PREVIOUS.value,InstructionEvent.NO_NEXT_ERROR.value,InstructionEvent.EXTRA_NEXT_ERROR.value, InstructionEvent.BAD_BLOCK_ID_ERROR.value)))
+        code = int(input("Code %d:Start/%d:Next/%d:Previous/%d:No Next Error/%d:Extra Next Error/%d:End " % (\
+                InstructionEvent.START.value,InstructionEvent.NEXT.value,InstructionEvent.PREVIOUS.value,InstructionEvent.NO_NEXT_ERROR.value,InstructionEvent.EXTRA_NEXT_ERROR.value, InstructionEvent.END.value)))
         data.append([ts,code])
 
     with open(csvfile, 'w', newline='') as csvfile:

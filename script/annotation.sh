@@ -6,12 +6,14 @@ echo "User = $user Setup = $setup Position = $position"
 
 raw_data=../raw_data/$setup/$position/$user
 dataset=../dataset/$setup/$position
+dataviz=../dataviz/$setup/$position
 if [ -d "$raw_data" ]; then
 
   mkdir $dataset/$user
   for figure in car tb house sc tc tsb
   do
-    mkdir $dataset/$user/$figure
+    mkdir -p $dataset/$user/$figure
+    mkdir -p $dataviz/$user/$figure
     xterm -hold -e "python3 event_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position" &
     xterm -hold -e "python3 instruction_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position"
   done
