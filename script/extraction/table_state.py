@@ -21,8 +21,8 @@ class TableState:
         self.user = user
         self.figure = figure
         self.blocks = []
-        self.path_data = ("../dataset/mobile/%s/%d/%s" % \
-                    (self.user.position, self.user.id, figure))
+        self.path_data = ("../dataset/%s/%s/%d/%s" % \
+                    (self.user.setup, self.user.position,  self.user.id, figure))
         df_instruction_event = pd.DataFrame(data=pd.read_csv(\
                         "%s/instruction_events.csv" % self.path_data))
         self.start = int(get_code_timestamp(df_instruction_event,\

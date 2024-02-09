@@ -31,10 +31,10 @@ class Extractor:
         self.user = user
         self.figure = figure
 
-        self.path_raw_data = ("../raw_data/mobile/%s/%d/%s" % \
-                    (self.user.position, self.user.id, figure))
-        self.path_data = ("../dataset/mobile/%s/%d/%s" % \
-                    (self.user.position, self.user.id, figure))
+        self.path_raw_data = ("../raw_data/%s/%s/%d/%s" % \
+                    (self.user.setup, self.user.position, self.user.id, figure))
+        self.path_data = ("../dataset/%s/%s/%d/%s" % \
+                    ( self.user.setup, self.user.position, self.user.id,figure))
 
         # Convert pupil frame into system timestamps
         self.extract_timestamps()
@@ -150,15 +150,3 @@ class Extractor:
             writer = csv.writer(f)
             for row in rows:
                 writer.writerow(row)
-
-    # def extract(user, figure):
-    #     position = user.position
-    #     id = user.id
-    #
-    #     path_raw_data = ("../raw_data/mobile/%s/%d/%s" % (position, id, figure))
-    #     path_data = ("../dataset/mobile/%s/%d/%s" % (position, id, figure))
-    #     df_instruction_event = pd.DataFrame(data=pd.read_csv(\
-    #                     "%s/instruction_events.csv" % path_data))
-    #     print(df_instruction_event)
-    #     print("Extract screen gazepoint")
-    #     print("Extract table gazepoint")

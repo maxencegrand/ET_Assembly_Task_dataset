@@ -12,6 +12,7 @@ TOBII = "tobii"
 FOVIO = "fovio"
 
 MOBILE_CSVFILE = "../dataset/users_mobile.csv"
+STATIONARY_CSVFILE = "../dataset/users_stationary.csv"
 
 
 
@@ -41,6 +42,29 @@ class User:
         """
         print("User %d\n\t Position: %s" % (self.id, self.position))
 
+class Group:
+    """
+    Class representing a group of users
+
+    G{classtree}
+    """
+    def __init__(self):
+        """
+        Constructs a group of users
+        """
+        self.users={}
+
+    def get_id_list(self):
+        """
+        @return The list of mobile users id
+        """
+        return self.users.keys()
+
+    def get_user(self,id):
+        """
+        @return
+        """
+        return self.users[id]
 class MobileUser(User):
     """
     Class representing a mobile user
@@ -72,15 +96,15 @@ class MobileUser(User):
         """
         print("Mobile User %d\n\t Position: %s" % (self.id, self.position))
 
-class Mobile:
+class Mobile(Group):
     """
     Class representing a groupe of mobile users
 
     G{classtree}
     """
     def __init__(self, csvfile=MOBILE_CSVFILE):
+        Group.__init__(self)
         table = pd.DataFrame(data=pd.read_csv(csvfile))
-        self.users = {}
         for i in table.index:
             self.users[i] = MobileUser(\
                 int(table.loc[i][ID]),\
@@ -91,14 +115,47 @@ class Mobile:
                 int(table.loc[i][SCREEN]),\
                 int(table.loc[i][PUPIL]))
 
-    def get_id_list(self):
-        """
-        @return The list of mobile users id
-        """
-        return self.users.keys()
 
-    def get_user(self,id):
+class StationaryUser(User):
+    """
+    Class representing a stationary user
+
+    G{classtree}
+    """
+    def __init__(self, id, position, glasses, fovio, tobii):
         """
-        @return
+        Constructs a mobile user
+
+        @param id User ID
+        @param position User's position
+        @param glasses 1 if the user wear glasses
+        @param fovio Calibration score for the fovio tracker
+        @param tobii Calibration score for the tobii tracker
         """
-        return self.users[id]
+        User.__init__(self, id, position, glasses)
+        self.tobii = tobii
+        self.fobio = fovio
+        self.setup = "stationary"
+
+    def print_info(self):
+        """
+        print users info
+        """
+        print("Stationary User %d\n\t Position: %s" % (self.id, self.position))
+
+class Stationary(Group):
+    """
+    Class representing a groupe of stationary users
+
+    G{classtree}
+    """
+    def __init__(self, csvfile=STATIONARY_CSVFILE):
+        Group.__init__(self)
+        table = pd.DataFrame(data=pd.read_csv(csvfile))
+        for i in table.index:
+            self.users[i] = StationaryUser(\
+                int(table.loc[i][ID]),\
+                table.loc[i][POSITION],\
+                int(table.loc[i][GLASSES]),\
+                int(table.loc[i][FOVIO]),\
+                int(table.loc[i][TOBII]))

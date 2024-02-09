@@ -23,10 +23,10 @@ class TableViz:
         self.user = user
         self.figure = figure
         self.blocks = {}
-        self.path_data = ("../dataset/mobile/%s/%d/%s" % \
-                    (self.user.position, self.user.id, figure))
-        self.path_viz = ("../dataviz/mobile/%s/%d/%s" % \
-                    (self.user.position, self.user.id, figure))
+        self.path_data = ("../dataset/%s/%s/%d/%s" % \
+                    (self.user.setup, self.user.position, self.user.id, figure))
+        self.path_viz = ("../dataviz/%s/%s/%d/%s" % \
+                    (self.user.setup, self.user.position, self.user.id, figure))
         self.extract_blocks()
         self.generate_viz()
 
