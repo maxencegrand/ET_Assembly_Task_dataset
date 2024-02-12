@@ -105,6 +105,7 @@ class Extractor:
         data = np.load(npyfile)
         self.timestamps = []
         for d in data:
+            print(d)
             self.timestamps.append((d+self.offset)*1000)
 
     def transpose_annotations(self):
@@ -116,8 +117,9 @@ class Extractor:
         rows = [["timestamp","action","block",\
                 "x0", "y0", "x1", "y1", "x2", "y2", "x3", "y3",\
                 "level", "type"]]
-
+        # print(self.timestamps)
         for frame in df["timestamp"].tolist():
+            print(frame)
             timestamp = self.timestamps[frame]
             action = df.loc[df["timestamp"]==frame]["action"].tolist()[0]
             block = df.loc[df["timestamp"]==frame]["block"].tolist()[0]

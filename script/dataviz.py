@@ -7,16 +7,19 @@ from utils.user_group import Mobile, Stationary
 
 def main(argv):
     print("Viz mobile data ...")
-    # mobile_users = Mobile()
-    # for id in mobile_users.get_id_list():
-    #     user = mobile_users.get_user(id)
-    #     user.print_info()
-    #     for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
-    #     # for figure in ["car"]:
-    #         print("Viz %s" % figure)
-    #         # mobile_extractor.Extractor(user, figure)
-    #         TableViz(user, figure)
-    #         ScreenViz(user,figure)
+    mobile_users = Mobile()
+    for id in mobile_users.get_id_list():
+        user = mobile_users.get_user(id)
+        user.print_info()
+        for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
+        # for figure in ["car"]:
+            try:
+                print("Viz %s" % figure)
+                # mobile_extractor.Extractor(user, figure)
+                TableViz(user, figure)
+                ScreenViz(user,figure)
+            except:
+                print("Error during data visualization")
 
     print("Viz stationary data ...")
     stat_users = Stationary()
@@ -25,9 +28,12 @@ def main(argv):
         user.print_info()
         # for figure in ["car"]:
         for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
-            print("Viz %s" % figure)
-            # mobile_extractor.Extractor(user, figure)
-            TableViz(user, figure)
-            ScreenViz(user,figure)
+            try:
+                print("Viz %s" % figure)
+                # mobile_extractor.Extractor(user, figure)
+                TableViz(user, figure)
+                ScreenViz(user,figure)
+            except:
+                print("Error during data visualization")
 if __name__ == "__main__":
    main(sys.argv[1:])

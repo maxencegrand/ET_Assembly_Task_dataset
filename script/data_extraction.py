@@ -8,15 +8,18 @@ from utils.user_group import Mobile, Stationary
 
 def main(argv):
     print("Extracting mobile data ...")
-    # mobile_users = Mobile()
-    # for id in mobile_users.get_id_list():
-    #     user = mobile_users.get_user(id)
-    #     user.print_info()
-    #     # for figure in ["car"]:
-    #     for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
-    #         print("Extract %s" % figure)
-    #         mobile_extractor.Extractor(user, figure)
-    #         TableState(user, figure)
+    mobile_users = Mobile()
+    for id in mobile_users.get_id_list():
+        user = mobile_users.get_user(id)
+        user.print_info()
+        # for figure in ["car"]:
+        for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
+            print("Extract %s" % figure)
+            try:
+                mobile_extractor.Extractor(user, figure)
+                TableState(user, figure)
+            except:
+                print("Error during extraction")
 
     print("Extracting stationary data ...")
     stat_users = Stationary()
@@ -25,9 +28,12 @@ def main(argv):
         user.print_info()
         # for figure in ["car"]:
         for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
-            print("Extract %s" % figure)
-            stationary_extractor.Extractor(user, figure)
-            TableState(user, figure)
+            try:
+                print("Extract %s" % figure)
+                stationary_extractor.Extractor(user, figure)
+                TableState(user, figure)
+            except:
+                print("Error during extraction")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
