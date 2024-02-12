@@ -24,7 +24,7 @@ def main(argv):
         user = stat_users.get_user(id)
         user.print_info()
         # for figure in ["car"]:
-        for figure in ["car", "tb"]:
+        for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
             print("Viz %s" % figure)
             # mobile_extractor.Extractor(user, figure)
             TableViz(user, figure)

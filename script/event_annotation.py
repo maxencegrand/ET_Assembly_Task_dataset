@@ -20,7 +20,7 @@ def main():
 
     args = parser.parse_args()
     df_stock = pd.DataFrame(data=pd.read_csv("csv/stock.csv"))
-    df_block = pd.DataFrame(data=pd.read_csv("csv/block.csv"))
+    df_block = pd.DataFrame(data=pd.read_csv("csv/blocks.csv"))
     df_inst = pd.DataFrame(data=pd.read_csv("csv/figures/%s/instructions.csv" \
                                                             % args.figure))
     if(args.setup == "mobile"):
@@ -46,23 +46,58 @@ def main():
 
     cont = "y"
     while(cont == "" or cont == "y" or cont == "Y"):
-        cont = input("Add new event? (y/n)")
-        if(cont == "n" or cont == "N"):
-            break
-        elif(not(cont == "" or cont == "y" or cont == "Y")):
-            cont = ""
-            continue
-        ts = int(input("Timestamp: "))
-        id = int(input("Block ID:"))
-        action = int(input("Action %d:Grasp/%d:Release " % (Action.GRASP.value, Action.RELEASE.value)))
-        type = int(input("Type %d:Legal/%d:Error/%d:Bad Id/%d:Correction " % (\
-                EventType.LEGAL.value,EventType.ERROR.value,EventType.BAD_ID.value,EventType.CORRECTION.value)))
-        if(EventType(type) == EventType.LEGAL):
-            if(Action(action) == Action.GRASP):
-                level=0
-                x = df_stock.loc[df_stock["block"]==id]["x"].tolist()[0]
-                y = df_stock.loc[df_stock["block"]==id]["y"].tolist()[0]
-                shape = Shape(df_block.loc[df_block["id"]==id]["shape"].tolist()[0])
+        try:
+            cont = input("Add new event? (y/n)")
+            if(cont == "n" or cont == "N"):
+                break
+            elif(not(cont == "" or cont == "y" or cont == "Y")):
+                cont = ""
+                continue
+            ts = int(input("Timestamp: "))
+            id = int(input("Block ID:"))
+            action = int(input("Action %d:Grasp/%d:Release " % (Action.GRASP.value, Action.RELEASE.value)))
+            type = int(input("Type %d:Legal/%d:Error/%d:Bad Id/%d:Correction " % (\
+                    EventType.LEGAL.value,EventType.ERROR.value,EventType.BAD_ID.value,EventType.CORRECTION.value)))
+            if(EventType(type) == EventType.LEGAL):
+                if(Action(action) == Action.GRASP):
+                    level=0
+                    x = df_stock.loc[df_stock["block"]==id]["x"].tolist()[0]
+                    y = df_stock.loc[df_stock["block"]==id]["y"].tolist()[0]
+                    shape = Shape(df_block.loc[df_block["id"]==id]["shape"].tolist()[0])
+                    tl = Point(x-0.5, y-0.5)
+                    bl = None
+                    tr = None
+                    br = None
+                    if(shape == Shape.CUBE):
+                        tr = Point(tl.x+2, tl.y)
+                        br = Point(tl.x+2, tl.y+2)
+                        bl = Point(tl.x, tl.y+2)
+                    else:
+                        tr = Point(tl.x+2, tl.y)
+                        br = Point(tl.x+2, tl.y+4)
+                        bl = Point(tl.x, tl.y+4)
+                else:
+                    x0 = df_inst.loc[df_inst["block"]==id]["x0"].tolist()[0]
+                    y0 = df_inst.loc[df_inst["block"]==id]["y0"].tolist()[0]
+                    tl = Point(x0-0.5, y0-0.5)
+                    x1 = df_inst.loc[df_inst["block"]==id]["x1"].tolist()[0]
+                    y1 = df_inst.loc[df_inst["block"]==id]["y1"].tolist()[0]
+                    tr = Point(x1+0.5, y1-0.5)
+                    x2 = df_inst.loc[df_inst["block"]==id]["x2"].tolist()[0]
+                    y2 = df_inst.loc[df_inst["block"]==id]["y2"].tolist()[0]
+                    br = Point(x2+0.5, y2+0.5)
+                    x3 = df_inst.loc[df_inst["block"]==id]["x3"].tolist()[0]
+                    y3 = df_inst.loc[df_inst["block"]==id]["y3"].tolist()[0]
+                    bl = Point(x3-0.5, y3+0.5)
+                    level = df_inst.loc[df_inst["block"]==id]["level"].tolist()[0]
+            else:
+                x = int(input("Top Left x: "))
+                y = int(input("Top Left y: "))
+                o = int(input("Orientation 0:Vertical/1:Horizontal "))
+                shape = Shape(int(input("Shape %d:Cube/%d:Brick " % (Shape.CUBE.value, Shape.BRICK.value))))
+                level = int(input("level: "))
+
+                #Compute position
                 tl = Point(x-0.5, y-0.5)
                 bl = None
                 tr = None
@@ -72,59 +107,27 @@ def main():
                     br = Point(tl.x+2, tl.y+2)
                     bl = Point(tl.x, tl.y+2)
                 else:
-                    tr = Point(tl.x+2, tl.y)
-                    br = Point(tl.x+2, tl.y+4)
-                    bl = Point(tl.x, tl.y+4)
-            else:
-                x0 = df_inst.loc[df_inst["block"]==id]["x0"].tolist()[0]
-                y0 = df_inst.loc[df_inst["block"]==id]["y0"].tolist()[0]
-                tl = Point(x0-0.5, y0-0.5)
-                x1 = df_inst.loc[df_inst["block"]==id]["x1"].tolist()[0]
-                y1 = df_inst.loc[df_inst["block"]==id]["y1"].tolist()[0]
-                tr = Point(x1+0.5, y1-0.5)
-                x2 = df_inst.loc[df_inst["block"]==id]["x2"].tolist()[0]
-                y2 = df_inst.loc[df_inst["block"]==id]["y2"].tolist()[0]
-                br = Point(x2+0.5, y2+0.5)
-                x3 = df_inst.loc[df_inst["block"]==id]["x3"].tolist()[0]
-                y3 = df_inst.loc[df_inst["block"]==id]["y3"].tolist()[0]
-                bl = Point(x3-0.5, y3+0.5)
-                level = df_inst.loc[df_inst["block"]==id]["level"].tolist()[0]
-        else:
-            x = int(input("Top Left x: "))
-            y = int(input("Top Left y: "))
-            o = int(input("Orientation 0:Vertical/1:Horizontal "))
-            shape = Shape(int(input("Shape %d:Cube/%d:Brick " % (Shape.CUBE.value, Shape.BRICK.value))))
-            level = int(input("level: "))
-
-            #Compute position
-            tl = Point(x-0.5, y-0.5)
-            bl = None
-            tr = None
-            br = None
-            if(shape == Shape.CUBE):
-                tr = Point(tl.x+2, tl.y)
-                br = Point(tl.x+2, tl.y+2)
-                bl = Point(tl.x, tl.y+2)
-            else:
-                if(o == 0):
-                    tr = Point(tl.x+2, tl.y)
-                    br = Point(tl.x+2, tl.y+4)
-                    bl = Point(tl.x, tl.y+4)
-                else:
-                    tr = Point(tl.x+4, tl.y)
-                    br = Point(tl.x+4, tl.y+2)
-                    bl = Point(tl.x, tl.y+2)
-            print(f"{tl} {tr} {br} {bl}")
-        tl = device.get_relative_from_abstract(tl)
-        tr = device.get_relative_from_abstract(tr)
-        bl = device.get_relative_from_abstract(bl)
-        br = device.get_relative_from_abstract(br)
-        position = Position(tl, tr, bl, br, level=level)
-        print(position)
-        #Create event and add raw
-        event = Event(ts, id, position, action, type)
-        data.append(event.get_raw())
-
+                    if(o == 0):
+                        tr = Point(tl.x+2, tl.y)
+                        br = Point(tl.x+2, tl.y+4)
+                        bl = Point(tl.x, tl.y+4)
+                    else:
+                        tr = Point(tl.x+4, tl.y)
+                        br = Point(tl.x+4, tl.y+2)
+                        bl = Point(tl.x, tl.y+2)
+                print(f"{tl} {tr} {br} {bl}")
+            tl = device.get_relative_from_abstract(tl)
+            tr = device.get_relative_from_abstract(tr)
+            bl = device.get_relative_from_abstract(bl)
+            br = device.get_relative_from_abstract(br)
+            position = Position(tl, tr, bl, br, level=level)
+            print(position)
+            #Create event and add raw
+            event = Event(ts, id, position, action, type)
+            data.append(event.get_raw())
+        except:
+            print("ERROR")
+            continue
     with open(csvfile, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',\
             quotechar='|', quoting=csv.QUOTE_MINIMAL)
