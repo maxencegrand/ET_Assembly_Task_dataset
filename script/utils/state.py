@@ -28,14 +28,15 @@ class State():
         """
         """
         if(event.is_grasp()):
-            self.grasp(event.block)
+            self.grasp(event.block, event.position)
         else:
             self.release(event.block, event.position)
 
-    def grasp(self, id):
+    def grasp(self, id, position):
         """
         """
         self.blocks[id]["holding"]=1
+        self.blocks[id]["block"].position = position
 
     def release(self, id, position):
         """

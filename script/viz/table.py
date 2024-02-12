@@ -77,10 +77,11 @@ class TableViz:
         df_table = pd.DataFrame(data=pd.read_csv("%s/states.csv"%self.path_data))
         last_idx = df_table.index.stop-1
         for i in df_table.index:
-            if(i == last_idx):
-                continue
             timestamp = df_table.loc[i,"timestamp"]
-            next_timestamp = df_table.loc[i+1,"timestamp"]
+            if(i == last_idx):
+                next_timestamp = df_table.loc[i,"timestamp"]
+            else:
+                next_timestamp = df_table.loc[i+1,"timestamp"]
             for block in self.blocks.keys():
                 self.read_state(df_table, i, block)
             self.generate_table_png(timestamp, next_timestamp)
