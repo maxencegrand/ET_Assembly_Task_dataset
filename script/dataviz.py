@@ -3,25 +3,28 @@
 import traceback
 from viz.table import TableViz
 from viz.screen import ScreenViz
+from viz.device import DeviceViz
 import sys
 from utils.user_group import Mobile, Stationary
 
 def main(argv):
     print("Viz mobile data ...")
     mobile_users = Mobile()
-    # for id in mobile_users.get_id_list():
-    #     user = mobile_users.get_user(id)
-    #     user.print_info()
-    #     for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
-    #     # for figure in ["car"]:
-    #         try:
-    #             print("Viz %s" % figure)
-    #             TableViz(user, figure)
-    #             ScreenViz(user,figure)
-    #         except:
-    #             print("Error during data visualization")
-    #             # traceback.print_exc()
-    #             # sys.exit(1)
+    for id in mobile_users.get_id_list():
+        user = mobile_users.get_user(id)
+        user.print_info()
+        for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
+        # for figure in ["car"]:
+            try:
+                print("Viz %s" % figure)
+                TableViz(user, figure)
+                ScreenViz(user,figure)
+                DeviceViz(user,figure)
+                sys.exit(1)
+            except:
+                print("Error during data visualization")
+                # traceback.print_exc()
+                # sys.exit(1)
 
     print("Viz stationary data ...")
     stat_users = Stationary()
