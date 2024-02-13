@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.8
 
+import traceback
 import sys, getopt
 import csv, os
 import argparse# Create the parser
@@ -61,8 +62,8 @@ def main():
             if(EventType(type) == EventType.LEGAL):
                 if(Action(action) == Action.GRASP):
                     level=0
-                    x = df_stock.loc[df_stock["block"]==id]["x"].tolist()[0]
-                    y = df_stock.loc[df_stock["block"]==id]["y"].tolist()[0]
+                    x = int(df_stock.loc[df_stock["block"]==id]["x"].tolist()[0])
+                    y = int(df_stock.loc[df_stock["block"]==id]["y"].tolist()[0])
                     shape = Shape(df_block.loc[df_block["id"]==id]["shape"].tolist()[0])
                     tl = Point(x-0.5, y-0.5)
                     bl = None
@@ -77,19 +78,19 @@ def main():
                         br = Point(tl.x+2, tl.y+4)
                         bl = Point(tl.x, tl.y+4)
                 else:
-                    x0 = df_inst.loc[df_inst["block"]==id]["x0"].tolist()[0]
-                    y0 = df_inst.loc[df_inst["block"]==id]["y0"].tolist()[0]
+                    x0 = int(df_inst.loc[df_inst["block"]==id]["x0"].tolist()[0])
+                    y0 = int(df_inst.loc[df_inst["block"]==id]["y0"].tolist()[0])
                     tl = Point(x0-0.5, y0-0.5)
-                    x1 = df_inst.loc[df_inst["block"]==id]["x1"].tolist()[0]
-                    y1 = df_inst.loc[df_inst["block"]==id]["y1"].tolist()[0]
+                    x1 = int(df_inst.loc[df_inst["block"]==id]["x1"].tolist()[0])
+                    y1 = int(df_inst.loc[df_inst["block"]==id]["y1"].tolist()[0])
                     tr = Point(x1+0.5, y1-0.5)
-                    x2 = df_inst.loc[df_inst["block"]==id]["x2"].tolist()[0]
-                    y2 = df_inst.loc[df_inst["block"]==id]["y2"].tolist()[0]
+                    x2 = int(df_inst.loc[df_inst["block"]==id]["x2"].tolist()[0])
+                    y2 = int(df_inst.loc[df_inst["block"]==id]["y2"].tolist()[0])
                     br = Point(x2+0.5, y2+0.5)
-                    x3 = df_inst.loc[df_inst["block"]==id]["x3"].tolist()[0]
-                    y3 = df_inst.loc[df_inst["block"]==id]["y3"].tolist()[0]
+                    x3 = int(df_inst.loc[df_inst["block"]==id]["x3"].tolist()[0])
+                    y3 = int(df_inst.loc[df_inst["block"]==id]["y3"].tolist()[0])
                     bl = Point(x3-0.5, y3+0.5)
-                    level = df_inst.loc[df_inst["block"]==id]["level"].tolist()[0]
+                    level = int(df_inst.loc[df_inst["block"]==id]["level"].tolist()[0])
             else:
                 x = int(input("Top Left x: "))
                 y = int(input("Top Left y: "))
@@ -125,8 +126,9 @@ def main():
             #Create event and add raw
             event = Event(ts, id, position, action, type)
             data.append(event.get_raw())
-        except:
+        except Exception as e:
             print("ERROR")
+            traceback.print_exc()
             continue
     with open(csvfile, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',\
