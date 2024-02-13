@@ -2,9 +2,11 @@
 
 import extraction.mobile as mobile_extractor
 import extraction.stationary as stationary_extractor
-from extraction.table_state import TableState
+from extraction.table_state import TableState, GoalState
 import sys
 from utils.user_group import Mobile, Stationary
+from extraction.dataset import Dataset
+import traceback
 
 def main(argv):
     print("Extracting mobile data ...")
@@ -18,8 +20,12 @@ def main(argv):
             try:
                 mobile_extractor.Extractor(user, figure)
                 TableState(user, figure)
+                GoalState(user,figure)
+                Dataset(user,figure)
             except:
                 print("Error during extraction")
+                # traceback.print_exc()
+                # sys.exit(1)
 
     print("Extracting stationary data ...")
     stat_users = Stationary()
@@ -32,6 +38,7 @@ def main(argv):
                 print("Extract %s" % figure)
                 stationary_extractor.Extractor(user, figure)
                 TableState(user, figure)
+                Dataset(user,figure)
             except:
                 print("Error during extraction")
 

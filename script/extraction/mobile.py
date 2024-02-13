@@ -47,7 +47,7 @@ class Extractor:
         self.end = get_code_timestamp(df_instruction_event,\
                 InstructionEvent.END.value)
         duration = (self.end - self.start) / 1000
-        print("Assembly starts at %d and lasts at %d" % (self.start, duration))
+        # print("Assembly starts at %d and lasts at %d" % (self.start, duration))
         self.extract("table")
         self.extract("screen")
 
@@ -87,7 +87,7 @@ class Extractor:
         #
         csvfile = "%s/%s.csv" % \
                 (self.path_data, display)
-        print(csvfile)
+        # print(csvfile)
         with open(csvfile , 'w',  newline='') as f:
             writer = csv.writer(f)
             for row in rows:
@@ -105,7 +105,7 @@ class Extractor:
         data = np.load(npyfile)
         self.timestamps = []
         for d in data:
-            print(d)
+            # print(d)
             self.timestamps.append((d+self.offset)*1000)
 
     def transpose_annotations(self):
@@ -119,7 +119,7 @@ class Extractor:
                 "level", "type"]]
         # print(self.timestamps)
         for frame in df["timestamp"].tolist():
-            print(frame)
+            # print(frame)
             timestamp = self.timestamps[frame]
             action = df.loc[df["timestamp"]==frame]["action"].tolist()[0]
             block = df.loc[df["timestamp"]==frame]["block"].tolist()[0]

@@ -26,6 +26,7 @@ class Device(Enum):
     """
     TABLE = 0
     SCREEN = 1
+    NO_DEVICE = 2
 
 class DeviceManager():
     """

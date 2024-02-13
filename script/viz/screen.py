@@ -8,6 +8,7 @@ from utils.event import InstructionEvent
 WIDTH=2560
 HEIGHT=1440
 PURPLE = (255, 0, 255, 255)
+BLACK = (0, 0, 0, 255)
 
 class ScreenViz:
     """
@@ -63,6 +64,21 @@ class ScreenViz:
             y = df.loc[i, "y"]
             if(math.isnan(x) or math.isnan(y)):
                 continue
-            frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=5, color=PURPLE, thickness=-1)
+            frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=20, color=PURPLE, thickness=-1)
+            j = i-1
+            while(j >= 0):
+                ts_prev = df.loc[j, "timestamp"]
+                # print(f"{ts} {ts_prev} {ts - ts_prev}")
+                if(ts_prev < timestamp):
+                    break
+                if(ts - ts_prev <= 40):
+                    # print("coucou")
+                    x_prev = df.loc[j, "x"]
+                    y_prev = df.loc[j, "y"]
+                    if(math.isnan(x_prev) or math.isnan(y_prev)):
+                        j -= 1
+                        continue
+                    frame = cv2.line(frame, (int(x*WIDTH),int(y*HEIGHT)), (int(x_prev*WIDTH),int(y_prev*HEIGHT)), color=PURPLE, thickness=4)
+                j -= 1
         # print(pngfile)
         cv2.imwrite(filename=pngfile, img=frame)

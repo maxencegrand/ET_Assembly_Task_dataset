@@ -4,8 +4,9 @@ import cv2
 from utils.block import Color
 import math
 BACKGROUND = "viz/resources/background.png"
-WIDTH=480
-HEIGHT=240
+WIDTH=1440
+HEIGHT=720
+
 BLACK = (0, 0, 0, 255)
 DARK_GREY = (111, 111, 111, 255)
 RED = (0, 0, 255, 255)
@@ -68,7 +69,22 @@ class TableViz:
             if(math.isnan(x) or math.isnan(y)):
                 continue
             # print([x*WIDTH,y*HEIGHT])
-            frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=5, color=PURPLE, thickness=-1)
+            frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=15, color=PURPLE, thickness=-1)
+            j = i-1
+            while(j >= 0):
+                ts_prev = df.loc[j, "timestamp"]
+                # print(f"{ts} {ts_prev} {ts - ts_prev}")
+                if(ts_prev < timestamp):
+                    break
+                if(ts - ts_prev <= 40):
+                    # print("coucou")
+                    x_prev = df.loc[j, "x"]
+                    y_prev = df.loc[j, "y"]
+                    if(math.isnan(x_prev) or math.isnan(y_prev)):
+                        j -= 1
+                        continue
+                    frame = cv2.line(frame, (int(x*WIDTH),int(y*HEIGHT)), (int(x_prev*WIDTH),int(y_prev*HEIGHT)), color=PURPLE, thickness=3)
+                j -= 1
         cv2.imwrite(filename=pngfile, img=frame)
 
     def generate_viz(self):

@@ -67,7 +67,7 @@ class Extractor:
                 c_right = Point(float(df.at[i, "Rt X Pos"]),\
                             float(df.at[i, "Rt Y Pos"]))
                 c_right = self.transposer.transpose(c_right)
-                print(f"{c_left} {c_right}")
+                # print(f"{c_left} {c_right}")
                 val_left = int(df.at[i,"L Quality"])
                 val_right = int(df.at[i,"R Quality"])
                 if(val_left > 0 or val_right > 0):
@@ -79,7 +79,7 @@ class Extractor:
                 else:
                     self.rows.append([ts,float("nan"),float("nan")])
             except Exception as inst:
-                print(inst)
+                # print(inst)
                 self.rows.append([ts,float("nan"),float("nan")])
 
     def write_data(self):

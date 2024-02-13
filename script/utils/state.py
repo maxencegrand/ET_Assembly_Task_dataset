@@ -61,6 +61,22 @@ class State():
             raw.append(self.blocks[id]["holding"])
         return raw
 
+    def get_raw_only_position(self, ids):
+        """
+        """
+        raw = []
+        for id in ids:
+            raw.append(self.blocks[id]["block"].position.top_left.x)
+            raw.append(self.blocks[id]["block"].position.top_left.y)
+            raw.append(self.blocks[id]["block"].position.top_right.x)
+            raw.append(self.blocks[id]["block"].position.top_right.y)
+            raw.append(self.blocks[id]["block"].position.bottom_right.x)
+            raw.append(self.blocks[id]["block"].position.bottom_right.y)
+            raw.append(self.blocks[id]["block"].position.bottom_left.x)
+            raw.append(self.blocks[id]["block"].position.bottom_left.y)
+            raw.append(self.blocks[id]["block"].position.level)
+        return raw
+
     def get_png(self, pngfile):
         width = 240
         height = 480

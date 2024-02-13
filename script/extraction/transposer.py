@@ -19,16 +19,21 @@ class Transposer:
         if(math.isnan(point.x) or math.isnan(point.y)):
             return Point(float("nan"), float("nan"))
 
-        y1 = point.y
-        x1 = self.no.x + (self.so.x - self.no.x) * \
-            float((y1 - self.no.y)/(self.so.y - self.no.y))
+        x1 = self.no.x + float(((self.so.x - self.no.x) * \
+            (point.y - self.no.y))/(self.so.y - self.no.y))
 
-        x2 = self.ne.x - (self.se.x - self.ne.x) * \
-            float((y1 - self.ne.y)/(self.se.y - self.ne.y))
+        y1 = self.ne.y + float(((self.no.y - self.ne.y) * \
+            (self.ne.x - point.x))/ (self.ne.x - self.no.x))
+
+        x2 = self.ne.x - float(((self.ne.x - self.se.x) * \
+            (point.y - self.ne.y))/(self.se.y - self.ne.y))
+
+        y2 = self.so.y - float(((self.so.y - self.se.y) * \
+            (point.x - self.so.x))/ (self.se.x - self.so.x))
 
         return Point(\
             float((point.x - x1)/(x2-x1)),\
-            float((point.y - self.no.y)/(self.so.y-self.no.y)))
+            float((point.y - y1)/(y2-y1)))
 
 class ScreenTransposer(Transposer):
     """
