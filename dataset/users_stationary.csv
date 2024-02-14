@@ -1,4 +1,5 @@
-id,position,glasses,fovio,tobii
-32322786,sitting,0,2,2
-6581999,sitting,1,3,3
-87891249,sitting,1,3,2
+id,position,glasses,fovio,tobii,car,tb,house,sc,tc,tsb
+32322786,sitting,0,2,2,1,1,1,1,1,1
+6581999,sitting,1,3,3,1,1,1,1,1,1
+87891249,sitting,1,3,3,1,1,1,1,1,1
+10383544,sitting,1,3,2,0,0,0,1,1,1
