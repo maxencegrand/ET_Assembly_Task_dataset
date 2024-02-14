@@ -38,16 +38,21 @@ def main():
 
     cont = "y"
     while(cont == "" or cont == "y" or cont == "Y"):
-        cont = input("Add new event? (y/n)")
-        if(cont == "n" or cont == "N"):
-            break
-        elif(not(cont == "" or cont == "y" or cont == "Y")):
-            cont = ""
+        try:
+            cont = input("Add new event? (y/n)")
+            if(cont == "n" or cont == "N"):
+                break
+            elif(not(cont == "" or cont == "y" or cont == "Y")):
+                cont = ""
+                continue
+            ts = int(input("Timestamp: "))
+            code = int(input("Code %d:Start/%d:Next/%d:Previous/%d:No Next Error/%d:Extra Next Error/%d:End " % (\
+                    InstructionEvent.START.value,InstructionEvent.NEXT.value,InstructionEvent.PREVIOUS.value,InstructionEvent.NO_NEXT_ERROR.value,InstructionEvent.EXTRA_NEXT_ERROR.value, InstructionEvent.END.value)))
+            data.append([ts,code])
+        except Exception as e:
+            print("ERROR")
+            traceback.print_exc()
             continue
-        ts = int(input("Timestamp: "))
-        code = int(input("Code %d:Start/%d:Next/%d:Previous/%d:No Next Error/%d:Extra Next Error/%d:End " % (\
-                InstructionEvent.START.value,InstructionEvent.NEXT.value,InstructionEvent.PREVIOUS.value,InstructionEvent.NO_NEXT_ERROR.value,InstructionEvent.EXTRA_NEXT_ERROR.value, InstructionEvent.END.value)))
-        data.append([ts,code])
 
     with open(csvfile, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',\
