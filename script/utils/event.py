@@ -33,6 +33,26 @@ class Instruction():
         self.block = block
         self.position = position
 
+    def __str__(self):
+        """
+        """
+        return f"Instruction {self.id}\n\t{self.block}\n\t{self.position}"
+
+    def get_raw(self):
+        """
+        """
+        return [\
+            self.block,\
+            self.position.top_left.x,\
+            self.position.top_left.y,\
+            self.position.top_right.x,\
+            self.position.top_right.y,\
+            self.position.bottom_right.x,\
+            self.position.bottom_right.y,\
+            self.position.bottom_left.x,\
+            self.position.bottom_left.y,\
+            self.position.level]
+
 class EventType(Enum):
     """
     Class enumerating Event Types
@@ -85,7 +105,7 @@ class Event:
         """
         """
         return self.action == Action.RELEASE
-        
+
     def get_raw(self):
         """
         Return containing the event at timestamp
