@@ -144,7 +144,7 @@ class Extractor:
         df = pd.DataFrame(data=pd.read_csv(csvfile))
         rows = [["timestamp","code"]]
         for frame in df["timestamp"].tolist():
-            timestamp = self.timestamps[frame]
+            timestamp = int(self.timestamps[frame])
             code = df.loc[df["timestamp"]==frame]["code"].tolist()[0]
             rows.append([timestamp,code])
         csvfile = ("%s/instruction_events.csv" % (self.path_data))
