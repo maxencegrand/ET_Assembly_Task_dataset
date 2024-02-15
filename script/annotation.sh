@@ -14,8 +14,8 @@ if [ -d "$raw_data" ]; then
   do
     mkdir -p $dataset/$user/$figure
     mkdir -p $dataviz/$user/$figure
-    xterm -hold -e "python3 event_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position" &
-    xterm -hold -e "python3 instruction_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position"
+    gnome-terminal -e "python3 event_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position" &
+    gnome-terminal --wait -e "python3 instruction_annotation.py -path ../dataset -user $user -figure $figure -setup $setup -position $position"
   done
 else
   echo "$raw_data doesn't exist."
