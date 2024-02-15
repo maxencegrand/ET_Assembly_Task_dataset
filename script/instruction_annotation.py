@@ -4,6 +4,7 @@ import sys, getopt
 import csv, os
 import argparse# Create the parser
 from utils.event import InstructionEvent
+import traceback
 
 def main():
     parser = argparse.ArgumentParser()# Add an argument
