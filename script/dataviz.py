@@ -20,7 +20,6 @@ def main(argv):
                 TableViz(user, figure)
                 ScreenViz(user,figure)
                 DeviceViz(user,figure)
-                sys.exit(1)
             except:
                 print("Error during data visualization")
                 # traceback.print_exc()
@@ -39,6 +38,6 @@ def main(argv):
                 ScreenViz(user,figure)
             except:
                 print("Error during data visualization")
-                traceback.print_exc()
+                # traceback.print_exc()
 if __name__ == "__main__":
    main(sys.argv[1:])
