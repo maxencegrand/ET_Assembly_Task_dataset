@@ -36,7 +36,7 @@ class Extractor:
         self.rows = [["timestamp", \
                 "x",\
                 "y"]]
-
+        all_ts = []
         with open(data, newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             first = True
@@ -49,6 +49,9 @@ class Extractor:
                     continue
                 if(ts > self.end):
                     continue
+                if(ts in all_ts):
+                    continue
+                all_ts.append(ts)
                 c_left = get_coord(row[2])
                 val_left = int(row[6])
                 c_right = get_coord(row[10])
