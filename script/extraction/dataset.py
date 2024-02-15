@@ -25,34 +25,12 @@ class Dataset:
         for i in df.index:
             ts_i = df.loc[i, "timestamp"]
             if(ts == ts_i):
-                # for id in range(24):
-                #     res.append(df.loc[i, ("%d_x0" % id)])
-                #     res.append(df.loc[i, ("%d_y0" % id)])
-                #     res.append(df.loc[i, ("%d_x1" % id)])
-                #     res.append(df.loc[i, ("%d_y1" % id)])
-                #     res.append(df.loc[i, ("%d_x2" % id)])
-                #     res.append(df.loc[i, ("%d_y2" % id)])
-                #     res.append(df.loc[i, ("%d_x3" % id)])
-                #     res.append(df.loc[i, ("%d_y3" % id)])
-                #     res.append(df.loc[i, ("%d_level" % id)])
-                #     res.append(df.loc[i, ("%d_holding" % id)])
                 return ts_i
             if(i+1 >= df.index.stop):
                 return -1
             i_next = i+1
             ts_next = df.loc[i_next, "timestamp"]
             if(ts > ts_i and ts < ts_next):
-                # for id in range(24):
-                #     res.append(df.loc[i_next, ("%d_x0" % id)])
-                #     res.append(df.loc[i_next, ("%d_y0" % id)])
-                #     res.append(df.loc[i_next, ("%d_x1" % id)])
-                #     res.append(df.loc[i_next, ("%d_y1" % id)])
-                #     res.append(df.loc[i_next, ("%d_x2" % id)])
-                #     res.append(df.loc[i_next, ("%d_y2" % id)])
-                #     res.append(df.loc[i_next, ("%d_x3" % id)])
-                #     res.append(df.loc[i_next, ("%d_y3" % id)])
-                #     res.append(df.loc[i_next, ("%d_level" % id)])
-                #     res.append(df.loc[i_next, ("%d_holding" % id)])
                 return ts_i
 
 
@@ -75,7 +53,7 @@ class Dataset:
             if(id_gz_table < df_gz_table.index.stop and\
                 id_gz_screen < df_gz_screen.index.stop):
                 ts_table = df_gz_table.loc[id_gz_table, "timestamp"]
-                ts_screen = df_gz_screen.loc[id_gz_table, "timestamp"]
+                ts_screen = df_gz_screen.loc[id_gz_screen, "timestamp"]
                 if(ts_table == ts_screen):
                     ts = ts_table
                     x_table = df_gz_table.loc[id_gz_table, "x"]
