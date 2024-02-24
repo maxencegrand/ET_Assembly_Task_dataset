@@ -5,6 +5,7 @@ import json
 import numpy as np
 import csv
 from utils.position import Point
+from utils.device import DeviceManager, Device
 
 KEY_SYNC = "start_time_synced_s"
 KEY_SYSTEM = "start_time_system_s"
@@ -14,7 +15,7 @@ SURFACE = {"Screen":{"offset":0, "width":1},\
             "Left":{"offset":0, "width":float(14/48)},\
             "Assembly":{"offset":float(14/48), "width":float(20/48)},\
             "Right":{"offset":float(34/48), "width":float(14/48)}}
-
+DEVICE = {"screen":Device.SCREEN, "table":Device.TABLE}
 def get_code_timestamp(df, value):
     df = df[df["code"] == value]
     idx = df.index[0]
@@ -28,6 +29,7 @@ class Extractor:
         """
 
         """
+        self.device = DeviceManager()
         self.user = user
         self.figure = figure
 
@@ -80,7 +82,9 @@ class Extractor:
                         no_data = False
                         eye = Point(data.at[i, "x_norm"],data.at[i, "y_norm"])
                         eye.x = SURFACE[s]["offset"]+(eye.x * SURFACE[s]["width"])
-                        rows.append([ts, eye.x, 1-eye.y])
+                        eye.y = 1-eye.y
+                        eye = self.device.get_absolute_from_relative(eye, DEVICE[display])
+                        rows.append([ts, eye.x, eye.y])
                         break
             if(no_data):
                 rows.append([ts, float("nan"), float("nan")])

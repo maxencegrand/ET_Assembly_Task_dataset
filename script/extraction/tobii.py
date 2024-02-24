@@ -4,7 +4,7 @@ import pandas as pd
 import csv
 import math
 from utils.util import get_coord, get_code_timestamp
-
+from utils.device import DeviceManager, Device
 class Extractor:
     """
     """
@@ -29,6 +29,8 @@ class Extractor:
     def extract(self):
         """
         """
+        device = DeviceManager()
+
         # Open Tobii data csv
         data = "%s/instructions.csv" % self.path_raw_data
 
@@ -59,11 +61,17 @@ class Extractor:
                 if(val_left == 1 and val_right == 1):
                     x = float((c_left[0] + c_right[0])/2)
                     y = float((c_left[1] + c_right[1])/2)
-                    self.rows.append([ts, x, y])
+                    eye = device.get_absolute_from_relative(Point(x,y),\
+                                                                Device.SCREEN)
+                    self.rows.append([ts, eye.x, eye.y])
                 elif(val_left == 1 and val_right == 0):
-                    self.rows.append([ts, c_left[0], c_left[1]])
+                    eye = device.get_absolute_from_relative(\
+                                Point(c_left[0],c_left[1]), Device.SCREEN)
+                    self.rows.append([ts, eye.x, eye.y])
                 elif(val_left == 0 and val_right == 1):
-                    self.rows.append([ts, c_right[0], c_right[1]])
+                    eye = device.get_absolute_from_relative(\
+                                Point(c_right[0],c_right[1]), Device.SCREEN)
+                    self.rows.append([ts, eye.x, eye.y])
                 else:
                     self.rows.append([ts, float("nan"), float("nan")])
 

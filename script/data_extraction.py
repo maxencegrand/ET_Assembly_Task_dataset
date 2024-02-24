@@ -18,32 +18,30 @@ def main(argv):
         for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
             print("Extract %s" % figure)
             try:
-                mobile_extractor.Extractor(user, figure)
                 TableState(user, figure)
                 GoalState(user,figure)
-                Dataset(user,figure)
+                mobile_extractor.Extractor(user, figure)
             except:
                 print("Error during extraction")
                 # traceback.print_exc()
                 # sys.exit(1)
 
-    print("Extracting stationary data ...")
-    stat_users = Stationary()
-    for id in stat_users.get_id_list():
-        user = stat_users.get_user(id)
-        user.print_info()
-        # for figure in ["car"]:
-        for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
-            try:
-                print("Extract %s" % figure)
-                stationary_extractor.Extractor(user, figure)
-                TableState(user, figure)
-                GoalState(user, figure)
-                Dataset(user,figure)
-            except:
-                print("Error during extraction")
-                # traceback.print_exc()
-                # sys.exit(1)
+    # print("Extracting stationary data ...")
+    # stat_users = Stationary()
+    # for id in stat_users.get_id_list():
+    #     user = stat_users.get_user(id)
+    #     user.print_info()
+    #     # for figure in ["car"]:
+    #     for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
+    #         try:
+    #             print("Extract %s" % figure)
+    #             stationary_extractor.Extractor(user, figure)
+    #             TableState(user, figure)
+    #             GoalState(user, figure)
+    #         except:
+    #             print("Error during extraction")
+    #             # traceback.print_exc()
+    #             # sys.exit(1)
 
 if __name__ == "__main__":
    main(sys.argv[1:])

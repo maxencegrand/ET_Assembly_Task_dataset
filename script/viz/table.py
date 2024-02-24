@@ -4,8 +4,8 @@ import cv2
 from utils.block import Color
 import math
 BACKGROUND = "viz/resources/background.png"
-WIDTH=1440
-HEIGHT=720
+WIDTH=float(1440/76)
+HEIGHT=float(720/38)
 
 BLACK = (0, 0, 0, 255)
 DARK_GREY = (111, 111, 111, 255)
@@ -68,7 +68,7 @@ class TableViz:
             y = df.loc[i, "y"]
             if(math.isnan(x) or math.isnan(y)):
                 continue
-            # print([x*WIDTH,y*HEIGHT])
+            print([x*WIDTH,y*HEIGHT])
             frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=15, color=PURPLE, thickness=-1)
             j = i-1
             while(j >= 0):
@@ -114,3 +114,5 @@ class TableViz:
         self.blocks[block]["p"] = [[x0,y0],[x2,y2]]
         self.blocks[block]["h"] = holding
         self.blocks[block]["l"] = level
+
+        print(self.blocks[block])

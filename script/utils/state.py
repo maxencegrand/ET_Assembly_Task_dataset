@@ -17,16 +17,12 @@ class State():
 
     G{classtree}
     """
-    def __init__(self, blocks, instruction):
+    def __init__(self, blocks):
         """
         """
-        self.set_instruction(instruction)
         self.blocks = {}
         for b in blocks:
             self.blocks[b.id] = {"block":b,"holding":0}
-
-    def set_instruction(self, instruction):
-        self.instruction = instruction
 
     def apply(self, event):
         """
@@ -63,7 +59,6 @@ class State():
             raw.append(self.blocks[id]["block"].position.bottom_left.y)
             raw.append(self.blocks[id]["block"].position.level)
             raw.append(self.blocks[id]["holding"])
-        raw.extend(self.instruction.get_raw())
         return raw
 
     def get_raw_only_position(self, ids):

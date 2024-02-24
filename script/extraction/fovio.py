@@ -5,6 +5,7 @@ import csv
 from utils.util import get_coord, get_code_timestamp
 from utils.position import Point
 from extraction.transposer import Transposer
+from utils.device import DeviceManager, Device
 
 WIDTH = 1280
 HEIGHT = 720
@@ -50,6 +51,7 @@ class Extractor:
     def extract(self):
         """
         """
+        device = DeviceManager()
         datacsv = "%s/%s/table.csv" % (self.path_raw_data, self.figure)
         df = pd.DataFrame(data=pd.read_csv(datacsv, sep = "\t", on_bad_lines='skip'))
         self.rows = [["timestamp", "x","y"]]
@@ -75,7 +77,9 @@ class Extractor:
                         / (val_left + val_right)
                     y = ((c_left.y*val_left) + (c_right.y*val_right)) \
                         / (val_left + val_right)
-                    self.rows.append([ts, x, y])
+                    eye = device.get_absolute_from_relative(Point(x,y),\
+                                                                Device.TABLE)
+                    self.rows.append([ts, eye.x, eye.y])
                 else:
                     self.rows.append([ts,float("nan"),float("nan")])
             except Exception as inst:
