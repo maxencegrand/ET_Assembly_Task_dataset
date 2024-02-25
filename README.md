@@ -4,20 +4,16 @@
 
 ### Mobile Configuration
 
-### Stationary Configuration 
+### Stationary Configuration
 
 ## Assembly Task
 
-## Dataset 
+## Dataset
 
-
-* [Users](users.md)
-* [Annotations](annotations.md)
-* [Gazepoints](gazepoints.md)
-* [Table States](table.md)
-* [Screen State](screen.md)
-* [Goal](goal.md)
+* gazepoint.csv removed
+* All relative coordinates convert into mm/pxl coordinates
+* table states change only with grasp/release event
+* gazepoints are in table.csv/screen.csv
 
 
 ## Dataviz
-
