@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.8
 from enum import Enum
+import pandas as pd
 
 class InstructionEvent(Enum):
     """
@@ -123,3 +124,22 @@ class Event:
             self.position.bottom_left.y, \
             self.position.level, \
             self.type]
+
+def event_extraction(user, figure, rep="../raw_data"):
+    '''
+    '''
+    if(user.setup == "mobile"):
+        raw_data = ("%s/%s/%s/%s/%s/events_frame.csv" % \
+                    (rep, user.setup, user.position, user.id, figure))
+        data = ("%s/%s/%s/%s/%s/events_frame.csv" % \
+                    ("../dataset", user.setup, user.position, user.id, figure))
+    else:
+        raw_data = ("%s/%s/%s/%s/%s/events.csv" % \
+                    (rep, user.setup, user.position, user.id, figure))
+        data = ("%s/%s/%s/%s/%s/events.csv" % \
+                    ("../dataset", user.setup, user.position, user.id, figure))
+    events = {}
+    df = pd.DataFrame(data=pd.read_csv(raw_data))
+    for i in df.index:
+        ts = df.loc[i, "timestamp"]
+    print(raw_data)

@@ -35,12 +35,32 @@ class User:
         self.time = {"car":0, "tb":0, "house":0, "sc":0, "tc":0, "tsb":0}
         self.error = {"car":0, "tb":0, "house":0, "sc":0, "tc":0, "tsb":0}
         self.setup = ""
+        self._has_data = True
+        self._has_figure_data = \
+            {"car":True, "tb":True, "house":True, "sc":True, "tc":True, "tsb":True}
 
     def print_info(self):
         """
         print users info
         """
         print("User %d\n\t Position: %s" % (self.id, self.position))
+
+    def has_data(self):
+        """
+        Check if data exist for the user
+
+        @return True if data exist for the user
+        """
+        return self._has_data
+
+    def has_figure_data(self, figure):
+        """
+        Check if figure data exist for the user
+
+        @param figure Figure to check
+        @return True if figure data exist for the user
+        """
+        return self._has_figure_data[figure]
 
 class Group:
     """
@@ -89,6 +109,7 @@ class MobileUser(User):
         self.screen = screen
         self.pupil = pupil
         self.setup = "mobile"
+        self._has_data = pupil > 0
 
     def print_info(self):
         """
@@ -114,6 +135,8 @@ class Mobile(Group):
                 int(table.loc[i][EYE_1]),\
                 int(table.loc[i][SCREEN]),\
                 int(table.loc[i][PUPIL]))
+            for f in ["car", "tb", "house", "sc", "tc", "tsb"]:
+                self.users[i]._has_figure_data[f] = (int(table.loc[i][f]) == 1)
 
 
 class StationaryUser(User):
@@ -136,6 +159,7 @@ class StationaryUser(User):
         self.tobii = tobii
         self.fobio = fovio
         self.setup = "stationnary"
+        self._has_data = (tobii > 0 and fovio > 0)
 
     def print_info(self):
         """
@@ -159,3 +183,5 @@ class Stationary(Group):
                 int(table.loc[i][GLASSES]),\
                 int(table.loc[i][FOVIO]),\
                 int(table.loc[i][TOBII]))
+            for f in ["car", "tb", "house", "sc", "tc", "tsb"]:
+                self.users[i]._has_figure_data[f] = (int(table.loc[i][f]) == 1)
