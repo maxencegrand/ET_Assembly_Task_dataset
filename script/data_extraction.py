@@ -3,7 +3,7 @@
 import extraction.mobile as mobile_extractor
 import extraction.stationary as stationary_extractor
 from extraction.table_state import TableState, GoalState
-from utils.event import event_extraction
+from utils.event import event_extraction, instruction_event_extraction
 
 import sys
 from utils.user_group import Mobile, Stationary
@@ -21,6 +21,7 @@ def main(argv):
                 print("Extract %s" % figure)
                 if(user.has_figure_data(figure)):
                     event_extraction(user, figure)
+                    instruction_event_extraction(user, figure)
                     # TableState(user, figure)
                     # GoalState(user,figure)
                     # mobile_extractor.Extractor(user, figure)
@@ -39,6 +40,7 @@ def main(argv):
                 print("Extract %s" % figure)
                 if(user.has_figure_data(figure)):
                     event_extraction(user, figure)
+                    instruction_event_extraction(user, figure)
                     # stationary_extractor.Extractor(user, figure)
                     # TableState(user, figure)
                     # GoalState(user, figure)

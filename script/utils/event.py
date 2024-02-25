@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.8
 from enum import Enum
 import pandas as pd
+from utils.device import DeviceManager, Device
+from utils.position import Point
+import csv
 
 class InstructionEvent(Enum):
     """
@@ -128,18 +131,69 @@ class Event:
 def event_extraction(user, figure, rep="../raw_data"):
     '''
     '''
+    raw_data = ("%s/%s/%s/%s/%s/events.csv" % \
+                (rep, user.setup, user.position, user.id, figure))
     if(user.setup == "mobile"):
-        raw_data = ("%s/%s/%s/%s/%s/events_frame.csv" % \
-                    (rep, user.setup, user.position, user.id, figure))
         data = ("%s/%s/%s/%s/%s/events_frame.csv" % \
                     ("../dataset", user.setup, user.position, user.id, figure))
     else:
-        raw_data = ("%s/%s/%s/%s/%s/events.csv" % \
-                    (rep, user.setup, user.position, user.id, figure))
         data = ("%s/%s/%s/%s/%s/events.csv" % \
                     ("../dataset", user.setup, user.position, user.id, figure))
     events = {}
     df = pd.DataFrame(data=pd.read_csv(raw_data))
+    device = DeviceManager()
+    raws = [["timestamp","action","block","x0","y0","x1","y1","x2","y2","x3","y3","level","type"]]
     for i in df.index:
-        ts = df.loc[i, "timestamp"]
-    print(raw_data)
+        ts = int(df.loc[i, "timestamp"])
+        action = int(df.loc[i, "action"])
+        x0 = float(df.loc[i, "x0"])
+        y0 = float(df.loc[i, "y0"])
+        point0 = device.get_absolute_from_relative(Point(x0,y0), Device.TABLE)
+        x1 = float(df.loc[i, "x1"])
+        y1 = float(df.loc[i, "y1"])
+        point1 = device.get_absolute_from_relative(Point(x1,y1), Device.TABLE)
+        x2 = float(df.loc[i, "x2"])
+        y2 = float(df.loc[i, "y2"])
+        point2 = device.get_absolute_from_relative(Point(x2,y2), Device.TABLE)
+        x3 = float(df.loc[i, "x3"])
+        y3 = float(df.loc[i, "y3"])
+        point3 = device.get_absolute_from_relative(Point(x3,y3), Device.TABLE)
+        level = int(df.loc[i, "level"])
+        type = int(df.loc[i, "action"])
+        raws.append([ts, action,\
+                    point0.x, point0.y,\
+                    point1.x, point1.y,\
+                    point2.x, point2.y,\
+                    point3.x, point3.y, level, type])
+
+    csvfile = (data)
+    with open(csvfile , 'w',  newline='') as f:
+        writer = csv.writer(f)
+        for raw in raws:
+            writer.writerow(raw)
+
+def instruction_event_extraction(user, figure, rep="../raw_data"):
+    '''
+    '''
+    raw_data = ("%s/%s/%s/%s/%s/instruction_events.csv" % \
+                (rep, user.setup, user.position, user.id, figure))
+    if(user.setup == "mobile"):
+        data = ("%s/%s/%s/%s/%s/instruction_events_frame.csv" % \
+                    ("../dataset", user.setup, user.position, user.id, figure))
+    else:
+        data = ("%s/%s/%s/%s/%s/instruction_events.csv" % \
+                    ("../dataset", user.setup, user.position, user.id, figure))
+    events = {}
+    df = pd.DataFrame(data=pd.read_csv(raw_data))
+    device = DeviceManager()
+    raws = [["timestamp","code"]]
+    for i in df.index:
+        ts = int(df.loc[i, "timestamp"])
+        code = int(df.loc[i, "code"])
+        raws.append([ts, code,])
+
+    csvfile = (data)
+    with open(csvfile , 'w',  newline='') as f:
+        writer = csv.writer(f)
+        for raw in raws:
+            writer.writerow(raw)
