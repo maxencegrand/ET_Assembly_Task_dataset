@@ -22,9 +22,9 @@ def main(argv):
                 if(user.has_figure_data(figure)):
                     event_extraction(user, figure)
                     instruction_event_extraction(user, figure)
+                    mobile_extractor.Extractor(user, figure)
                     # TableState(user, figure)
                     # GoalState(user,figure)
-                    # mobile_extractor.Extractor(user, figure)
                 else:
                     print("\tNo Data for the figure")
         else:
@@ -41,7 +41,7 @@ def main(argv):
                 if(user.has_figure_data(figure)):
                     event_extraction(user, figure)
                     instruction_event_extraction(user, figure)
-                    # stationary_extractor.Extractor(user, figure)
+                    stationary_extractor.Extractor(user, figure)
                     # TableState(user, figure)
                     # GoalState(user, figure)
                 else:

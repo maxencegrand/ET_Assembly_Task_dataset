@@ -5,6 +5,8 @@ import csv
 import math
 from utils.util import get_coord, get_code_timestamp
 from utils.device import DeviceManager, Device
+from utils.position import Point
+
 class Extractor:
     """
     """
@@ -58,21 +60,24 @@ class Extractor:
                 val_left = int(row[6])
                 c_right = get_coord(row[10])
                 val_right = int(row[14])
-                if(val_left == 1 and val_right == 1):
-                    x = float((c_left[0] + c_right[0])/2)
-                    y = float((c_left[1] + c_right[1])/2)
-                    eye = device.get_absolute_from_relative(Point(x,y),\
-                                                                Device.SCREEN)
-                    self.rows.append([ts, eye.x, eye.y])
-                elif(val_left == 1 and val_right == 0):
-                    eye = device.get_absolute_from_relative(\
-                                Point(c_left[0],c_left[1]), Device.SCREEN)
-                    self.rows.append([ts, eye.x, eye.y])
-                elif(val_left == 0 and val_right == 1):
-                    eye = device.get_absolute_from_relative(\
-                                Point(c_right[0],c_right[1]), Device.SCREEN)
-                    self.rows.append([ts, eye.x, eye.y])
-                else:
+                try:
+                    if(val_left == 1 and val_right == 1):
+                        x = float((c_left[0] + c_right[0])/2)
+                        y = float((c_left[1] + c_right[1])/2)
+                        eye = device.get_absolute_from_relative(Point(x,y),\
+                                                                    Device.SCREEN)
+                        self.rows.append([ts, eye.x, eye.y])
+                    elif(val_left == 1 and val_right == 0):
+                        eye = device.get_absolute_from_relative(\
+                                    Point(c_left[0],c_left[1]), Device.SCREEN)
+                        self.rows.append([ts, eye.x, eye.y])
+                    elif(val_left == 0 and val_right == 1):
+                        eye = device.get_absolute_from_relative(\
+                                    Point(c_right[0],c_right[1]), Device.SCREEN)
+                        self.rows.append([ts, eye.x, eye.y])
+                    else:
+                        self.rows.append([ts, float("nan"), float("nan")])
+                except:
                     self.rows.append([ts, float("nan"), float("nan")])
 
     def write_data(self):
