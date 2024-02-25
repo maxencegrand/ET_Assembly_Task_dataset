@@ -63,73 +63,67 @@ class Point:
         """
         Check if the current point is above the line defined by two points.
 
+        Warning: the origin is at the top left
+
         @param point1: First point of the line.
         @param point2: Second point of the line.
         @return: True if the point is above the line, False otherwise.
         """
-        x_p, y_p = self.x, self.y
-        x_A, y_A = point1.x, point1.y
-        x_B, y_B = point2.x, point2.y
-
-        # Calculate the expected y value on the line for the horizontal position of the point
-        expected_y = ((y_B - y_A) / (x_B - x_A)) * (x_p - x_A) + y_A
+         # Calculate the expected y value on the line for the horizontal position of the point
+        expected_y = ((self.x - point1.x) / (point2.x - point1.x)) * (point2.y - point1.y) + point1.y
 
         # Check if the point is above the line
-        return y_p > expected_y
+        return self.y <= expected_y
 
     def is_below(self, point1, point2):
         """
         Check if the current point is below the line defined by two points.
 
+        Warning: the origin is at the top left
+
         @param point1: First point of the line.
         @param point2: Second point of the line.
         @return: True if the point is below the line, False otherwise.
         """
-        x_p, y_p = self.x, self.y
-        x_A, y_A = point1.x, point1.y
-        x_B, y_B = point2.x, point2.y
-
          # Calculate the expected y value on the line for the horizontal position of the point
-        expected_y = ((y_B - y_A) / (x_B - x_A)) * (x_p - x_A) + y_A
+        expected_y = ((self.x - point1.x) / (point2.x - point1.x)) * (point2.y - point1.y) + point1.y
 
         # Check if the point is below the line
-        return y_p > expected_y
+        return self.y >= expected_y
 
     def is_point_right_of_segment(self, point1, point2):
         """
         Check if the current point is to the right of a line segment defined by two points.
 
+        Warning: the origin is at the top left
+
         @param point1: The first point of the line segment.
         @param point2: The second point of the line segment.
         @return: True if the point is to the right, False otherwise.
         """
-        vector_AB = (point2.x - point1.x, point2.y - point1.y)
-        vector_AP = (self.x - point1.x, self.y - point1.y)
+        expected_x = (point1.x - point2.x) * ((point2.y-point1.y) / (point2.y - self.y)) + point2.x
 
-        cross_product = vector_AB[0] * vector_AP[1] - vector_AB[1] * vector_AP[0]
-
-        # If the cross product is positive, the point is to the right of the segment
-        return cross_product > 0
+        return self.y >= expected_x
 
     def is_point_left_of_segment(self, point1, point2):
         """
         Check if the current point is to the left of a line segment defined by two points.
 
+        Warning: the origin is at the top left
+
         @param point1: The first point of the line segment.
         @param point2: The second point of the line segment.
         @return: True if the point is to the right, False otherwise.
         """
-        vector_AB = (point2.x - point1.x, point2.y - point1.y)
-        vector_AP = (self.x - point1.x, self.y - point1.y)
+        expected_x = (point1.x - point2.x) * ((point2.y-point1.y) / (point2.y - self.y)) + point2.x
 
-        cross_product = vector_AB[0] * vector_AP[1] - vector_AB[1] * vector_AP[0]
-
-        # If the cross product is negative, the point is to the left of the segment
-        return cross_product < 0
+        return self.y <= expected_x
 
     def distance_to_segment(self, point1, point2):
         """
         Compute the distance between the current point and a line segment defined by two points.
+
+        Warning: the origin is at the top left
 
         @param point1: First point of the segment.
         @param point2: Second point of the segment.
@@ -189,14 +183,14 @@ class Position:
         """
         # Check if the point is to the left of the right side and to the right of the left side
         is_inside_horizontal = (
-            not point.is_point_left_of_segment(self.top_right, self.bottom_right) and
-            not point.is_point_right_of_segment(self.top_left, self.bottom_left)
+            point.is_point_left_of_segment(self.top_right, self.bottom_right) and
+            point.is_point_right_of_segment(self.top_left, self.bottom_left)
         )
 
         # Check if the point is below the top side and above the bottom side
         is_inside_vertical = (
-            not point.is_below(self.top_left, self.top_right) and
-            not point.is_above(self.bottom_left, self.bottom_right)
+            point.is_below(self.top_left, self.top_right) and
+            point.is_above(self.bottom_left, self.bottom_right)
         )
 
         # The point is inside the position if it satisfies both horizontal and vertical conditions

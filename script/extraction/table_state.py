@@ -60,14 +60,10 @@ class TableState:
             type = EventType(df_event.loc[i, "type"])
             block = int(df_event.loc[i, "block"])
             position = Position(\
-                dm.get_absolute_from_relative(Point(df_event.loc[i, "x0"], df_event.loc[i, "y0"]),\
-                                                      Device.TABLE),\
-                dm.get_absolute_from_relative(Point(df_event.loc[i, "x1"], df_event.loc[i, "y1"]),\
-                                                      Device.TABLE),\
-                dm.get_absolute_from_relative(Point(df_event.loc[i, "x3"], df_event.loc[i, "y3"]),\
-                                                      Device.TABLE),\
-                dm.get_absolute_from_relative(Point(df_event.loc[i, "x2"], df_event.loc[i, "y2"]),\
-                                                      Device.TABLE),\
+                Point(df_event.loc[i, "x0"], df_event.loc[i, "y0"]),\
+                Point(df_event.loc[i, "x1"], df_event.loc[i, "y1"]),\
+                Point(df_event.loc[i, "x3"], df_event.loc[i, "y3"]),\
+                Point(df_event.loc[i, "x2"], df_event.loc[i, "y2"]),\
                 level = df_event.loc[i, "level"])
             event = Event(ts, block, position, action, type)
             self.initial_state.apply(event)

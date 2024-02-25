@@ -3,8 +3,8 @@
 import pandas as pd
 from enum import Enum
 from utils.position import Position
-from exceptions import OutofBoundDeviceException
 from utils.position import Point
+from utils.exceptions import OutofBoundDeviceException
 
 DEVICE_CSVFILE = "csv/device.csv"
 DEVICE_POINT_ID = "id"
@@ -94,7 +94,7 @@ class DeviceManager():
         @raise OutofBoundDeviceException : raises if point is out of device
         """
         if(not self.abstract_position.contains(point)):
-            raise utils.exceptions.OutofBoundDeviceException()
+            raise OutofBoundDeviceException()
 
         x_relative = float((point.x - self.abstract_position.top_left.x)\
                     /( self.abstract_position.top_right.x - self.abstract_position.top_left.x))
@@ -116,7 +116,7 @@ class DeviceManager():
         @raise OutofBoundDeviceException : raises if point is out of device
         """
         if(not self.abstract_position.contains(point)):
-            raise utils.exceptions.OutofBoundDeviceException()
+            raise OutofBoundDeviceException()
         relative = self.get_relative_from_abstract(point)
         return self.get_absolute_from_relative(relative, device)
 
@@ -132,7 +132,7 @@ class DeviceManager():
         @raise OutofBoundDeviceException : raises if point is out of device
         """
         if(point.x < 0 or point.x > 1 or point.y < 0 or point.y > 1):
-            raise utils.exceptions.OutofBoundDeviceException()
+            raise OutofBoundDeviceException()
         x_absolute =self.real_position[device].top_left.x +\
                     (point.y * (self.real_position[device].top_right.x\
                                         -self.real_position[device].top_left.x))
@@ -206,8 +206,10 @@ class DeviceManager():
 
         @raise OutofBoundDeviceException : raises if point is out of device
         """
+        # print(self.abstract_position)
+        # print(point)
         if(point.x < 0 or point.x > 1 or point.y < 0 or point.y > 1):
-            raise utils.exceptions.OutofBoundDeviceException()
+            raise OutofBoundDeviceException()
 
         y_absolute = self.real_position[device].top_left.y +\
                     (point.y * (self.real_position[device].bottom_left.y\

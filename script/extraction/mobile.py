@@ -143,6 +143,7 @@ class Extractor:
             writer = csv.writer(f)
             for row in rows:
                 writer.writerow(row)
+
         # Transpose instructions
         csvfile = ("%s/instruction_events_frame.csv" % (self.path_data))
         df = pd.DataFrame(data=pd.read_csv(csvfile))

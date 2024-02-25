@@ -145,6 +145,7 @@ def event_extraction(user, figure, rep="../raw_data"):
     raws = [["timestamp","action","block","x0","y0","x1","y1","x2","y2","x3","y3","level","type"]]
     for i in df.index:
         ts = int(df.loc[i, "timestamp"])
+        block = int(df.loc[i, "block"])
         action = int(df.loc[i, "action"])
         x0 = float(df.loc[i, "x0"])
         y0 = float(df.loc[i, "y0"])
@@ -159,8 +160,8 @@ def event_extraction(user, figure, rep="../raw_data"):
         y3 = float(df.loc[i, "y3"])
         point3 = device.get_absolute_from_relative(Point(x3,y3), Device.TABLE)
         level = int(df.loc[i, "level"])
-        type = int(df.loc[i, "action"])
-        raws.append([ts, action,\
+        type = int(df.loc[i, "type"])
+        raws.append([ts, action, block,\
                     point0.x, point0.y,\
                     point1.x, point1.y,\
                     point2.x, point2.y,\

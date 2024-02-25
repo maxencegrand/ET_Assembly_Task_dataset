@@ -68,11 +68,9 @@ class ScreenViz:
             j = i-1
             while(j >= 0):
                 ts_prev = df.loc[j, "timestamp"]
-                # print(f"{ts} {ts_prev} {ts - ts_prev}")
                 if(ts_prev < timestamp):
                     break
                 if(ts - ts_prev <= 40):
-                    # print("coucou")
                     x_prev = df.loc[j, "x"]
                     y_prev = df.loc[j, "y"]
                     if(math.isnan(x_prev) or math.isnan(y_prev)):
@@ -80,5 +78,4 @@ class ScreenViz:
                         continue
                     frame = cv2.line(frame, (int(x),int(y)), (int(x_prev),int(y_prev)), color=PURPLE, thickness=4)
                 j -= 1
-        # print(pngfile)
         cv2.imwrite(filename=pngfile, img=frame)

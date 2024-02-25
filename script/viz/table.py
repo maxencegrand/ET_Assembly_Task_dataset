@@ -36,8 +36,6 @@ class TableViz:
         """
         df_blocks = pd.DataFrame(data=pd.read_csv("csv/blocks.csv"))
         for i in df_blocks.index:
-            # print(i)
-            # print(df_blocks.loc[i])
             color = Color(df_blocks.loc[i, "color"])
             self.blocks[df_blocks.loc[i, "id"]] = {"c":color, "p":None, "h":0, "l":0}
 
@@ -68,16 +66,13 @@ class TableViz:
             y = df.loc[i, "y"]
             if(math.isnan(x) or math.isnan(y)):
                 continue
-            print([x*WIDTH,y*HEIGHT])
             frame = cv2.circle(frame, (int(x*WIDTH),int(y*HEIGHT)), radius=15, color=PURPLE, thickness=-1)
             j = i-1
             while(j >= 0):
                 ts_prev = df.loc[j, "timestamp"]
-                # print(f"{ts} {ts_prev} {ts - ts_prev}")
                 if(ts_prev < timestamp):
                     break
                 if(ts - ts_prev <= 40):
-                    # print("coucou")
                     x_prev = df.loc[j, "x"]
                     y_prev = df.loc[j, "y"]
                     if(math.isnan(x_prev) or math.isnan(y_prev)):
@@ -114,5 +109,3 @@ class TableViz:
         self.blocks[block]["p"] = [[x0,y0],[x2,y2]]
         self.blocks[block]["h"] = holding
         self.blocks[block]["l"] = level
-
-        print(self.blocks[block])
