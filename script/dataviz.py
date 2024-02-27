@@ -4,6 +4,7 @@ import traceback
 from viz.table import TableViz
 from viz.screen import ScreenViz
 from viz.device import DeviceViz
+from viz.distance import GraspDistance
 import sys
 from utils.user_group import Mobile, Stationary
 
@@ -19,6 +20,8 @@ def main(argv):
                 if(user.has_figure_data(figure)):
                     TableViz(user, figure)
                     ScreenViz(user,figure)
+                    GraspDistance(user, figure)
+
                 else:
                     print("\tNo Data for the figure")
         else:
@@ -36,10 +39,11 @@ def main(argv):
                 if(user.has_figure_data(figure)):
                     TableViz(user, figure)
                     ScreenViz(user,figure)
+                    GraspDistance(user, figure)
                 else:
                     print("\tNo Data for the figure")
         else:
             print("\tNo Data for the user")
-            
+
 if __name__ == "__main__":
    main(sys.argv[1:])

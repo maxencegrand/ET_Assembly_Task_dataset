@@ -76,7 +76,3 @@ class State():
             raw.append(self.blocks[id]["block"].position.bottom_left.y)
             raw.append(self.blocks[id]["block"].position.level)
         return raw
-
-    def get_png(self, pngfile):
-        width = 240
-        height = 480

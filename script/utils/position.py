@@ -206,11 +206,17 @@ class Position:
         @return: The distance
         """
         # Calculate the distance to each side
+        # distances = [
+        #     point.distance_to_segment(self.top_left, self.top_right),
+        #     point.distance_to_segment(self.top_right, self.bottom_right),
+        #     point.distance_to_segment(self.bottom_right, self.bottom_left),
+        #     point.distance_to_segment(self.bottom_left, self.top_left)
+        # ]
         distances = [
-            point.distance_to_segment(self.top_left, self.top_right),
-            point.distance_to_segment(self.top_right, self.bottom_right),
-            point.distance_to_segment(self.bottom_right, self.bottom_left),
-            point.distance_to_segment(self.bottom_left, self.top_left)
+            point.distance(self.top_left),
+            point.distance(self.top_right),
+            point.distance(self.bottom_left),
+            point.distance(self.bottom_right)
         ]
 
         # If the point is inside the position, return the minimum distance with a negative sign
