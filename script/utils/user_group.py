@@ -38,6 +38,12 @@ class User:
         self._has_data = True
         self._has_figure_data = \
             {"car":True, "tb":True, "house":True, "sc":True, "tc":True, "tsb":True}
+        self.glasses = (glasses == 1)
+
+    def is_wearing_glasses(self):
+        """
+        """
+        return self.glasses
 
     def print_info(self):
         """
@@ -157,7 +163,7 @@ class StationaryUser(User):
         """
         User.__init__(self, id, position, glasses)
         self.tobii = tobii
-        self.fobio = fovio
+        self.fovio = fovio
         self.setup = "stationnary"
         self._has_data = (tobii > 0 and fovio > 0)
 
