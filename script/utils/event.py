@@ -131,12 +131,14 @@ class Event:
 def event_extraction(user, figure, rep="../raw_data"):
     '''
     '''
-    raw_data = ("%s/%s/%s/%s/%s/events.csv" % \
-                (rep, user.setup, user.position, user.id, figure))
     if(user.setup == "mobile"):
+        raw_data = ("%s/%s/%s/%s/%s/events_frame.csv" % \
+                    (rep, user.setup, user.position, user.id, figure))
         data = ("%s/%s/%s/%s/%s/events_frame.csv" % \
                     ("../dataset", user.setup, user.position, user.id, figure))
     else:
+        raw_data = ("%s/%s/%s/%s/%s/events.csv" % \
+                    (rep, user.setup, user.position, user.id, figure))
         data = ("%s/%s/%s/%s/%s/events.csv" % \
                     ("../dataset", user.setup, user.position, user.id, figure))
     events = {}
@@ -176,12 +178,15 @@ def event_extraction(user, figure, rep="../raw_data"):
 def instruction_event_extraction(user, figure, rep="../raw_data"):
     '''
     '''
-    raw_data = ("%s/%s/%s/%s/%s/instruction_events.csv" % \
-                (rep, user.setup, user.position, user.id, figure))
+
     if(user.setup == "mobile"):
+        raw_data = ("%s/%s/%s/%s/%s/instruction_events_frame.csv" % \
+                    (rep, user.setup, user.position, user.id, figure))
         data = ("%s/%s/%s/%s/%s/instruction_events_frame.csv" % \
                     ("../dataset", user.setup, user.position, user.id, figure))
     else:
+        raw_data = ("%s/%s/%s/%s/%s/instruction_events.csv" % \
+                    (rep, user.setup, user.position, user.id, figure))
         data = ("%s/%s/%s/%s/%s/instruction_events.csv" % \
                     ("../dataset", user.setup, user.position, user.id, figure))
     events = {}

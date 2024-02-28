@@ -20,7 +20,7 @@ def main(argv):
                 if(user.has_figure_data(figure)):
                     TableViz(user, figure)
                     ScreenViz(user,figure)
-                    GraspDistance(user, figure)
+                    # GraspDistance(user, figure)
 
                 else:
                     print("\tNo Data for the figure")
@@ -39,7 +39,7 @@ def main(argv):
                 if(user.has_figure_data(figure)):
                     TableViz(user, figure)
                     ScreenViz(user,figure)
-                    GraspDistance(user, figure)
+                    # GraspDistance(user, figure)
                 else:
                     print("\tNo Data for the figure")
         else:
