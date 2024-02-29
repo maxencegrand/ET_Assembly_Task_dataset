@@ -10,8 +10,8 @@
 ## 2. Common Variables for Both Datasets
    - **id:** Unique identifier for each participant
    -  **glasses:** Indication if the participant wore glasses or contact lenses (1 for yes, 0 for no).
-   - **car, tb, house, sc, tc, tsb:** Binary variables indicating if the corresponding figure was recorded (1 for recorded, 0 for not recorded).
    - **position:** Participant's position during recording (sitting/standing).
+   - **car, tb, house, sc, tc, tsb:** Binary variables indicating if the corresponding figure was recorded (1 for recorded, 0 for not recorded).
 
 ## 3. Usesr-mobile Specific Variables
    - **eye0, eye1:** Recording status for eye 0 and eye 1 (1 for recorded, 0 for not recorded).
