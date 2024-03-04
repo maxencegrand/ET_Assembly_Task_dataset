@@ -4,7 +4,7 @@ import extraction.mobile as mobile_extractor
 import extraction.stationary as stationary_extractor
 from extraction.table_state import TableState, GoalState
 from utils.event import event_extraction, instruction_event_extraction
-from extraction.distance import GraspDistance
+from extraction.distance import GraspDistance,ReleaseDistance
 import sys
 from utils.user_group import Mobile, Stationary
 from extraction.dataset import Dataset
@@ -25,7 +25,8 @@ def main(argv):
                     mobile_extractor.Extractor(user, figure)
                     TableState(user, figure)
                     # GoalState(user,figure)
-                    GraspDistance(user, figure)
+                    # GraspDistance(user, figure)
+                    ReleaseDistance(user, figure)
                 else:
                     print("\tNo Data for the figure")
         else:
@@ -45,7 +46,8 @@ def main(argv):
                     stationary_extractor.Extractor(user, figure)
                     TableState(user, figure)
                     # GoalState(user, figure)
-                    GraspDistance(user, figure)
+                    # GraspDistance(user, figure)
+                    ReleaseDistance(user, figure)
                 else:
                     print("\tNo Data for the figure")
 

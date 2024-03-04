@@ -10,7 +10,7 @@ import csv
 def get_code_timestamp(df, value):
     df = df[df["code"] == value]
     idx = df.index[0]
-    return df.loc[idx]["timestamp"]
+    return df.loc[idx,"timestamp"]
 
 class GraspDistance:
     """
@@ -46,6 +46,12 @@ class GraspDistance:
             else:
                 block_id = int(df.loc[i, "block"])
                 self.events[ts] = {"prev_ts":prev_ts, "block_id":block_id}
+        df = pd.DataFrame(pd.read_csv("%s/instruction_events.csv"%self.path_data))
+        for ts_event in self.events.keys():
+            for i in df.index:
+                ts = int(df.loc[i, "timestamp"])
+                if(ts < ts_event and ts >= self.events[ts_event]['prev_ts']):
+                    self.events[ts_event]['prev_ts'] = ts
 
     def read_states(self):
         """
@@ -129,7 +135,7 @@ class GraspDistance:
                         row.append(self.distances[ts_event][block_id][ts])
                     writer.writerow(row)
 
-class ReleaseDistance:
+class ReleaseDistance(GraspDistance):
     """
     Generate distance csvfiles before release
     """
@@ -145,7 +151,6 @@ class ReleaseDistance:
         self.start = int(get_code_timestamp(df_instruction_event,\
                 InstructionEvent.START.value))
         self.read_events(start_ts=self.start)
-        self.read_states()
         self.compute_distance()
         self.write_csv(folder = "%s/block_distances_before_release" % self.path_data)
 
@@ -160,5 +165,53 @@ class ReleaseDistance:
             act = Action(int(df.loc[i, "action"]))
             if(act == Action.RELEASE):
                 block_id = int(df.loc[i, "block"])
-                self.events[ts] = {"prev_ts":prev_ts, "block_id":block_id}
+                position = Position(\
+                    Point(df.loc[i, "x0"],df.loc[i, "y0"]),\
+                    Point(df.loc[i, "x1"],df.loc[i, "y1"]),\
+                    Point(df.loc[i, "x3"],df.loc[i, "y3"]),\
+                    Point(df.loc[i, "x2"],df.loc[i, "y2"]),\
+                )
+                self.events[ts] = {"prev_ts":prev_ts, "position":position}
                 prev_ts=ts
+        df = pd.DataFrame(pd.read_csv("%s/instruction_events.csv"%self.path_data))
+        for ts_event in self.events.keys():
+            for i in df.index:
+                ts = int(df.loc[i, "timestamp"])
+                if(ts < ts_event and ts >= self.events[ts_event]['prev_ts']):
+                    self.events[ts_event]['prev_ts'] = ts
+
+    def compute_distance(self):
+        """
+        """
+        df = pd.DataFrame(pd.read_csv("%s/table.csv"%self.path_data))
+        self.distances = {}
+        for ts_event in self.events:
+            self.distances[ts_event] = {}
+            prev_ts = self.events[ts_event]["prev_ts"]
+            position = self.events[ts_event]["position"]
+            masque = (df['timestamp'] >= prev_ts) & (df['timestamp'] <= ts_event)
+            for i in df[masque].index:
+                ts_gz = int(df[masque].loc[i, "timestamp"])
+                gz = Point(float(df[masque].loc[i, "x"]),\
+                    float(df[masque].loc[i, "y"]))
+                if(np.isnan(gz.x) or np.isnan(gz.y)):
+                    self.distances[ts_event][ts_gz-prev_ts] = np.nan
+                else:
+                    self.distances[ts_event][ts_gz-prev_ts] = position.distance(gz)
+
+    def write_csv(self, folder):
+        """
+        """
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        for ts_event in self.events:
+            csvfile = "%s/distance_before_release_%d.csv" %\
+                        (folder, ts_event)
+            with open(csvfile , 'w',  newline='') as f:
+                writer = csv.writer(f)
+                row = ["timestamp", 'distance']
+                writer.writerow(row)
+                for ts in self.distances[ts_event]:
+                    row = [ts, self.distances[ts_event][ts]]
+                    writer.writerow(row)
