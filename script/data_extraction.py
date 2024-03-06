@@ -25,7 +25,7 @@ def main(argv):
                     mobile_extractor.Extractor(user, figure)
                     TableState(user, figure)
                     # GoalState(user,figure)
-                    # GraspDistance(user, figure)
+                    GraspDistance(user, figure)
                     ReleaseDistance(user, figure)
                 else:
                     print("\tNo Data for the figure")
@@ -46,7 +46,7 @@ def main(argv):
                     stationary_extractor.Extractor(user, figure)
                     TableState(user, figure)
                     # GoalState(user, figure)
-                    # GraspDistance(user, figure)
+                    GraspDistance(user, figure)
                     ReleaseDistance(user, figure)
                 else:
                     print("\tNo Data for the figure")

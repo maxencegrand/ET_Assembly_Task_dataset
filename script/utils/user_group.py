@@ -68,6 +68,20 @@ class User:
         """
         return self._has_figure_data[figure]
 
+    def get_dataset_folder(self):
+        """
+        """
+        return f"../dataset/{self.setup}/{self.position}/{self.id}"
+
+    def get_dataviz_folder(self):
+        """
+        """
+        return f"../dataviz/{self.setup}/{self.position}/{self.id}"
+
+    def get_raw_data_folder(self):
+        """
+        """
+        return f"../raw_data/{self.setup}/{self.position}/{self.id}"
 class Group:
     """
     Class representing a group of users

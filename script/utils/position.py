@@ -70,7 +70,12 @@ class Point:
         @return: True if the point is above the line, False otherwise.
         """
          # Calculate the expected y value on the line for the horizontal position of the point
-        expected_y = ((self.x - point1.x) / (point2.x - point1.x)) * (point2.y - point1.y) + point1.y
+        if(point2.x == self.x):
+            expected_y = point2.y
+        elif(point1.x == self.x):
+            expected_y = point1.y
+        else:
+            expected_y = ((self.x - point1.x) / (point2.x - point1.x)) * (point2.y - point1.y) + point1.y
 
         # Check if the point is above the line
         return self.y <= expected_y
@@ -86,7 +91,12 @@ class Point:
         @return: True if the point is below the line, False otherwise.
         """
          # Calculate the expected y value on the line for the horizontal position of the point
-        expected_y = ((self.x - point1.x) / (point2.x - point1.x)) * (point2.y - point1.y) + point1.y
+        if(point2.x == self.x):
+            expected_y = point2.y
+        elif(point1.x == self.x):
+            expected_y = point1.y
+        else:
+            expected_y = ((self.x - point1.x) / (point2.x - point1.x)) * (point2.y - point1.y) + point1.y
 
         # Check if the point is below the line
         return self.y >= expected_y
@@ -101,9 +111,14 @@ class Point:
         @param point2: The second point of the line segment.
         @return: True if the point is to the right, False otherwise.
         """
-        expected_x = (point1.x - point2.x) * ((point2.y-point1.y) / (point2.y - self.y)) + point2.x
+        if(point2.y == self.y):
+            expected_x = point2.x
+        elif(point1.y == self.y):
+            expected_x = point1.x
+        else:
+            expected_x = (point1.x - point2.x) * ((point2.y-point1.y) / (point2.y - self.y)) + point2.x
 
-        return self.y >= expected_x
+        return self.x >= expected_x
 
     def is_point_left_of_segment(self, point1, point2):
         """
@@ -115,9 +130,14 @@ class Point:
         @param point2: The second point of the line segment.
         @return: True if the point is to the right, False otherwise.
         """
-        expected_x = (point1.x - point2.x) * ((point2.y-point1.y) / (point2.y - self.y)) + point2.x
+        if(point2.y == self.y):
+            expected_x = point2.x
+        elif(point1.y == self.y):
+            expected_x = point1.x
+        else:
+            expected_x = (point1.x - point2.x) * ((point2.y-point1.y) / (point2.y - self.y)) + point2.x
 
-        return self.y <= expected_x
+        return self.x <= expected_x
 
     def distance_to_segment(self, point1, point2):
         """
