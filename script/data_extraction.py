@@ -7,7 +7,7 @@ from utils.event import event_extraction, instruction_event_extraction
 from extraction.distance import GraspDistance,ReleaseDistance
 import sys
 from utils.user_group import Mobile, Stationary
-from extraction.dataset import Dataset
+from extraction.flow import DeviceFlow
 import traceback
 
 def main(argv):
@@ -27,6 +27,7 @@ def main(argv):
                     # GoalState(user,figure)
                     GraspDistance(user, figure)
                     ReleaseDistance(user, figure)
+                    DeviceFlow(user, figure)
                 else:
                     print("\tNo Data for the figure")
         else:
@@ -48,6 +49,7 @@ def main(argv):
                     # GoalState(user, figure)
                     GraspDistance(user, figure)
                     ReleaseDistance(user, figure)
+                    DeviceFlow(user, figure)
                 else:
                     print("\tNo Data for the figure")
 
