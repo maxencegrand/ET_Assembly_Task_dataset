@@ -9,7 +9,7 @@ class BinaryMap:
     def __init__(self, user, figure, n_column, n_row):
         """
         """
-        self.map = np.zeros((n_row, n_column))
+        self.map = np.zeros((n_column, n_row))
         self.user = user
         self.figure = figure
         self.read_gazepoint()

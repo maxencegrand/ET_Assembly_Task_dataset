@@ -45,10 +45,10 @@ class BinaryMap:
         """
         img = get_blank_image(self.n_column, self.n_row)
         df = pd.DataFrame(pd.read_csv(self.get_csv_file()))
-        for i in range(self.n_row):
+        for i in range(self.n_column):
             non_zeros = ast.literal_eval(df.loc[i,"non_zero_column"])
             for j in non_zeros:
-                cv2.circle(img, (i, j), 1, RED, -1)
+                cv2.rectangle(img, (i-1, j-1), (i+1, j+1), RED, -1)
 
         cv2.imwrite(filename=self.get_png_file(), img=img)
         cv2.waitKey(0)

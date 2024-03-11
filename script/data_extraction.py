@@ -30,7 +30,7 @@ def main(argv):
                     # ReleaseDistance(user, figure)
                     # DeviceFlow(user, figure)
                     ScreenMap(user, figure)
-                    # TableMap(user,figure)
+                    TableMap(user,figure)
                 else:
                     print("\tNo Data for the figure")
         else:
@@ -54,7 +54,7 @@ def main(argv):
                     # ReleaseDistance(user, figure)
                     # DeviceFlow(user, figure)
                     ScreenMap(user, figure)
-                    # TableMap(user,figure)
+                    TableMap(user,figure)
                 else:
                     print("\tNo Data for the figure")
 
