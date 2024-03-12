@@ -19,8 +19,8 @@ def main(argv):
             for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
                 print("Viz %s" % figure)
                 if(user.has_figure_data(figure)):
-                    # TableViz(user, figure)
-                    # ScreenViz(user,figure)
+                    TableViz(user, figure)
+                    ScreenViz(user,figure)
                     # GraspDistance(user, figure)
                     ScreenMap(user, figure)
                     TableMap(user, figure)
@@ -39,8 +39,8 @@ def main(argv):
             for figure in ["car", "tb", "house", "sc", "tc", "tsb"]:
                 print("Viz %s" % figure)
                 if(user.has_figure_data(figure)):
-                    # TableViz(user, figure)
-                    # ScreenViz(user,figure)
+                    TableViz(user, figure)
+                    ScreenViz(user,figure)
                     # GraspDistance(user, figure)
                     ScreenMap(user, figure)
                     TableMap(user, figure)
