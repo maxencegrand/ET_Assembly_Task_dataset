@@ -15,7 +15,7 @@ def distance_analysis(users):
     interval_width = 4
     for id_position, position in enumerate(['Sitting', 'Standing']):
         for setup in ['Mobile', 'Stationnary']:
-            d = -32
+            d = -16
             while d < n_max:
                 val[id_position][setup][Action.GRASP.value][d] = []
                 val[id_position][setup][Action.RELEASE.value][d] = []
@@ -63,7 +63,7 @@ def distance_analysis(users):
 
     bar_width = (interval_width/3)
     for idx_position, position in enumerate(["Sitting"]):
-        fig, axs = plt.subplots(1, 2, figsize=(12, 8))
+        fig, axs = plt.subplots(1, 2, figsize=(10, 5))
         for id_act, act in enumerate([Action.GRASP, Action.RELEASE]):
             #Mob data
             freq = {}

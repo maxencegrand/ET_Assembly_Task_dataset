@@ -20,20 +20,77 @@ def get_blank_image(width, height):
 def get_color(value):
     """
     """
-    if(value == 0):
-        return (0,0,0,255)
-    elif(value <= 1/6):
-        return (255,0,0,255)
-    elif(value <= 2/6):
-        return (255,255,0,255)
-    elif(value <= 3/6):
-        return (0,255,0,255)
-    elif(value <= 4/6):
-        return (0,255,255,255)
-    elif(value <= 5/6):
-        return (0,0,255, 255)
+    # if(value == 0):
+    #     return (0,0,0,255)
+    # elif(value <= 1/10):
+    #     return (255,0,0,255)
+    # elif(value <= 3/10):
+    #     return (255,255,0,255)
+    # elif(value <= 4/6):
+    #     return (0,255,0,255)
+    # elif(value <= 5/10):
+    #     return (0,255,255,255)
+    # elif(value <= 7/10):
+    #     return (0,0,255, 255)
+    # else:
+    #     print(value)
+    #     return (255,255,255, 255)
+
+    # if(value < 0.3):
+    #     value = round(value / .05) * value
+    # elif(value > .7):
+    #     value = round(value / .05) * value
+    # else:
+    #     value = round(value / .2) * value
+    # red = int(value*255)
+    # blue = 255 - red
+    # green = 0 if (value < .5) else 1
+    # return (blue, green, red, 255)
+
+    k1 = .2
+    k2 = .2
+    k3 = .2
+    k4 = .4
+    if(value < k1):
+        #blue to cyan
+        v = (value/k1)
+
+        red = 0
+        green = int(v*255)
+        blue = 255
+    elif(value-k1 < k2):
+        #cyan to green
+        v = ((value-k1)/k2)
+        red = 0
+        green = 255
+        blue = 255 - int(v*255)
+    elif(value-(k1+k2) < k3):
+        #green to yellow
+        v = ((value-(k1+k2))/k3)
+        red = int(v*255)
+        green = 255
+        blue = 0
     else:
-        return (255,255,255, 255)
+        v = ((value-(k1+k2+k3))/k4)
+        red = 255
+        green = 255-int(v*255)
+        blue = 0
+    # if(value < k1+k2):
+    #     blue = 255
+    #     v = ((value-.1)/.7)
+    #     green = int(v*255)
+    #     red = 0
+    # else:
+    #     blue = 0
+    #     green = 0
+    #     v = ((value-.8)/.2)
+    #     red = int(v*255)
+    return (blue, green, red, 255)
+
+    # if(value < .5):
+    #     return (255-int(value*255),0,int(value*255), 255)
+    # else:
+    #     return (255-int(value*255),1,int(value*255), 255)
 
 class Map:
     """
@@ -93,6 +150,22 @@ class TableMap(Map):
     def get_csv_file(self, user, figure):
         return f"{user.get_dataset_folder()}/{figure}/binary_table.csv"
 
+    def read(self, user, figure):
+        """
+        """
+        df = pd.DataFrame(pd.read_csv(self.get_csv_file(user, figure)))
+        for i in range(self.n_column):
+            non_zeros = ast.literal_eval(df.loc[i,"non_zero_column"])
+            for j in non_zeros:
+                self.map[i,j] += 1
+                for k1 in range(1,5):
+                    for k2 in range(1,5):
+                        try:
+                            self.map[i+k1,j+k2] += 1#1-(4/(k1+k2))
+                            self.map[i-k1,j-k2] += 1#1-(4/(k1+k2))
+                        except:
+                            continue
+
 class ScreenMap(Map):
     """
     """
@@ -108,6 +181,22 @@ class ScreenMap(Map):
 
     def get_csv_file(self, user, figure):
         return f"{user.get_dataset_folder()}/{figure}/binary_screen.csv"
+
+    def read(self, user, figure):
+        """
+        """
+        df = pd.DataFrame(pd.read_csv(self.get_csv_file(user, figure)))
+        for i in range(self.n_column):
+            non_zeros = ast.literal_eval(df.loc[i,"non_zero_column"])
+            for j in non_zeros:
+                self.map[i,j] += 1
+                for k1 in range(1,10):
+                    for k2 in range(1,10):
+                        try:
+                            self.map[i+k1,j+k2] += 1#1-(4/(k1+k2))
+                            self.map[i-k1,j-k2] += 1#1-(4/(k1+k2))
+                        except:
+                            continue
 
 def device(users):
 
@@ -133,5 +222,6 @@ def device(users):
                     n+=1
                     screen.read(user, figure)
                     table.read(user, figure)
-            screen.generate_png(position=position, setup=setup)
-            table.generate_png(position=position, setup=setup)
+            screen.generate_png(n=n, position=position, setup=setup)
+            table.generate_png(n=n, position=position, setup=setup)
+        break
