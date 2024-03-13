@@ -11,42 +11,26 @@ def get_blank_image(width, height):
     """
     """
     image = np.zeros((height, width, 3), np.uint8)
-    image[:, :, 0] = 255
-    image[:, :, 1] = 255
-    image[:, :, 2] = 255
+    image[:, :, 0] = 0
+    image[:, :, 1] = 0
+    image[:, :, 2] = 0
 
     return image
+
+def get_color_delta(v_blue,v_red):
+    """
+    """
+    sum = v_blue+v_red
+
+    blue = int(255 * float(v_blue/sum))
+    green = 0
+    red = int(255 * float(v_red/sum))
+
+    return (blue, green, red, 255)
 
 def get_color(value):
     """
     """
-    # if(value == 0):
-    #     return (0,0,0,255)
-    # elif(value <= 1/10):
-    #     return (255,0,0,255)
-    # elif(value <= 3/10):
-    #     return (255,255,0,255)
-    # elif(value <= 4/6):
-    #     return (0,255,0,255)
-    # elif(value <= 5/10):
-    #     return (0,255,255,255)
-    # elif(value <= 7/10):
-    #     return (0,0,255, 255)
-    # else:
-    #     print(value)
-    #     return (255,255,255, 255)
-
-    # if(value < 0.3):
-    #     value = round(value / .05) * value
-    # elif(value > .7):
-    #     value = round(value / .05) * value
-    # else:
-    #     value = round(value / .2) * value
-    # red = int(value*255)
-    # blue = 255 - red
-    # green = 0 if (value < .5) else 1
-    # return (blue, green, red, 255)
-
     k1 = .2
     k2 = .2
     k3 = .2
@@ -121,6 +105,11 @@ class Map:
         """
         return ""
 
+    def get_png_delta_file(self, position):
+        """
+        """
+        return ""
+
     def generate_png(self, position='sitting', setup='Mobile', n=1):
         """
         """
@@ -134,6 +123,27 @@ class Map:
         cv2.imwrite(filename=pngfile, img=img)
         cv2.waitKey(0)
 
+    def generate_png_delta(self, red, position='sitting'):
+        """
+        """
+        img = get_blank_image(self.n_column, self.n_row)
+        for i in range(self.n_column):
+            for j in range(self.n_row):
+                v_blue = self.map[i,j]
+                v_red = red.map[i,j]
+                if(v_blue + v_red > 0):
+                    cv2.rectangle(img, (i, j), (i+1, j+1), get_color_delta(v_blue, v_red), -1)
+        pngfile = self.get_png_delta_file(position)
+        print(f"Generate {pngfile}")
+        cv2.imwrite(filename=pngfile, img=img)
+        cv2.waitKey(0)
+
+    def add(self, other):
+        """
+        """
+        for i in range(self.n_column):
+            for j in range(self.n_row):
+                self.map[i,j] += other.map[i,j]
 class TableMap(Map):
     """
     """
@@ -147,6 +157,11 @@ class TableMap(Map):
         """
         return f"../data_analysis/heatmap_table_{setup}_{position}.png"
 
+    def get_png_delta_file(self, position):
+        """
+        """
+        return f"../data_analysis/delta_table_{position}.png"
+
     def get_csv_file(self, user, figure):
         return f"{user.get_dataset_folder()}/{figure}/binary_table.csv"
 
@@ -157,12 +172,12 @@ class TableMap(Map):
         for i in range(self.n_column):
             non_zeros = ast.literal_eval(df.loc[i,"non_zero_column"])
             for j in non_zeros:
-                self.map[i,j] += 1
-                for k1 in range(1,5):
-                    for k2 in range(1,5):
+                self.map[i,j] = 1
+                for k1 in range(1,3):
+                    for k2 in range(1,3):
                         try:
-                            self.map[i+k1,j+k2] += 1#1-(4/(k1+k2))
-                            self.map[i-k1,j-k2] += 1#1-(4/(k1+k2))
+                            self.map[i+k1,j+k2] = 1#1-(4/(k1+k2))
+                            self.map[i-k1,j-k2] = 1#1-(4/(k1+k2))
                         except:
                             continue
 
@@ -179,6 +194,11 @@ class ScreenMap(Map):
         """
         return f"../data_analysis/heatmap_screen_{setup}_{position}.png"
 
+    def get_png_delta_file(self, position):
+        """
+        """
+        return f"../data_analysis/delta_screen_{position}.png"
+
     def get_csv_file(self, user, figure):
         return f"{user.get_dataset_folder()}/{figure}/binary_screen.csv"
 
@@ -189,28 +209,30 @@ class ScreenMap(Map):
         for i in range(self.n_column):
             non_zeros = ast.literal_eval(df.loc[i,"non_zero_column"])
             for j in non_zeros:
-                self.map[i,j] += 1
-                for k1 in range(1,10):
-                    for k2 in range(1,10):
+                self.map[i,j] = 1
+                for k1 in range(1,5):
+                    for k2 in range(1,5):
                         try:
-                            self.map[i+k1,j+k2] += 1#1-(4/(k1+k2))
-                            self.map[i-k1,j-k2] += 1#1-(4/(k1+k2))
+                            self.map[i+k1,j+k2] = 1#1-(4/(k1+k2))
+                            self.map[i-k1,j-k2] = 1#1-(4/(k1+k2))
                         except:
                             continue
 
 def device(users):
 
-    positions = ['sitting', 'standing']
+    positions = ['sitting']
     setups = list(users.keys())
     figures = ['car', 'tb', 'house', 'sc', 'tc', 'tsb']
 
     for position in positions:
+        screen_map = {x:ScreenMap() for x in setups}
+        table_map = {x:TableMap() for x in setups}
+        n = {x:0 for x in setups}
         for setup in setups:
-            n = 0
-            screen = ScreenMap()
-            table = TableMap()
             for id in users[setup].get_id_list():
                 user = users[setup].get_user(id)
+                screen = ScreenMap()
+                table = TableMap()
                 if(user.position != position):
                     continue
                 if(not user.has_data()):
@@ -219,9 +241,13 @@ def device(users):
                 for figure in figures:
                     if(not user.has_figure_data(figure)):
                         continue
-                    n+=1
                     screen.read(user, figure)
                     table.read(user, figure)
-            screen.generate_png(n=n, position=position, setup=setup)
-            table.generate_png(n=n, position=position, setup=setup)
-        break
+                n[setup]+=1
+                screen_map[setup].add(screen)
+                table_map[setup].add(table)
+        for setup in setups:
+            screen_map[setup].generate_png(n=n[setup], position=position, setup=setup)
+            table_map[setup].generate_png(n=n[setup], position=position, setup=setup)
+        screen_map['Mobile'].generate_png_delta(screen_map['Stationnary'], position=position)
+        table_map['Mobile'].generate_png_delta(table_map['Stationnary'], position=position)

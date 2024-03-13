@@ -17,9 +17,9 @@ def main():
     # event.instructions_events(users)
     # event.assembly_durations(users)
     # event.action_events_durations(users)
-    distance.distance_analysis(users)
+    # distance.distance_analysis(users)
     # flow.behavior(users)
-    # heatmap.device(users)
+    heatmap.device(users)
 
 
 if __name__ == "__main__":
