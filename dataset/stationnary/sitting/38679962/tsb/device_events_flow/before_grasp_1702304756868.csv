@@ -1,0 +1,4 @@
+timestamp,event,device
+249,enter,SCREEN
+824,quit,SCREEN
+1199,release,BLOCK
