@@ -21,10 +21,10 @@ nb_bloc_2 = int((48/2)*(24/2))
 nb_bloc_4 = int((48/4)*(24/4))
 nb_bloc_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
@@ -74,12 +74,12 @@ def parsingAllParticipantOneMethode():
 
     # On parcours la liste des dossiers correspondant aux participants
     for method_pos,method in enumerate(["mobile", "stationnary"]):
-        directory = "../../data/ET_Assembly_Task_dataset/dataset/" + method + "/sitting/"
+        directory = "../../dataset/" + method + "/sitting/"
         for entry in os.scandir(directory):
 
             # Choix du model : car, house, sc, tb, tc, tsb
-            #list_model = ["car", "house", "sc", "tb", "tc", "tsb"]
-            list_model = ["car"]
+            list_model = ["car", "house", "sc", "tb", "tc", "tsb"]
+            #list_model = ["car"]
 
             for model in list_model:
 
@@ -145,13 +145,10 @@ def parsingAllParticipantOneMethode():
                     for position, prediction in enumerate(liste_predi_id):
                         # Analyse max min dist
                         (
-                            
                             list_time_good_grasp_predi,
                             list_time_good_release_predi,
                             analyse_grasp
-                            
                         ) = analyseSituation(world, gaze_point, prediction, timestamp_action)
-
                         # Mise a jour des variables pour comparaison entre methode
 
                         liste_analyse_methode_grasp_temps[method_pos][position] = liste_analyse_methode_grasp_temps[method_pos][position] + list_time_good_grasp_predi
@@ -191,6 +188,8 @@ def parsingAllParticipantOneMethode():
 
     # Durée d'exécution en secondes
     duree_execution = temps_fin - temps_debut
+
+    print(total_nb_grasp)
 
     nom_fichier = saveLog(liste_analyse_zone_release_temps,liste_analyse_best_zone_release_temps,liste_analyse_methode_grasp_temps,liste_analyse_methode_release_temps,total_nb_grasp,duree_execution,X)
 

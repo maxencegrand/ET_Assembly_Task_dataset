@@ -20,10 +20,10 @@ nb_bloc_2 = int((48/2)*(24/2))
 nb_bloc_4 = int((48/4)*(24/4))
 nb_bloc_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 from tools import CurrentWorld, isHolding, moreCloseRectangle, minDistanceRectangleGaze
 
@@ -123,6 +123,8 @@ def parsingOneSituation(gaze_point, world, ax):
 
             feature[0, t, i_min] += 1
             feature[1, t, i_min] += (dist_max - d_min)/(dist_max - dist_min)
+
+    timestamp_action.append(t)
 
     liste_data_t = liste_data_t + timestamp_action
     liste_data_t.sort()

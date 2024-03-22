@@ -19,10 +19,10 @@ nb_bloc_2 = int((48/2)*(24/2))
 nb_bloc_4 = int((48/4)*(24/4))
 nb_bloc_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 from tools import listeHolding,listeRelease
 
@@ -150,83 +150,72 @@ list_time_good_release_predi: liste contenant pour chaque action release dont la
 def analyseSituation(world, gaze_point, history_prediction,timestamp_action):
     
     
-    if analyse:
-        plt.close()
-        # Declaration des variables
-        liste_holding, liste_holding_t = listeHolding(world)
-        
-        
-        liste_adjacence_release = listeRelease(world)
-        
-        liste_adjacence_release_t = []
 
-        list_time_good_grasp_predi = []
-        list_time_good_release_predi = []
+    plt.close()
+    # Declaration des variables
+    liste_holding, liste_holding_t = listeHolding(world)
+    
+    
+    liste_adjacence_release = listeRelease(world)
 
-        timestamp_action_indice = 1
+    list_time_good_grasp_predi = []
+    list_time_good_release_predi = []
 
-        grasp_result = np.zeros((history_prediction.shape[1]))
-        find_result = np.zeros((history_prediction.shape[1]))
+    timestamp_action_indice = 1
+
+    grasp_result = np.zeros((history_prediction.shape[1]))
+    find_result = np.zeros((history_prediction.shape[1]))
 
 
-        for i in range(history_prediction.shape[1]):
+    for i in range(history_prediction.shape[1]):
 
-            if (timestamp_action_indice-1)//2 < len(liste_holding) and history_prediction[0][i] == liste_holding[(timestamp_action_indice-1)//2]:
-                grasp_result[i] += 1
-
-                
-
-                if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 1:
-                    
-                    time_predi_end = i
-                    time_predi_start = i
-
-                    while time_predi_start >= 0 and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
-                        time_predi_start -= 1
-
-                    list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
-
-                    time_predi_end = i
-                    time_predi_start = i
-
-                    while time_predi_start < history_prediction.shape[1] and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
-                        time_predi_start += 1
-                    
-                    list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
+        if (timestamp_action_indice-1)//2 < len(liste_holding) and history_prediction[0][i] == liste_holding[(timestamp_action_indice-1)//2]:
+            grasp_result[i] += 1
 
             
-            if (timestamp_action_indice)//2 < len(liste_adjacence_release) and history_prediction[1][i] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                find_result[i] += 1
 
+            if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 1:
                 
+                time_predi_end = i
+                time_predi_start = i
 
-                if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 0:
-                    time_predi_end = i
-                    time_predi_start = i
+                while time_predi_start >= 0 and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
+                    time_predi_start -= 1
 
-                    while time_predi_start >= 0 and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                        time_predi_start -= 1
+                list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
 
-                    list_time_good_release_predi.append(time_predi_start - time_predi_end )
+                time_predi_end = i
+                time_predi_start = i
 
-                    time_predi_end = i
-                    time_predi_start = i
+                while time_predi_start < history_prediction.shape[1] and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
+                    time_predi_start += 1
+                
+                list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
 
-                    while time_predi_start < history_prediction.shape[1] and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                        time_predi_start += 1
-                    
-                    list_time_good_release_predi.append(time_predi_start - time_predi_end)
-            
-            if (
-                i < history_prediction.shape[1] - 1
-                and history_prediction[timestamp_action_indice%2][i] != -1
-                and history_prediction[timestamp_action_indice%2][i + 1] == -1
-            ):
-                liste_adjacence_release_t.append(int(i))
+        
+        if (timestamp_action_indice)//2 < len(liste_adjacence_release) and history_prediction[1][i] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
 
+            find_result[i] += 1
 
-            if timestamp_action_indice < len(timestamp_action) - 1 and i+1 > timestamp_action[timestamp_action_indice]:
-                timestamp_action_indice += 1
+            if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 0:
+                time_predi_end = i
+                time_predi_start = i
+
+                while time_predi_start >= 0 and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
+                    time_predi_start -= 1
+
+                list_time_good_release_predi.append(time_predi_start - time_predi_end )
+
+                time_predi_end = i
+                time_predi_start = i
+
+                while time_predi_start < history_prediction.shape[1] and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
+                    time_predi_start += 1
+                
+                list_time_good_release_predi.append(time_predi_start - time_predi_end)
+
+        if timestamp_action_indice < len(timestamp_action) - 1 and i+1 > timestamp_action[timestamp_action_indice]:
+            timestamp_action_indice += 1
 
 
             

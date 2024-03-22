@@ -21,10 +21,10 @@ nb_bloc_2 = int((48/2)*(24/2))
 nb_bloc_4 = int((48/4)*(24/4))
 nb_bloc_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../../data/ET_Assembly_Task_dataset/script/csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 def bestAreaMax(zone,liste_t_value):
 
@@ -88,10 +88,10 @@ def interpretation(probability, timestamp_action,liste_t_value,world):
     ################################################
 
     area_best = np.zeros((5,duration))
-    #area_best[0] = bestAreaMax(area1[0],liste_t_value)
-    #area_best[1] = bestAreaMax(area1[1],liste_t_value)
-    #area_best[2] = bestAreaMax(area1[2],liste_t_value)
-    #area_best[3] = bestAreaMax(area1[3],liste_t_value)
+    area_best[0] = bestAreaMax(area1[0],liste_t_value)
+    area_best[1] = bestAreaMax(area1[1],liste_t_value)
+    area_best[2] = bestAreaMax(area1[2],liste_t_value)
+    area_best[3] = bestAreaMax(area1[3],liste_t_value)
     area_best[4] = bestAreaMax(area1[4],liste_t_value)
 
     ################################################
@@ -125,11 +125,29 @@ def interpretation(probability, timestamp_action,liste_t_value,world):
                     proba[3,1,r] += probability[3,1,t,tendon]
                     proba[4,1,r] += probability[4,1,t,tendon]
 
-                proba[:,0,r] = proba[:,0,r] / ((((r//3)%2)+1)*3)
-                proba[:,1,r] = proba[:,1,r] / ((((r//3)%2)+1)*3)
+                proba[0,0,r] = proba[0,0,r] / ((((r//3)%2)+1)*3)
+                proba[1,0,r] = proba[1,0,r] / ((((r//3)%2)+1)*3)
+                proba[2,0,r] = proba[2,0,r] / ((((r//3)%2)+1)*3)
+                proba[3,0,r] = proba[3,0,r] / ((((r//3)%2)+1)*3)
+                proba[4,0,r] = proba[4,0,r] / ((((r//3)%2)+1)*3)
+
+                proba[0,1,r] = proba[0,1,r] / ((((r//3)%2)+1)*3)
+                proba[1,1,r] = proba[1,1,r] / ((((r//3)%2)+1)*3)
+                proba[2,1,r] = proba[2,1,r] / ((((r//3)%2)+1)*3)
+                proba[3,1,r] = proba[3,1,r] / ((((r//3)%2)+1)*3)
+                proba[4,1,r] = proba[4,1,r] / ((((r//3)%2)+1)*3)
                 
-            liste_predi_id[:,0,t] = proba[:,0,:].argmax(axis=1)
-            liste_predi_id[:,1,t] = proba[:,1,:].argmax(axis=1)
+            liste_predi_id[0,0,t] = proba[0,0,:].argmax()
+            liste_predi_id[1,0,t] = proba[1,0,:].argmax()
+            liste_predi_id[2,0,t] = proba[2,0,:].argmax()
+            liste_predi_id[3,0,t] = proba[3,0,:].argmax()
+            liste_predi_id[4,0,t] = proba[4,0,:].argmax()
+
+            liste_predi_id[0,1,t] = proba[0,1,:].argmax()
+            liste_predi_id[1,1,t] = proba[1,1,:].argmax()
+            liste_predi_id[2,1,t] = proba[2,1,:].argmax()
+            liste_predi_id[3,1,t] = proba[3,1,:].argmax()
+            liste_predi_id[4,1,t] = proba[4,1,:].argmax()
 
         else:
             liste_predi_id[0,0,t] = liste_predi_id[0,0,t-1]
