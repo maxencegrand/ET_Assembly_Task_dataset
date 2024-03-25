@@ -574,3 +574,64 @@ def loadLog(nom_fichier):
     liste_area1, liste_area2, liste_area4, liste_area8, liste_area_best, liste_grasp, liste_release, total_nb_grasp, timer, features = donnees[:]
 
     return liste_area1, liste_area2, liste_area4, liste_area8, liste_area_best, liste_grasp, liste_release, total_nb_grasp, timer, features
+
+def showComparaisonAlgorithm(liste_temps, total_nb_grasp,linestyles,list_name,method,action):
+        plt.close()
+        fig, ax = plt.subplots(1, 2)
+
+        for ind in [0,1]:
+            for u in range(len(liste_temps[ind])):
+                l_y = []
+                l_x = []
+                if len(liste_temps[ind][u]) > 0:
+                    for i in range(-3000, 25, 25):
+                        q = np.array(liste_temps[ind][u])
+                        qwerty = q[q <= i]
+                        val = 100 * len(qwerty) / total_nb_grasp[ind]
+                        l_y.append(val)
+                        l_x.append(i)
+
+                    for i in range(0, 3025, 25):
+
+                        q = np.array(liste_temps[ind][u])
+                        qwerty = q[q >= i]
+                        val = 100 * len(qwerty) / total_nb_grasp[ind]
+                        l_y.append(val)
+                        l_x.append(i)
+
+                else:
+                    l = np.zeros((61))
+                ax[ind].plot(l_x, l_y, linestyle = linestyles[u] , label = list_name[u])
+
+            ax[ind].set_title(method[ind],fontsize = 24)
+        
+        ax[0].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
+        ax[1].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
+
+        box = ax[0].get_position()
+        ax[0].set_position([box.x0, box.y0 + box.height * 0.1,
+                        box.width, box.height * 0.9])
+        
+        box = ax[1].get_position()
+        ax[1].set_position([box.x0, box.y0 + box.height * 0.1,
+                        box.width, box.height * 0.9])
+
+        # Put a legend below current axis
+        ax[0].legend(loc='upper center', bbox_to_anchor=(1.1, -0.05),
+                fancybox=True, shadow=True, ncol=6, fontsize = 20) 
+
+        ax[0].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
+        ax[1].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
+        
+        ax[0].set_xlabel('Time (ms)', fontsize = 22) 
+        ax[0].set_ylabel('Percentage of good prediction', fontsize = 22) 
+
+        ax[1].set_xlabel('Time (ms)', fontsize = 22) 
+        ax[1].set_ylabel('Percentage of good prediction', fontsize = 22) 
+
+        
+
+        fig.suptitle(action,fontsize = 30)
+
+
+        plt.show()

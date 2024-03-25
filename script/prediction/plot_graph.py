@@ -1,5 +1,4 @@
-from tools import loadLog
-from analyse import showComparaisonAlgorithm
+from tools import loadLog,showComparaisonAlgorithm
 import sys
 
 def main(argument):

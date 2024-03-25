@@ -1,8 +1,5 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
-import matplotlib.colors
-from matplotlib.widgets import Slider
 import os
 import time
 
@@ -91,10 +88,6 @@ def parsingAllParticipantOneMethode():
                     print("---------------------------")
                     print("Partcipant :", str(entry.path).split("/")[-1],model, method_pos)
 
-                    # ferme le plot actuel et creer un subplot
-                    plt.close()
-                    fig, ax = plt.subplots(2, 1)
-
                     # charge les deux fichiers dans des np.array
                     gaze_point = np.genfromtxt(
                         str(entry.path) + "/" + model + "/table.csv", delimiter=","
@@ -108,7 +101,7 @@ def parsingAllParticipantOneMethode():
                         timestamp_action,
                         liste_t_value,
 
-                    ) = parsingOneSituation(gaze_point, world, ax)
+                    ) = parsingOneSituation(gaze_point, world)
                     
                     #X[method_pos].append(feature.tolist())
 

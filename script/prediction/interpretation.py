@@ -1,8 +1,5 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
-import matplotlib.colors
-from matplotlib.widgets import Slider
 import os
 
 from tools import liste_tenon_bloc

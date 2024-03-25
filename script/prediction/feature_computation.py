@@ -1,8 +1,5 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
-import matplotlib.colors
-from matplotlib.widgets import Slider
 import os
 
 plot_1 = False
@@ -56,7 +53,7 @@ history_prediction: np.array(y) np array de taille gaze_point[-1,0] - gaze_point
                                                                                                           soit pour le srelease l'id d'un bloc adjacent a
 """
 
-def parsingOneSituation(gaze_point, world, ax):
+def parsingOneSituation(gaze_point, world):
     # memorise le timestamp initial
     t_init = gaze_point[1, 0]
 
