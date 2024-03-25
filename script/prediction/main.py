@@ -26,7 +26,7 @@ array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
 from interpretation import interpretation
-from analyse import showComparaisonAlgorithm,analyseSituation,analyseRelease,evaluationBestArea,analyseMethod,goodAreaCoord
+from analyse import analyseSituation,analyseRelease,evaluationBestArea,analyseMethod,goodAreaCoord
 from tools import quadrillageRelease,liste_tenon_bloc,saveLog,loadLog
 
 
