@@ -19,12 +19,12 @@ if __name__ == "__main__":
 
         linestyles = ["-","--","-.",":",(0, (3, 2, 1, 2, 1, 2))]
 
-        showComparaisonAlgorithm(liste_grasp,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions for Grasp")
-        showComparaisonAlgorithm(liste_release,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions to find reference block during Release")
+        showComparaisonAlgorithm(liste_grasp,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Grasp")
+        showComparaisonAlgorithm(liste_release,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Reference Block during Release")
 
-        showComparaisonAlgorithm(liste_area1,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 1x1")
-        showComparaisonAlgorithm(liste_area2,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 2x2")
-        showComparaisonAlgorithm(liste_area4,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 4x4")
-        showComparaisonAlgorithm(liste_area8,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 8x8")
+        showComparaisonAlgorithm(liste_area1,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 1x1")
+        showComparaisonAlgorithm(liste_area2,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 2x2")
+        showComparaisonAlgorithm(liste_area4,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 4x4")
+        showComparaisonAlgorithm(liste_area8,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 8x8")
 
-        showComparaisonAlgorithm(liste_area_best,total_nb_grasp,linestyles,["Score1","Score2","Score3","Score4","Score5"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, with size 8x8")
+        showComparaisonAlgorithm(liste_area_best,total_nb_grasp,linestyles,["OB_Count","OB_Distance","AB_Linear_Dist","AB_Inverse_Dist","AB_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Sliding Area, with size 8x8")

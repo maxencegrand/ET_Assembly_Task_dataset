@@ -23,6 +23,18 @@ array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
 array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
 array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
+"""
+bestAreaMax renvoi l'emplacement de la meilleur zone 8x8 
+
+Input
+
+zone: les probabilites des zones 1x1
+liste_t_value: l'ensemble des timestamp ou l'on a eu un gaze point (ca ne sert a rien de regarder les autres t)
+
+Output
+
+array: np.array(duration) pour tout t, l'id du tenon en haut a gauche de la zone 8x8 qui maximise les proba
+"""
 def bestAreaMax(zone,liste_t_value):
 
     array = np.zeros((zone.shape[0]))
@@ -53,7 +65,22 @@ def bestAreaMax(zone,liste_t_value):
 
     return array
 
+"""
+interpretation renvoi les prediction des zones d'action ainsi que les prediction de grasp/ref
 
+Input
+
+probability: np.array((5, 2, duration, nb_area_1)) probabilite qu'un bloc tenon soit important selon les 5 manieres de calculer, sur la duree d'un assamblage, pour tous les tenons. La dimension 2 correspond aux reset grasp ou reset release
+timestamp_action: liste des t correspondant aux evenements, avec 0 et le t final inclus
+liste_t_value: l'ensemble des timestamp ou l'on a eu un gaze point (ca ne sert a rien de regarder les autres t)
+world: np.array(k,241) correspond a l'ensemble des donnes present dans le fichier states.csv
+
+Output
+[area1max_indices,area2max_indices,area4max_indices,area8max_indices]: les predictions des zones de release
+area_best: la prediction de zone glissante 
+liste_predi_id: Prediction de bloc (grasp lors des grasp et ref lors des releases)
+
+"""
 def interpretation(probability, timestamp_action,liste_t_value,world):
     duration = probability.shape[2]
 

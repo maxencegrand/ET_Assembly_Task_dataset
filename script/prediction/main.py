@@ -31,11 +31,11 @@ from tools import quadrillageRelease,liste_tenon_bloc,saveLog,loadLog
 
 
 """
-parsingOneSituation does blah blah blah.
+parsingOneSituation parcours la liste des participants, et pour chaque type de capteur (mobile/fixe), pour chaque participant, pour chaque figure, fait les differentes etapes menant aux predictions .
 
 Input
 
-method: str correspond a la methode actuellement analyse (mobile ou stationnary)
+None
 
 Output
 
@@ -181,8 +181,6 @@ def parsingAllParticipantOneMethode():
 
     # Durée d'exécution en secondes
     duree_execution = temps_fin - temps_debut
-
-    print(total_nb_grasp)
 
     nom_fichier = saveLog(liste_analyse_zone_release_temps,liste_analyse_best_zone_release_temps,liste_analyse_methode_grasp_temps,liste_analyse_methode_release_temps,total_nb_grasp,duree_execution,X)
 

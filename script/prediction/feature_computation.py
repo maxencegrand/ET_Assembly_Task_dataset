@@ -12,10 +12,10 @@ dist_min = -largeur/(2*48)
 dist_max = math.sqrt((largeur)**2+(hauteur)**2)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -27,30 +27,18 @@ from tools import CurrentWorld, isHolding, moreCloseRectangle, minDistanceRectan
 
 
 """
-parsingOneSituation does blah blah blah.
+parsingOneSituation prend les gaze point d'un participant pour une figure et retourne les poids pour tout t ainsi que l'ensemble des timestamps auquels il y a une action.
 
 Input
 
 gaze_point: np.array(x,3) correspond a l'ensemble des donnes present dans le fichier tables.csv
 world: np.array(k,241) correspond a l'ensemble des donnes present dans le fichier states.csv
-ax: ax de plt.subplot
 
 Output
 
-list_timestamp: np.array(k) 1D qui contient l'ensemble des timestamp correspondant a un  capture d'eye tracking sur la table, les donnees sont dans l'ordre croissant
-list_id: np.array(k) 1D qui contient pour chaque capture d'eye tracking sur la table, l'id du rectangle le plus proche
-list_dist: np.array(k) 1D qui contient pour chaque capture d'eye tracking sur la table, la distance entre cette capture et le rectangle le plus proche
-    list_timestamp[i], list_id[i] et list_dist[i] correspondent a la meme capture
-
-
-max_compteur: np.array(x) pour chacun des timestamp de max_compteur_time donne l'id du rectangle qui a ete le plus present pour la derniere action
-max_compteur_time: np.array(x) donne l'ensemble des timestamps de capture pour la derniere action 
-    max_compteur_time[i] et max_compteur[i] correspondent a la meme capture
-
-timestamp_action: TODO
-
-history_prediction: np.array(y) np array de taille gaze_point[-1,0] - gaze_point[1,0], pour chaque i on a soit pour les grasp l'id du bloc de l'on predit qui va etre prit
-                                                                                                          soit pour le srelease l'id d'un bloc adjacent a
+feature: np.array(5,d,nb_tenon), poid pour les 5 manieres de calculer, pour tout t dans la duree de l'assamblage, pour chaque tenon
+timestamp_action: liste des t correspondant aux evenements, avec 0 et le t final inclus
+liste_data_t: liste des t correspondant a un gaze point non nul
 """
 
 def parsingOneSituation(gaze_point, world):
@@ -59,7 +47,7 @@ def parsingOneSituation(gaze_point, world):
 
     duration = gaze_point[-1, 0] - gaze_point[1, 0]
 
-    feature = np.zeros((5, int(duration) + 1, nb_bloc_1)) 
+    feature = np.zeros((5, int(duration) + 1, nb_area_1)) 
 
     timestamp_action = [0]
 
@@ -95,18 +83,13 @@ def parsingOneSituation(gaze_point, world):
 
         if str(gaze_point[i, 1]) != "nan":
 
-            liste_data_t.append(t)
-
-            # On recupere le rectangle le plus proche
-            id, dist = moreCloseRectangle(
-                current_world, gaze_point[i, 1], gaze_point[i, 2]
-            )         
+            liste_data_t.append(t)      
 
             d_min = math.inf
             i_min = math.inf
 
 
-            for z in range(nb_bloc_1):
+            for z in range(nb_area_1):
                 zone = array_zone1[z + 1]
                 d = minDistanceRectangleGaze(zone[1],zone[2],zone[3],zone[4],zone[5],zone[6],zone[7],zone[8],gaze_point[i,1],gaze_point[i,2])
                 feature[2, t, z] += dist_max - d

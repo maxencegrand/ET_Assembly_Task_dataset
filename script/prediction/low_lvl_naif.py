@@ -11,10 +11,10 @@ hauteur = 38
 dist_min = -largeur/(2*48)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -22,11 +22,22 @@ array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
 array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 
+"""
+low_level_naif prend les poids de feature extraction et renvoi les probabilites selon la methode modele
 
+Input
+
+feature: np.array(5,d,nb_tenon), poid pour les 5 manieres de calculer, pour tout t dans la duree de l'assamblage, pour chaque tenon
+timestamp_action: liste des t correspondant aux evenements, avec 0 et le t final inclus
+
+Output
+
+probability: np.array((5, 2, duration, nb_area_1)) probabilite qu'un bloc tenon soit important selon les 5 manieres de calculer, sur la duree d'un assamblage, pour tous les tenons. La dimension 2 correspond aux reset grasp ou reset release
+"""
 def low_level_naif(feature, timestamp_action):
     duration = feature.shape[1]
 
-    probability = np.zeros((5, 2, duration, nb_bloc_1))
+    probability = np.zeros((5, 2, duration, nb_area_1))
 
     timestamp_indice = 0
 
@@ -74,7 +85,7 @@ def low_level_naif(feature, timestamp_action):
 
 
             else:
-                probability[m, 0, t] = np.ones((nb_bloc_1))/nb_bloc_1
+                probability[m, 0, t] = np.ones((nb_area_1))/nb_area_1
 
 
             if np.sum(probability[m,1,t]) > 0:
@@ -82,7 +93,7 @@ def low_level_naif(feature, timestamp_action):
 
 
             else:
-                probability[m, 1, t] = np.ones((nb_bloc_1))/nb_bloc_1
+                probability[m, 1, t] = np.ones((nb_area_1))/nb_area_1
 
 
     return probability
