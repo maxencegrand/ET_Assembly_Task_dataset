@@ -130,24 +130,26 @@ def interpretation(probability, timestamp_action,liste_t_value,world):
     liste_predi_id = np.zeros((5,2,duration))
 
     for t in range(duration):
-        if t in liste_t_value:
-            if indice_timestamp_action < len(timestamp_action) - 1 and t > timestamp_action[indice_timestamp_action + 1]:
+        if indice_timestamp_action < len(timestamp_action) - 1 and t > timestamp_action[indice_timestamp_action + 1]:
                 indice_timestamp_action += 1
 
+        if t in liste_t_value:
+            
             proba = np.zeros((5,2,24))
             for r in range(24):
+                for tendon in liste_resultat[max(0,indice_timestamp_action - 1)][r]:
+                    proba[0,(max(0,indice_timestamp_action - 1)) % 2,r] += probability[0,(max(0,indice_timestamp_action - 1)) % 2,t,tendon]
+                    proba[1,(max(0,indice_timestamp_action - 1)) % 2,r] += probability[1,(max(0,indice_timestamp_action - 1)) % 2,t,tendon]
+                    proba[2,(max(0,indice_timestamp_action - 1)) % 2,r] += probability[2,(max(0,indice_timestamp_action - 1)) % 2,t,tendon]
+                    proba[3,(max(0,indice_timestamp_action - 1)) % 2,r] += probability[3,(max(0,indice_timestamp_action - 1)) % 2,t,tendon]
+                    proba[4,(max(0,indice_timestamp_action - 1)) % 2,r] += probability[4,(max(0,indice_timestamp_action - 1)) % 2,t,tendon]
+                    
                 for tendon in liste_resultat[indice_timestamp_action][r]:
-                    proba[0,0,r] += probability[0,0,t,tendon]
-                    proba[1,0,r] += probability[1,0,t,tendon]
-                    proba[2,0,r] += probability[2,0,t,tendon]
-                    proba[3,0,r] += probability[3,0,t,tendon]
-                    proba[4,0,r] += probability[4,0,t,tendon]
-
-                    proba[0,1,r] += probability[0,1,t,tendon]
-                    proba[1,1,r] += probability[1,1,t,tendon]
-                    proba[2,1,r] += probability[2,1,t,tendon]
-                    proba[3,1,r] += probability[3,1,t,tendon]
-                    proba[4,1,r] += probability[4,1,t,tendon]
+                    proba[0,(indice_timestamp_action) % 2,r] += probability[0,(indice_timestamp_action) % 2,t,tendon]
+                    proba[1,(indice_timestamp_action) % 2,r] += probability[1,(indice_timestamp_action) % 2,t,tendon]
+                    proba[2,(indice_timestamp_action) % 2,r] += probability[2,(indice_timestamp_action) % 2,t,tendon]
+                    proba[3,(indice_timestamp_action) % 2,r] += probability[3,(indice_timestamp_action) % 2,t,tendon]
+                    proba[4,(indice_timestamp_action) % 2,r] += probability[4,(indice_timestamp_action) % 2,t,tendon]
 
                 proba[0,0,r] = proba[0,0,r] / ((((r//3)%2)+1)*3)
                 proba[1,0,r] = proba[1,0,r] / ((((r//3)%2)+1)*3)

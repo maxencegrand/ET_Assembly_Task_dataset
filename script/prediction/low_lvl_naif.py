@@ -42,7 +42,7 @@ def low_level_naif(feature, timestamp_action):
     timestamp_indice = 0
 
 
-    for t in range(duration):
+    for t in range(1,duration):
         if timestamp_indice < len(timestamp_action) and t > timestamp_action[timestamp_indice]:
 
             probability[0, (timestamp_indice + 1) % 2, t] = probability[0, (timestamp_indice + 1) % 2, t-1] + feature[0, t]
@@ -60,8 +60,7 @@ def low_level_naif(feature, timestamp_action):
             probability[4, timestamp_indice % 2, t] = feature[4, t]
 
             timestamp_indice += 1
-
-
+        
 
         else:
 
@@ -83,14 +82,11 @@ def low_level_naif(feature, timestamp_action):
             if np.sum(probability[m,0,t]) > 0:
                 probability[m, 0, t] = probability[m, 0, t]/np.sum(probability[m, 0, t])
 
-
             else:
                 probability[m, 0, t] = np.ones((nb_area_1))/nb_area_1
 
-
             if np.sum(probability[m,1,t]) > 0:
                 probability[m, 1, t] = probability[m, 1, t]/np.sum(probability[m, 1, t])
-
 
             else:
                 probability[m, 1, t] = np.ones((nb_area_1))/nb_area_1

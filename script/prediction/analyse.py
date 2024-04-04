@@ -86,7 +86,7 @@ len(liste_adjacence_release): int nombre de release
 list_time_good_grasp_predi: liste contenant pour chaque action grasp dont la derniere prediction est correct, depuis combien de temps est-ce qu'elle etait correct (en ms)
 list_time_good_release_predi: liste contenant pour chaque action release dont la derniere prediction est correct, depuis combien de temps est-ce qu'elle etait correct (en ms)
 """
-def analyseSituation(world, gaze_point, history_prediction,timestamp_action):
+def analyseSituation(world, history_prediction,timestamp_action):
     
 
     # Declaration des variables
@@ -95,209 +95,116 @@ def analyseSituation(world, gaze_point, history_prediction,timestamp_action):
     
     liste_adjacence_release = listeRelease(world)
 
-    list_time_good_grasp_predi = []
-    list_time_good_release_predi = []
 
-    timestamp_action_indice = 1
-
-    grasp_result = np.zeros((history_prediction.shape[1]))
-    find_result = np.zeros((history_prediction.shape[1]))
-
-
-    for i in range(history_prediction.shape[1]):
-
-        if (timestamp_action_indice-1)//2 < len(liste_holding) and history_prediction[0][i] == liste_holding[(timestamp_action_indice-1)//2]:
-            grasp_result[i] += 1
-
-            
-
-            if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 1:
-                
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start >= 0 and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
-                    time_predi_start -= 1
-
-                list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
-
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start < history_prediction.shape[1] and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
-                    time_predi_start += 1
-                
-                list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
-
-        
-        if (timestamp_action_indice)//2 < len(liste_adjacence_release) and history_prediction[1][i] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-
-            find_result[i] += 1
-
-            if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 0:
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start >= 0 and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                    time_predi_start -= 1
-
-                list_time_good_release_predi.append(time_predi_start - time_predi_end )
-
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start < history_prediction.shape[1] and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                    time_predi_start += 1
-                
-                list_time_good_release_predi.append(time_predi_start - time_predi_end)
-
-        if timestamp_action_indice < len(timestamp_action) - 1 and i+1 > timestamp_action[timestamp_action_indice]:
-            timestamp_action_indice += 1
-
-
-            
-    """
-    # Analyse des predictions de grasp lorsqu'on a un grasp (prediction juste et depuis cbm de temps)
-    good_last_grasp_prediction = 0
-    for i in range(len(liste_holding)):
-        if liste_holding[i] == history_prediction[0][liste_holding_t[i]-1]:
-            good_last_grasp_prediction += 1
-
-            time_predi_end = liste_holding_t[i]-1
-            time_predi_start = liste_holding_t[i]-1
-            while history_prediction[0][time_predi_start] == liste_holding[i]:
-                time_predi_start -= 1
-            list_time_good_grasp_predi.append(time_predi_start - time_predi_end - 1)
-
-            time_predi_end = liste_holding_t[i]-1
-            time_predi_start = liste_holding_t[i]-1
-            while history_prediction[0][time_predi_start] == liste_holding[i]:
-                time_predi_start += 1
-            list_time_good_grasp_predi.append(time_predi_start - time_predi_end - 1)
-
-    """
-    # Analyse des predictions de release lorsqu'on a un release (prediction juste et depuis cbm de temps)
-
-
-
-    grasp_ind = 1
     analyse_grasp = np.zeros((6001))
-    while grasp_ind < len(timestamp_action)-1:
-        grasp_action_indice = timestamp_action[grasp_ind]
-        for i in range(grasp_action_indice-3000,grasp_action_indice+3001,1):
-            if i >=0 and i<len(grasp_result):
-                analyse_grasp[int(i-(grasp_action_indice-3000))] += grasp_result[i]
+    nb_analyse_grasp = np.zeros((6001))
 
-        grasp_ind += 2
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
+
+    for t in range(1,len(timestamp_action)-1):
+        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
+                if history_prediction[0][time] == liste_holding[(t - 1) // 2]:
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+            else:
+                if history_prediction[1][time] in liste_adjacence_release[(t-1)//2]:
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
 
     #print(len(list_time_good_grasp_predi),len(list_time_good_release_predi))
 
     return (
-        list_time_good_grasp_predi,
-        list_time_good_release_predi,
         analyse_grasp,
+        nb_analyse_grasp,
+        analyse_release,
+        nb_analyse_release
     )
 
 
-def analyseRelease(quadrillage,liste_good_zones,timestamp_action):
-    good = 0
-    last_good = 0
-    total = 0
+def analyseRelease(quadrillage,liste_good_grasp_zones, liste_good_release_zones,timestamp_action):
 
-    list_t = []
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
 
-    timestamp_action_indice = 2
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
 
-    for i in range(1,quadrillage.shape[0]):
-        
+    for t in range(1,len(timestamp_action)-1):
+        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
+                if quadrillage[time] in liste_good_grasp_zones[(t - 1) // 2]:
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+            else:
+                if quadrillage[time] in liste_good_release_zones[(t-1)//2]:
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
 
-        if quadrillage[i] >= 0:
-            if int((timestamp_action_indice-2)/2) >= len(liste_good_zones):
-                print(i,timestamp_action,quadrillage.shape[0])
-            elif quadrillage[i] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                good += 1
-            total +=1
-
-                
-
-           
-
-            if i == timestamp_action[timestamp_action_indice] and int((timestamp_action_indice-2)/2) < len(liste_good_zones) and quadrillage[i] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                last_good+=1
-
-                t_start = i - 1
-                t_end = i - 1
-                while t_start >= 0 and quadrillage[t_start] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                    t_start -= 1
-                list_t.append(t_start - t_end )
-
-                t_start = i - 1
-                t_end = i - 1
-                while t_start < quadrillage.shape[0] and quadrillage[t_start] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                    t_start += 1
-                list_t.append(t_start - t_end)
-
-        if i+1 > timestamp_action[timestamp_action_indice]:
-            if timestamp_action_indice + 2 < len(timestamp_action):
-                timestamp_action_indice += 2
-    return good,total,last_good,list_t
+    return analyse_grasp, nb_analyse_grasp, analyse_release, nb_analyse_release
 
 
 
 
-def evaluationBestArea(prediction, liste_good_area, timestamp_action):
+def evaluationBestArea(prediction, liste_good_grasp_area, liste_good_release_area, timestamp_action):
 
-    good = 0 
-    total = 0
-    last_good = 0
-    timestamp_action_indice = 2
-    list_t = []
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
 
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
 
-
-    for i in range(prediction.shape[0]):
-        total += 1
-
-        if prediction[i] >= 0:
+    for t in range(1,len(timestamp_action)-1):
+        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
             
-            x0 = round((48/largeur)*liste_good_area[int((timestamp_action_indice-2)/2)][0])
-            y0 = round((24/hauteur)*liste_good_area[int((timestamp_action_indice-2)/2)][1])
-            x2 = round((48/largeur)*liste_good_area[int((timestamp_action_indice-2)/2)][2])
-            y2 = round((24/hauteur)*liste_good_area[int((timestamp_action_indice-2)/2)][3])
-            x = prediction[i] // 24
-            y = prediction[i] % 24
+            x = prediction[time] // 24
+            y = prediction[time] % 24
 
-            if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
-                good += 1
+            if (t - 1) % 2 == 0:
+                x0 = round((48/largeur)*liste_good_grasp_area[int((t-1)//2)][0])
+                y0 = round((24/hauteur)*liste_good_grasp_area[int((t-1)//2)][1])
+                x2 = round((48/largeur)*liste_good_grasp_area[int((t-1)//2)][2])
+                y2 = round((24/hauteur)*liste_good_grasp_area[int((t-1)//2)][3])
+                if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
 
-                if i == timestamp_action[timestamp_action_indice]:
-                    last_good+=1
+            else:
+                x0 = round((48/largeur)*liste_good_release_area[int((t-1)//2)][0])
+                y0 = round((24/hauteur)*liste_good_release_area[int((t-1)//2)][1])
+                x2 = round((48/largeur)*liste_good_release_area[int((t-1)//2)][2])
+                y2 = round((24/hauteur)*liste_good_release_area[int((t-1)//2)][3])
+                if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
 
-                    t_start = i - 1
-                    t_end = i - 1
-                    while t_start >= 0 and x2 - 8 <= (prediction[t_start] // 24) and (prediction[t_start] // 24) <= x0 and y2 - 8 <= (prediction[t_start] % 24) and (prediction[t_start] % 24) <= y0:
-                        t_start -= 1
-                    list_t.append(t_start - t_end )
+    return (analyse_grasp,
+        nb_analyse_grasp,
+        analyse_release,
+        nb_analyse_release)
 
-                    t_start = i - 1
-                    t_end = i - 1
-                    while t_start < prediction.shape[0] and x2 - 8 <= (prediction[t_start] // 24) and (prediction[t_start] // 24) <= x0 and y2 - 8 <= (prediction[t_start] % 24) and (prediction[t_start] % 24) <= y0:
-                        t_start += 1
-                    list_t.append(t_start - t_end)
-
-        
-        if i+1 > timestamp_action[timestamp_action_indice]:
-            if timestamp_action_indice + 2 < len(timestamp_action):
-                timestamp_action_indice += 2
-
-    return good,total,last_good,list_t
-
-def goodAreaCoord(world):
-
+def goodReleaseAreaCoord(world):
     liste = []
     for i in range(2, world.shape[0]):
         for indice in range(24):
             if world[i - 1, 10 * indice + 10] == 1:
+                sub_liste = []
+                sub_liste.append(world[i, 10 * indice + 1])
+                sub_liste.append(world[i, 10 * indice + 2])
+
+                sub_liste.append(world[i, 10 * indice + 5])
+                sub_liste.append(world[i, 10 * indice + 6])
+                liste.append(sub_liste)
+
+    return liste
+
+def goodGraspAreaCoord(world):
+    liste = []
+    for i in range(1, world.shape[0]-1):
+        for indice in range(24):
+            if world[i + 1, 10 * indice + 10] == 1:
                 sub_liste = []
                 sub_liste.append(world[i, 10 * indice + 1])
                 sub_liste.append(world[i, 10 * indice + 2])
