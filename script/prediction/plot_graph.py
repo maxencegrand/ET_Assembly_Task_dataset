@@ -19,7 +19,6 @@ if __name__ == "__main__":
         results = results.reshape(12,2,nb_predi,6001)
         nb_prediction = nb_prediction.reshape(12,2,6001)
 
-        print(results.shape,nb_prediction.shape)
 
         area1_grasp = results[0]
         area1_release = results[4]

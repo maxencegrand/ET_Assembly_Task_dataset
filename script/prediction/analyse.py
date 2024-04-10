@@ -135,11 +135,11 @@ def analyseRelease(quadrillage,liste_good_grasp_zones, liste_good_release_zones,
     for t in range(1,len(timestamp_action)-1):
         for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
             if (t - 1) % 2 == 0:
-                if quadrillage[time] in liste_good_grasp_zones[(t - 1) // 2]:
+                if quadrillage[0][time] in liste_good_grasp_zones[(t - 1) // 2]:
                     analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
                 nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
             else:
-                if quadrillage[time] in liste_good_release_zones[(t-1)//2]:
+                if quadrillage[1][time] in liste_good_release_zones[(t-1)//2]:
                     analyse_release[time - (timestamp_action[t] - 3000)] += 1
                 nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
 
@@ -159,23 +159,29 @@ def evaluationBestArea(prediction, liste_good_grasp_area, liste_good_release_are
     for t in range(1,len(timestamp_action)-1):
         for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
             
-            x = prediction[time] // 24
-            y = prediction[time] % 24
 
             if (t - 1) % 2 == 0:
+                x = prediction[0][time] // 24
+                y = prediction[0][time] % 24
+            
                 x0 = round((48/largeur)*liste_good_grasp_area[int((t-1)//2)][0])
                 y0 = round((24/hauteur)*liste_good_grasp_area[int((t-1)//2)][1])
                 x2 = round((48/largeur)*liste_good_grasp_area[int((t-1)//2)][2])
                 y2 = round((24/hauteur)*liste_good_grasp_area[int((t-1)//2)][3])
+
                 if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
                     analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
                 nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
 
             else:
+                x = prediction[1][time] // 24
+                y = prediction[1][time] % 24
+
                 x0 = round((48/largeur)*liste_good_release_area[int((t-1)//2)][0])
                 y0 = round((24/hauteur)*liste_good_release_area[int((t-1)//2)][1])
                 x2 = round((48/largeur)*liste_good_release_area[int((t-1)//2)][2])
                 y2 = round((24/hauteur)*liste_good_release_area[int((t-1)//2)][3])
+
                 if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
                     analyse_release[time - (timestamp_action[t] - 3000)] += 1
                 nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
@@ -184,6 +190,23 @@ def evaluationBestArea(prediction, liste_good_grasp_area, liste_good_release_are
         nb_analyse_grasp,
         analyse_release,
         nb_analyse_release)
+
+
+def goodGraspAreaCoord(world):
+    liste = []
+    for i in range(1, world.shape[0]-1):
+        for indice in range(24):
+            if world[i + 1, 10 * indice + 10] == 1:
+                sub_liste = []
+                sub_liste.append(world[i, 10 * indice + 1])
+                sub_liste.append(world[i, 10 * indice + 2])
+
+                sub_liste.append(world[i, 10 * indice + 5])
+                sub_liste.append(world[i, 10 * indice + 6])
+                liste.append(sub_liste)
+
+    return liste
+
 
 def goodReleaseAreaCoord(world):
     liste = []
@@ -200,17 +223,3 @@ def goodReleaseAreaCoord(world):
 
     return liste
 
-def goodGraspAreaCoord(world):
-    liste = []
-    for i in range(1, world.shape[0]-1):
-        for indice in range(24):
-            if world[i + 1, 10 * indice + 10] == 1:
-                sub_liste = []
-                sub_liste.append(world[i, 10 * indice + 1])
-                sub_liste.append(world[i, 10 * indice + 2])
-
-                sub_liste.append(world[i, 10 * indice + 5])
-                sub_liste.append(world[i, 10 * indice + 6])
-                liste.append(sub_liste)
-
-    return liste

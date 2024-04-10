@@ -28,6 +28,7 @@ array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
+from low_lvl_lstm import low_level_lstm
 from interpretation import interpretation
 from analyse import analyseSituation,analyseRelease,evaluationBestArea,analyseMethod,goodReleaseAreaCoord,goodGraspAreaCoord
 from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog
@@ -85,8 +86,8 @@ def parsingAllParticipantOneMethode():
         for entry in os.scandir(directory):
 
             # Choix du model : car, house, sc, tb, tc, tsb
-            #list_model = ["car", "house", "sc", "tb", "tc", "tsb"]
-            list_model = ["car"]
+            list_model = ["car", "house", "sc", "tb", "tc", "tsb"]
+            #list_model = ["car"]
 
             for model in list_model:
 
@@ -104,20 +105,28 @@ def parsingAllParticipantOneMethode():
                     gaze_point = np.genfromtxt(
                         str(entry.path) + "/" + model + "/table.csv", delimiter=","
                     )
+
                     world = np.genfromtxt(
                         str(entry.path) + "/" + model + "/states.csv", delimiter=","
                     )
                     
+                    duration = int(gaze_point[-1,0] - gaze_point[1,0])+1
+                    nb_gaze = gaze_point.shape[0] - 1
+
+                    
+
+
                     (
                         feature,
                         timestamp_action,
                         liste_t_value,
 
                     ) = parsingOneSituation(gaze_point, world)
+                    
 
-                    probability = low_level_naif(feature,timestamp_action)
+                    probability = low_level_naif(feature,timestamp_action,liste_t_value)
 
-                    area_prediction,area_best_prediction,liste_predi_id = interpretation(probability,timestamp_action,liste_t_value,world)
+                    area_prediction,area_best_prediction,liste_predi_id = interpretation(probability,timestamp_action,liste_t_value,world,duration)
 
                     temps_fin = time.time()
 
@@ -149,8 +158,8 @@ def parsingAllParticipantOneMethode():
                         global_nb_analyse_area_grasp[position][method_pos] += nb_analyse_area_grasp
                         global_nb_analyse_area_release[position][method_pos] += nb_analyse_area_release
 
-                    liste_good_release_area_coord = goodReleaseAreaCoord(world)
                     liste_good_grasp_area_coord = goodGraspAreaCoord(world)
+                    liste_good_release_area_coord = goodReleaseAreaCoord(world)
                     for posi,predi in enumerate(area_best_prediction):
                         (
                         analyse_area_grasp,

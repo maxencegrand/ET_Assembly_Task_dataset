@@ -47,7 +47,7 @@ def parsingOneSituation(gaze_point, world):
 
     duration = gaze_point[-1, 0] - gaze_point[1, 0]
 
-    feature = np.zeros((5, int(duration) + 1, nb_area_1)) 
+    feature = np.zeros((5, gaze_point.shape[0] - 1, nb_area_1)) 
 
     timestamp_action = [0]
 
@@ -58,10 +58,12 @@ def parsingOneSituation(gaze_point, world):
 
     # Pour chaque ligne correspondant a une donne de l'eye tracker
     for i in range(1, gaze_point.shape[0]):
-
+         
         # On prend le temps depuis le debut
         t = int(gaze_point[i, 0] - t_init)
 
+        liste_data_t.append(t)  
+        
         # On extrait l'etat actuel de la table
         current_world = CurrentWorld(gaze_point[i, 0], world)
 
@@ -83,26 +85,26 @@ def parsingOneSituation(gaze_point, world):
 
         if str(gaze_point[i, 1]) != "nan":
 
-            liste_data_t.append(t)      
+               
 
             d_min = math.inf
             i_min = math.inf
 
-            '''
+            
             for z in range(nb_area_1):
                 zone = array_zone1[z + 1]
                 d = minDistanceRectangleGaze(zone[1],zone[2],zone[3],zone[4],zone[5],zone[6],zone[7],zone[8],gaze_point[i,1],gaze_point[i,2])
-                feature[2, t, z] += dist_max - d
-                feature[3, t, z] += 1/(d-dist_min)
+                feature[2, i - 1, z] += dist_max - d
+                feature[3, i - 1, z] += 1/(d-dist_min)
 
                 K = math.log2((dist_max - dist_min) / (-2*dist_min) + 1)
-                feature[4, t, z] += (K - math.log2((d - dist_min) / (-2*dist_min) + 1))/K
+                feature[4, i - 1, z] += (K - math.log2((d - dist_min) / (-2*dist_min) + 1))/K
                 if d < d_min:
                     d_min = d
                     i_min = z
 
-            feature[0, t, i_min] += 1
-            feature[1, t, i_min] += (dist_max - d_min)/(dist_max - dist_min)
+            feature[0, i - 1, i_min] += 1
+            feature[1, i - 1, i_min] += (dist_max - d_min)/(dist_max - dist_min)
             '''
 
             for z in range(nb_area_1):
@@ -110,21 +112,24 @@ def parsingOneSituation(gaze_point, world):
                 zone_x_mean = (zone[1] + zone[5])/2
                 zone_y_mean = (zone[2] + zone[6])/2
                 d = math.sqrt((zone_x_mean - gaze_point[i,1])**2 + (zone_y_mean - gaze_point[i,2])**2)
-                feature[2, t, z] += dist_max - d
-                feature[3, t, z] += 1/(d-dist_min)
+                
+                feature[2, i-1, z] += dist_max - d
+                feature[3, i-1, z] += 1/(d-dist_min)
 
                 K = math.log2((dist_max - dist_min) / (-2*dist_min) + 1)
-                feature[4, t, z] += (K - math.log2((d - dist_min) / (-2*dist_min) + 1))/K
+                
+                feature[4, i-1, z] += (K - math.log2((d - dist_min) / (-2*dist_min) + 1))/K
+
                 if d < d_min:
                     d_min = d
                     i_min = z
 
-            feature[0, t, i_min] += 1
-            feature[1, t, i_min] += (dist_max - d_min)/(dist_max - dist_min)
-
+            feature[0, i-1, i_min] += 1
+            feature[1, i-1, i_min] += (dist_max - d_min)/(dist_max - dist_min)
+            '''
     timestamp_action.append(t)
 
-    liste_data_t = liste_data_t + timestamp_action
+    liste_data_t = liste_data_t
     liste_data_t.sort()
     return (
         feature,

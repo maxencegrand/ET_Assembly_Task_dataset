@@ -34,7 +34,7 @@ Output
 
 probability: np.array((5, 2, duration, nb_area_1)) probabilite qu'un bloc tenon soit important selon les 5 manieres de calculer, sur la duree d'un assamblage, pour tous les tenons. La dimension 2 correspond aux reset grasp ou reset release
 """
-def low_level_naif(feature, timestamp_action):
+def low_level_naif(feature, timestamp_action,liste_t):
     duration = feature.shape[1]
 
     probability = np.zeros((5, 2, duration, nb_area_1))
@@ -42,39 +42,46 @@ def low_level_naif(feature, timestamp_action):
     timestamp_indice = 0
 
 
-    for t in range(1,duration):
-        if timestamp_indice < len(timestamp_action) and t > timestamp_action[timestamp_indice]:
+    for t in range(0,duration):
+            
+        weight0 = feature[0, t]
+        weight1 = feature[1, t]
+        weight2 = feature[2, t]
+        weight3 = feature[3, t]
+        weight4 = feature[4, t]
+            
+        if timestamp_indice < len(timestamp_action) and liste_t[t] > timestamp_action[timestamp_indice]:
 
-            probability[0, (timestamp_indice + 1) % 2, t] = probability[0, (timestamp_indice + 1) % 2, t-1] + feature[0, t]
-            probability[1, (timestamp_indice + 1) % 2, t] = probability[1, (timestamp_indice + 1) % 2, t-1] + feature[1, t]
-            probability[2, (timestamp_indice + 1) % 2, t] = probability[2, (timestamp_indice + 1) % 2, t-1] + feature[2, t]
-            probability[3, (timestamp_indice + 1) % 2, t] = probability[3, (timestamp_indice + 1) % 2, t-1] + feature[3, t]
-            probability[4, (timestamp_indice + 1) % 2, t] = probability[4, (timestamp_indice + 1) % 2, t-1] + feature[4, t]
+            probability[0, (timestamp_indice + 1) % 2, t] = probability[0, (timestamp_indice + 1) % 2, t-1] + weight0
+            probability[1, (timestamp_indice + 1) % 2, t] = probability[1, (timestamp_indice + 1) % 2, t-1] + weight1
+            probability[2, (timestamp_indice + 1) % 2, t] = probability[2, (timestamp_indice + 1) % 2, t-1] + weight2
+            probability[3, (timestamp_indice + 1) % 2, t] = probability[3, (timestamp_indice + 1) % 2, t-1] + weight3
+            probability[4, (timestamp_indice + 1) % 2, t] = probability[4, (timestamp_indice + 1) % 2, t-1] + weight4
 
             
 
-            probability[0, timestamp_indice % 2, t] = feature[0, t]
-            probability[1, timestamp_indice % 2, t] = feature[1, t]
-            probability[2, timestamp_indice % 2, t] = feature[2, t]
-            probability[3, timestamp_indice % 2, t] = feature[3, t]
-            probability[4, timestamp_indice % 2, t] = feature[4, t]
+            probability[0, timestamp_indice % 2, t] = weight0
+            probability[1, timestamp_indice % 2, t] = weight1
+            probability[2, timestamp_indice % 2, t] = weight2
+            probability[3, timestamp_indice % 2, t] = weight3
+            probability[4, timestamp_indice % 2, t] = weight4
 
             timestamp_indice += 1
         
 
         else:
 
-            probability[0, 0, t] = probability[0, 0, t-1] + feature[0, t]
-            probability[1, 0, t] = probability[1, 0, t-1] + feature[1, t]
-            probability[2, 0, t] = probability[2, 0, t-1] + feature[2, t]
-            probability[3, 0, t] = probability[3, 0, t-1] + feature[3, t]
-            probability[4, 0, t] = probability[4, 0, t-1] + feature[4, t]
+            probability[0, 0, t] = probability[0, 0, t-1] + weight0
+            probability[1, 0, t] = probability[1, 0, t-1] + weight1
+            probability[2, 0, t] = probability[2, 0, t-1] + weight2
+            probability[3, 0, t] = probability[3, 0, t-1] + weight3
+            probability[4, 0, t] = probability[4, 0, t-1] + weight4
 
-            probability[0, 1, t] = probability[0, 1, t-1] + feature[0, t]
-            probability[1, 1, t] = probability[1, 1, t-1] + feature[1, t]
-            probability[2, 1, t] = probability[2, 1, t-1] + feature[2, t]
-            probability[3, 1, t] = probability[3, 1, t-1] + feature[3, t]
-            probability[4, 1, t] = probability[4, 1, t-1] + feature[4, t]
+            probability[0, 1, t] = probability[0, 1, t-1] + weight0
+            probability[1, 1, t] = probability[1, 1, t-1] + weight1
+            probability[2, 1, t] = probability[2, 1, t-1] + weight2
+            probability[3, 1, t] = probability[3, 1, t-1] + weight3
+            probability[4, 1, t] = probability[4, 1, t-1] + weight4
                 
     for t in range(duration):
 

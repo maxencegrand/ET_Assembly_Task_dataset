@@ -571,10 +571,10 @@ def liste_tenon_bloc(world):
 
 def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
-    np.savetxt(nom_fichier+"_results.csv", results.reshape(12,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_fichier+"_nb_prediction.csv", nb_prediction.reshape(12,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "_results.csv", results.reshape(12,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "_nb_prediction.csv", nb_prediction.reshape(12,-1), delimiter=',',fmt='%.4f')
 
-    with open(nom_fichier+"_time.csv", 'w', newline='') as fichier_csv:
+    with open(nom_fichier + "_time.csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
         
         # Écrire chaque sous-liste dans une ligne du fichier CSV
@@ -584,11 +584,11 @@ def saveLog(nom_fichier,results,nb_prediction,duree_execution):
     return nom_fichier
 
 def loadLog(nom_fichier):
-    results = np.genfromtxt(nom_fichier + "_results.csv", delimiter=",")
-    nb_prediction = np.genfromtxt(nom_fichier + "_nb_prediction.csv", delimiter=",")
+    results = np.genfromtxt(nom_fichier + "results.csv", delimiter=",")
+    nb_prediction = np.genfromtxt(nom_fichier + "nb_prediction.csv", delimiter=",")
     #duree_execution = np.genfromtxt(nom_fichier + "_time.csv", delimiter=",")
     duree_execution = []
-    with open(nom_fichier + "_time.csv", 'r', newline='') as fichier_csv:
+    with open(nom_fichier + "time.csv", 'r', newline='') as fichier_csv:
         reader = csv.reader(fichier_csv)
         
         # Lire chaque ligne du fichier CSV
