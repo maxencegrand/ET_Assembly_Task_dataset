@@ -1,6 +1,6 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
+
 import matplotlib.colors
 from matplotlib.widgets import Slider
 import os
@@ -584,11 +584,11 @@ def saveLog(nom_fichier,results,nb_prediction,duree_execution):
     return nom_fichier
 
 def loadLog(nom_fichier):
-    results = np.genfromtxt(nom_fichier + "results.csv", delimiter=",")
-    nb_prediction = np.genfromtxt(nom_fichier + "nb_prediction.csv", delimiter=",")
+    results = np.genfromtxt(nom_fichier + "_results.csv", delimiter=",")
+    nb_prediction = np.genfromtxt(nom_fichier + "_nb_prediction.csv", delimiter=",")
     #duree_execution = np.genfromtxt(nom_fichier + "_time.csv", delimiter=",")
     duree_execution = []
-    with open(nom_fichier + "time.csv", 'r', newline='') as fichier_csv:
+    with open(nom_fichier + "_time.csv", 'r', newline='') as fichier_csv:
         reader = csv.reader(fichier_csv)
         
         # Lire chaque ligne du fichier CSV
@@ -599,46 +599,51 @@ def loadLog(nom_fichier):
             duree_execution.append(ligne)
     return results,nb_prediction,duree_execution
 
-def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,action):
-        plt.close()
-        fig, ax = plt.subplots(1, 2)
-
-        for ind in [0,1]:
-
-            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][0][::25]/nb_results[ind][::25], linestyle = linestyles[0] , label = list_name[0])
-            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][1][::25]/nb_results[ind][::25], linestyle = linestyles[1] , label = list_name[1])
-            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][2][::25]/nb_results[ind][::25], linestyle = linestyles[2] , label = list_name[2])
-            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][3][::25]/nb_results[ind][::25], linestyle = linestyles[3] , label = list_name[3])
-            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][4][::25]/nb_results[ind][::25], linestyle = linestyles[4] , label = list_name[4])
-
-            ax[ind].set_title(method[ind],fontsize = 24)
-        
-        ax[0].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
-        ax[1].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
-
-        box = ax[0].get_position()
-        ax[0].set_position([box.x0, box.y0 + box.height * 0.1,
-                        box.width, box.height * 0.9])
-        
-        box = ax[1].get_position()
-        ax[1].set_position([box.x0, box.y0 + box.height * 0.1,
-                        box.width, box.height * 0.9])
-
-        # Put a legend below current axis
-        ax[0].legend(loc='upper center', bbox_to_anchor=(1.1, -0.05),
-                fancybox=True, shadow=True, ncol=6, fontsize = 20) 
-
-        ax[0].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
-        ax[1].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
-        
-        ax[0].set_xlabel('Time (ms)', fontsize = 22) 
-        ax[0].set_ylabel('Percentage of good prediction', fontsize = 22) 
-
-        ax[1].set_xlabel('Time (ms)', fontsize = 22) 
-        ax[1].set_ylabel('Percentage of good prediction', fontsize = 22) 
-
-        
-        fig.suptitle(action,fontsize = 30)
 
 
-        plt.show()
+def listeTimneAction(world):
+    liste = []
+    t_init = world [1,0]
+    for t in range(1,world.shape[0]):
+        t = world[t,0]
+        liste.append(int(t - t_init))
+
+    return liste
+
+
+def savingTime(nom_dossier,participant,duree):
+
+
+    with open(nom_dossier + "/" + participant + "_time.csv", 'w', newline='') as fichier_csv:
+        writer = csv.writer(fichier_csv)
+    
+        writer.writerow(duree)
+
+    return
+
+def savingFeature(nom_dossier,participant,feature):
+
+    np.savetxt(nom_dossier + "/" + participant + "_feature.csv", feature[:,:,:].reshape(5,-1), delimiter=',',fmt='%.4f')
+
+    return
+
+def savingProba(nom_dossier,participant,proba):
+
+
+    np.savetxt(nom_dossier + "/" + participant + "_probability.csv", proba.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    return
+
+def savingInterpretation(nom_dossier,participant,temp_area1,temp_area2,temp_area4,temp_area8,temp_area_sliding,temp_block):
+
+
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area1.csv", temp_area1.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area2.csv", temp_area2.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area4.csv", temp_area4.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area8.csv", temp_area8.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    np.savetxt(nom_dossier + "/" + participant + "_inter_block.csv", temp_block.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    return

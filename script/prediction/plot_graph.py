@@ -1,8 +1,53 @@
-from tools import loadLog,showComparaisonAlgorithm
+from tools import loadLog
 import sys
-
+import matplotlib.pyplot as plt
+import numpy as np
 def main(argument):
     print("Le nom du fichier fourni est:", argument)
+
+def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,action):
+        plt.close()
+        fig, ax = plt.subplots(1, 2)
+
+        for ind in [0,1]:
+
+            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][0][::25]/nb_results[ind][::25], linestyle = linestyles[0] , label = list_name[0])
+            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][1][::25]/nb_results[ind][::25], linestyle = linestyles[1] , label = list_name[1])
+            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][2][::25]/nb_results[ind][::25], linestyle = linestyles[2] , label = list_name[2])
+            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][3][::25]/nb_results[ind][::25], linestyle = linestyles[3] , label = list_name[3])
+            ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][4][::25]/nb_results[ind][::25], linestyle = linestyles[4] , label = list_name[4])
+
+            ax[ind].set_title(method[ind],fontsize = 24)
+        
+        ax[0].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
+        ax[1].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
+
+        box = ax[0].get_position()
+        ax[0].set_position([box.x0, box.y0 + box.height * 0.1,
+                        box.width, box.height * 0.9])
+        
+        box = ax[1].get_position()
+        ax[1].set_position([box.x0, box.y0 + box.height * 0.1,
+                        box.width, box.height * 0.9])
+
+        # Put a legend below current axis
+        ax[0].legend(loc='upper center', bbox_to_anchor=(1.1, -0.05),
+                fancybox=True, shadow=True, ncol=6, fontsize = 20) 
+
+        ax[0].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
+        ax[1].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
+        
+        ax[0].set_xlabel('Time (ms)', fontsize = 22) 
+        ax[0].set_ylabel('Percentage of good prediction', fontsize = 22) 
+
+        ax[1].set_xlabel('Time (ms)', fontsize = 22) 
+        ax[1].set_ylabel('Percentage of good prediction', fontsize = 22) 
+
+        
+        fig.suptitle(action,fontsize = 30)
+
+
+        plt.show()
 
 if __name__ == "__main__":
     # Vérifier si un argument a été fourni
@@ -63,3 +108,5 @@ if __name__ == "__main__":
 
         showComparaisonAlgorithm(sliding_area_grasp,nb_sliding_area_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Sliding Area, with size 8x8")
         showComparaisonAlgorithm(sliding_area_release,nb_sliding_area_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Sliding Area, with size 8x8")
+
+

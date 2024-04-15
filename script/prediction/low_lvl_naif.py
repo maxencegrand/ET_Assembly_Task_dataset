@@ -34,69 +34,57 @@ Output
 
 probability: np.array((5, 2, duration, nb_area_1)) probabilite qu'un bloc tenon soit important selon les 5 manieres de calculer, sur la duree d'un assamblage, pour tous les tenons. La dimension 2 correspond aux reset grasp ou reset release
 """
-def low_level_naif(feature, timestamp_action,liste_t):
-    duration = feature.shape[1]
+def low_level_naif(feature,timestamp,timestamp_action,timestamp_indice,past_probability_score):
 
-    probability = np.zeros((5, 2, duration, nb_area_1))
+    new_probability = np.zeros((5, 2, nb_area_1))
+    new_probability_score = np.zeros((5, 2, nb_area_1))
+        
+    if timestamp_indice < len(timestamp_action)-1 and timestamp == timestamp_action[timestamp_indice]:
 
-    timestamp_indice = 0
+
+        new_probability_score[0, (timestamp_indice + 1) % 2] = past_probability_score[0, (timestamp_indice + 1) % 2] + feature[0]
+        new_probability_score[1, (timestamp_indice + 1) % 2] = past_probability_score[1, (timestamp_indice + 1) % 2] + feature[1]
+        new_probability_score[2, (timestamp_indice + 1) % 2] = past_probability_score[2, (timestamp_indice + 1) % 2] + feature[2]
+        new_probability_score[3, (timestamp_indice + 1) % 2] = past_probability_score[3, (timestamp_indice + 1) % 2] + feature[3]
+        new_probability_score[4, (timestamp_indice + 1) % 2] = past_probability_score[4, (timestamp_indice + 1) % 2] + feature[4]
+
+        new_probability_score[0, timestamp_indice % 2] = feature[0]
+        new_probability_score[1, timestamp_indice % 2] = feature[1]
+        new_probability_score[2, timestamp_indice % 2] = feature[2]
+        new_probability_score[3, timestamp_indice % 2] = feature[3]
+        new_probability_score[4, timestamp_indice % 2] = feature[4]
+
+        timestamp_indice += 1
+
+    else:
+
+        new_probability_score[0, 0] = past_probability_score[0, 0] + feature[0]
+        new_probability_score[1, 0] = past_probability_score[1, 0] + feature[1]
+        new_probability_score[2, 0] = past_probability_score[2, 0] + feature[2]
+        new_probability_score[3, 0] = past_probability_score[3, 0] + feature[3]
+        new_probability_score[4, 0] = past_probability_score[4, 0] + feature[4]
+
+        new_probability_score[0, 1] = past_probability_score[0, 1] + feature[0]
+        new_probability_score[1, 1] = past_probability_score[1, 1] + feature[1]
+        new_probability_score[2, 1] = past_probability_score[2, 1] + feature[2]
+        new_probability_score[3, 1] = past_probability_score[3, 1] + feature[3]
+        new_probability_score[4, 1] = past_probability_score[4, 1] + feature[4]
 
 
-    for t in range(0,duration):
-            
-        weight0 = feature[0, t]
-        weight1 = feature[1, t]
-        weight2 = feature[2, t]
-        weight3 = feature[3, t]
-        weight4 = feature[4, t]
-            
-        if timestamp_indice < len(timestamp_action) and liste_t[t] > timestamp_action[timestamp_indice]:
-
-            probability[0, (timestamp_indice + 1) % 2, t] = probability[0, (timestamp_indice + 1) % 2, t-1] + weight0
-            probability[1, (timestamp_indice + 1) % 2, t] = probability[1, (timestamp_indice + 1) % 2, t-1] + weight1
-            probability[2, (timestamp_indice + 1) % 2, t] = probability[2, (timestamp_indice + 1) % 2, t-1] + weight2
-            probability[3, (timestamp_indice + 1) % 2, t] = probability[3, (timestamp_indice + 1) % 2, t-1] + weight3
-            probability[4, (timestamp_indice + 1) % 2, t] = probability[4, (timestamp_indice + 1) % 2, t-1] + weight4
-
-            
-
-            probability[0, timestamp_indice % 2, t] = weight0
-            probability[1, timestamp_indice % 2, t] = weight1
-            probability[2, timestamp_indice % 2, t] = weight2
-            probability[3, timestamp_indice % 2, t] = weight3
-            probability[4, timestamp_indice % 2, t] = weight4
-
-            timestamp_indice += 1
         
 
+
+    for m in range(5):
+        if np.sum(new_probability_score[m,0]) > 0:
+            new_probability[m, 0] = new_probability_score[m, 0]/np.sum(new_probability_score[m, 0])
+
         else:
+            new_probability[m, 0] = np.ones((nb_area_1))/nb_area_1
 
-            probability[0, 0, t] = probability[0, 0, t-1] + weight0
-            probability[1, 0, t] = probability[1, 0, t-1] + weight1
-            probability[2, 0, t] = probability[2, 0, t-1] + weight2
-            probability[3, 0, t] = probability[3, 0, t-1] + weight3
-            probability[4, 0, t] = probability[4, 0, t-1] + weight4
+        if np.sum(new_probability_score[m,1]) > 0:
+            new_probability[m, 1] = new_probability_score[m, 1]/np.sum(new_probability_score[m, 1])
 
-            probability[0, 1, t] = probability[0, 1, t-1] + weight0
-            probability[1, 1, t] = probability[1, 1, t-1] + weight1
-            probability[2, 1, t] = probability[2, 1, t-1] + weight2
-            probability[3, 1, t] = probability[3, 1, t-1] + weight3
-            probability[4, 1, t] = probability[4, 1, t-1] + weight4
-                
-    for t in range(duration):
+        else:
+            new_probability[m, 1] = np.ones((nb_area_1))/nb_area_1
 
-        for m in range(5):
-            if np.sum(probability[m,0,t]) > 0:
-                probability[m, 0, t] = probability[m, 0, t]/np.sum(probability[m, 0, t])
-
-            else:
-                probability[m, 0, t] = np.ones((nb_area_1))/nb_area_1
-
-            if np.sum(probability[m,1,t]) > 0:
-                probability[m, 1, t] = probability[m, 1, t]/np.sum(probability[m, 1, t])
-
-            else:
-                probability[m, 1, t] = np.ones((nb_area_1))/nb_area_1
-
-
-    return probability
+    return new_probability, new_probability_score, timestamp_indice

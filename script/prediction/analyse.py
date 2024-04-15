@@ -102,19 +102,19 @@ def analyseSituation(world, history_prediction,timestamp_action):
     analyse_release = np.zeros((6001))
     nb_analyse_release = np.zeros((6001))
 
-    for t in range(1,len(timestamp_action)-1):
+    for t in range(1,len(timestamp_action)):
+
         for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
             if (t - 1) % 2 == 0:
                 if history_prediction[0][time] == liste_holding[(t - 1) // 2]:
                     analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
                 nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
             else:
+                
                 if history_prediction[1][time] in liste_adjacence_release[(t-1)//2]:
                     analyse_release[time - (timestamp_action[t] - 3000)] += 1
                 nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
 
-
-    #print(len(list_time_good_grasp_predi),len(list_time_good_release_predi))
 
     return (
         analyse_grasp,
@@ -132,8 +132,8 @@ def analyseRelease(quadrillage,liste_good_grasp_zones, liste_good_release_zones,
     analyse_release = np.zeros((6001))
     nb_analyse_release = np.zeros((6001))
 
-    for t in range(1,len(timestamp_action)-1):
-        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
+    for t in range(1,len(timestamp_action)):
+        for time in range(max(0,timestamp_action[t]-3000),min(quadrillage.shape[1],timestamp_action[t] + 3001)):
             if (t - 1) % 2 == 0:
                 if quadrillage[0][time] in liste_good_grasp_zones[(t - 1) // 2]:
                     analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
@@ -156,9 +156,8 @@ def evaluationBestArea(prediction, liste_good_grasp_area, liste_good_release_are
     analyse_release = np.zeros((6001))
     nb_analyse_release = np.zeros((6001))
 
-    for t in range(1,len(timestamp_action)-1):
-        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
-            
+    for t in range(1,len(timestamp_action)):
+        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1]-1,timestamp_action[t] + 3001)):
 
             if (t - 1) % 2 == 0:
                 x = prediction[0][time] // 24

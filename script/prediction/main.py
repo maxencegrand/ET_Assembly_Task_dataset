@@ -4,9 +4,6 @@ import os
 import time
 from datetime import datetime
 
-import matplotlib.pyplot as plt
-
-
 plot_1 = False
 analyse = True
 plot_analyse = False
@@ -16,10 +13,10 @@ hauteur = 38
 dist_min = -largeur/(2*48)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -28,10 +25,9 @@ array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
-from low_lvl_lstm import low_level_lstm
 from interpretation import interpretation
 from analyse import analyseSituation,analyseRelease,evaluationBestArea,analyseMethod,goodReleaseAreaCoord,goodGraspAreaCoord
-from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog
+from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog,listeTimneAction,CurrentWorld,savingTime,savingFeature,savingProba,savingInterpretation
 
 
 """
@@ -51,7 +47,9 @@ def parsingAllParticipantOneMethode():
     date_heure_actuelle = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Nom du fichier avec la date et l'heure
-    nom_fichier = f"logs/{date_heure_actuelle}"
+    nom_dossier = f"logs/{date_heure_actuelle}"
+
+    os.mkdir(nom_dossier)
 
     nb_predi = 5
 
@@ -82,6 +80,7 @@ def parsingAllParticipantOneMethode():
 
     # On parcours la liste des dossiers correspondant aux participants
     for method_pos,method in enumerate(["mobile", "stationnary"]):
+    #for method_pos,method in enumerate(["mobile"]):    
         directory = "../../dataset/" + method + "/sitting/"
         for entry in os.scandir(directory):
 
@@ -99,7 +98,7 @@ def parsingAllParticipantOneMethode():
                     print("---------------------------")
                     print("Partcipant :", str(entry.path).split("/")[-1],model, method_pos)
 
-                    temps_debut = time.time()
+                    
 
                     # charge les deux fichiers dans des np.array
                     gaze_point = np.genfromtxt(
@@ -110,25 +109,120 @@ def parsingAllParticipantOneMethode():
                         str(entry.path) + "/" + model + "/states.csv", delimiter=","
                     )
                     
-                    duration = int(gaze_point[-1,0] - gaze_point[1,0])+1
+                    duree = int(max(world[-1,0], gaze_point[-1,0] ) - min(world[1,0], gaze_point[1,0] ) ) + 1
+
                     nb_gaze = gaze_point.shape[0] - 1
 
+                    timestamp_action = listeTimneAction(world)
                     
 
+                    all_feature = np.zeros((5, nb_gaze, nb_area_1))
+                    probability_score = np.zeros((5, 2, nb_gaze, nb_area_1))
+                    probability = np.zeros((5, 2, nb_gaze, nb_area_1))
 
-                    (
+                    t_init = world[1,0]
+
+                    indice = 0
+
+                    liste_t_value = []
+
+                    liste_temps_exec = []
+
+                    temp_area1 = np.zeros((5,2,nb_gaze))
+                    temp_area2 = np.zeros((5,2,nb_gaze))
+                    temp_area4 = np.zeros((5,2,nb_gaze))
+                    temp_area8 = np.zeros((5,2,nb_gaze))
+
+                    temp_area_sliding = np.zeros((5,2,nb_gaze))
+
+                    temp_block = np.zeros((5,2,nb_gaze))
+
+                    for i in range(nb_gaze):
+                        temps_debut = time.time()
+
+                        current_world = CurrentWorld(gaze_point[i, 0], world)
+
+                        gaze_value = gaze_point [i + 1]
+                        t = gaze_value[0] - t_init
+                        liste_t_value.append(t)
+
+                        (
                         feature,
-                        timestamp_action,
-                        liste_t_value,
+                        ) = parsingOneSituation(gaze_value)
 
-                    ) = parsingOneSituation(gaze_point, world)
+                        all_feature[:,i,:] = feature
+
+                        if i > 0:
+                            past_probability_score = probability_score[:,:,i-1,:]
+                        else:
+                            past_probability_score = probability_score[:,:,i,:]
+                            
+                        new_probability,new_probability_score,new_indice = low_level_naif(feature,t,timestamp_action,indice,past_probability_score)
+                        
+                        probability[:,:,i,:] = new_probability
+                        probability_score[:,:,i,:] = new_probability_score
+
+
+                        area1max_indices,area2max_indices,area4max_indices,area8max_indices,area_best,liste_predi_id = interpretation(new_probability,new_indice,world,)
+                        
+                        temp_area1[:,:,i] = area1max_indices
+                        temp_area2[:,:,i] = area2max_indices
+                        temp_area4[:,:,i] = area4max_indices
+                        temp_area8[:,:,i] = area8max_indices
+
+                        temp_area_sliding[:,:,i] = area_best
+
+                        temp_block[:,:,i] = liste_predi_id
+
+                        indice = new_indice
+                        
+                        temps_fin = time.time()
+                        diff_temps = temps_fin - temps_debut
+                        liste_temps_exec.append(diff_temps)
+
+                    participant = method+"_sitting_"+str(entry.path).split("/")[-1]+"_"+model
+
+                    savingTime(nom_dossier,participant,liste_temps_exec)
+                    savingFeature(nom_dossier,participant,all_feature)
+                    savingProba(nom_dossier,participant,probability)
+                    savingInterpretation(nom_dossier,participant,temp_area1,temp_area2,temp_area4,temp_area8,temp_area_sliding,temp_block)
+
+                    for k in range(nb_gaze):
+                        if not np.array_equal(temp_area1[:,:,k], probability.argmax(axis=3)[:,:,k]):
+                            print("Problem :",k)
                     
+                    result_area1 = np.zeros((5, 2, duree))
+                    result_area2 = np.zeros((5, 2, duree))
+                    result_area4 = np.zeros((5, 2, duree))
+                    result_area8 = np.zeros((5, 2, duree))
+                    result_sliding_area = np.zeros((5, 2, duree))
+                    result_block = np.zeros((5, 2, duree))
 
-                    probability = low_level_naif(feature,timestamp_action,liste_t_value)
+                    time_indice = 0
 
-                    area_prediction,area_best_prediction,liste_predi_id = interpretation(probability,timestamp_action,liste_t_value,world,duration)
+                    for t in range(duree):
+                        if time_indice < len(liste_t_value) and t == liste_t_value[time_indice]:
 
-                    temps_fin = time.time()
+                            result_area1[:,:,t] = temp_area1[:,:,time_indice]
+                            result_area2[:,:,t] = temp_area2[:,:,time_indice]
+                            result_area4[:,:,t] = temp_area4[:,:,time_indice]
+                            result_area8[:,:,t] = temp_area8[:,:,time_indice]
+                            result_sliding_area[:,:,t] = temp_area_sliding[:,:,time_indice]
+                            result_block[:,:,t] = temp_block[:,:,time_indice]
+
+                            time_indice += 1
+
+                        else:
+                            result_area1[:,:,t] = result_area1[:,:,t-1]
+                            result_area2[:,:,t] = result_area2[:,:,t-1]
+                            result_area4[:,:,t] = result_area4[:,:,t-1]
+                            result_area8[:,:,t] = result_area8[:,:,t-1]
+                            result_sliding_area[:,:,t] = result_sliding_area[:,:,t-1]
+                            result_block[:,:,t] = result_block[:,:,t-1]
+
+                    area_prediction = [result_area1,result_area2,result_area4,result_area8]
+                    area_best_prediction = result_sliding_area
+                    block_prediction = result_block
 
                     # Durée d'exécution en secondes
                     delta_temps = temps_fin - temps_debut
@@ -138,7 +232,7 @@ def parsingAllParticipantOneMethode():
                     total_nb_grasp[method_pos] = total_nb_grasp[method_pos] + (len(timestamp_action)-2)/2
                     total_nb_release[method_pos] = total_nb_release[method_pos] + (len(timestamp_action)-2)/2
                     
-                    nb_bloc = [nb_bloc_1,nb_bloc_2,nb_bloc_4,nb_bloc_8]
+                    nb_bloc = [nb_area_1,nb_area_2,nb_area_4,nb_area_8]
 
                     for position, quadri in enumerate(area_prediction):
                         liste_good_release_zones = quadrillageRelease(world,nb_bloc[position])
@@ -160,6 +254,7 @@ def parsingAllParticipantOneMethode():
 
                     liste_good_grasp_area_coord = goodGraspAreaCoord(world)
                     liste_good_release_area_coord = goodReleaseAreaCoord(world)
+
                     for posi,predi in enumerate(area_best_prediction):
                         (
                         analyse_area_grasp,
@@ -174,7 +269,7 @@ def parsingAllParticipantOneMethode():
                     global_nb_analyse_sliding_area_grasp[method_pos] += nb_analyse_area_grasp
                     global_nb_analyse_sliding_area_release[method_pos] += nb_analyse_area_release
 
-                    for position, prediction in enumerate(liste_predi_id):
+                    for position, prediction in enumerate(block_prediction):
                         # Analyse max min dist
                         (
 
@@ -233,7 +328,7 @@ def parsingAllParticipantOneMethode():
     nb_prediction[10] = global_nb_analyse_grasp
     nb_prediction[11] = global_nb_analyse_release
 
-    nom_fichier = saveLog(nom_fichier,results,nb_prediction,duree_execution)
+    nom_dossier = saveLog(nom_dossier,results,nb_prediction,duree_execution)
 
 
 
