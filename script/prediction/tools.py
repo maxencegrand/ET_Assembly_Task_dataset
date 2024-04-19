@@ -1,11 +1,12 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
+
 import matplotlib.colors
 from matplotlib.widgets import Slider
 import os
 from datetime import datetime
 import json
+import csv
 
 
 plot_1 = False
@@ -17,10 +18,10 @@ hauteur = 38
 dist_min = -largeur/(2*48)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -458,44 +459,57 @@ def listeRelease(world):
 
 
 
+def quadrillageGrasp(world,nb_bloc):
+    l = []
+    for i in range(1, world.shape[0] - 1):
+        for indice in range(24):
+            if world[i + 1, 10 * indice + 10] == 1:
+                l.append([world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8]])
+
+    return l
 
 def quadrillageRelease(world,nb_bloc):
     l = []
     for i in range(2, world.shape[0]):
         for indice in range(24):
             if world[i - 1, 10 * indice + 10] == 1:
-                l.append(jeSaisPasTrop(world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8],nb_bloc))
+                l.append([world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8]])
 
     return l
 
-def jeSaisPasTrop(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
+def BlockToZoneID(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
 
     nb_bloc_x = int(2*math.sqrt(nb_bloc/2))
     nb_bloc_y = int(math.sqrt(nb_bloc/2))
 
     taille = 48 / nb_bloc_x
 
+
+    #id bloc contenant x0,y0
     bloc_x0 = int((48*x0/largeur) // taille)
     bloc_y0 = int((24*y0/hauteur) // taille)
     id_x0 = nb_bloc_y*bloc_x0 + bloc_y0
 
-
+    #id bloc contenant x1,y1
     bloc_x1 = int((48*x1/largeur) // taille)
     bloc_y1 = int((24*y1/hauteur) // taille)
     id_x1 = nb_bloc_y*bloc_x1 + bloc_y1
 
+    #id bloc contenant x2,y2
     bloc_x2 = int((48*x2/largeur) // taille)
     bloc_y2 = int((24*y2/hauteur) // taille)
     id_x2 = nb_bloc_y*bloc_x2 + bloc_y2
 
+    #id bloc contenant x3,y3
     bloc_x3 = int((48*x3/largeur) // taille)
     bloc_y3 = int((24*y3/hauteur) // taille)
     id_x3 = nb_bloc_y*bloc_x3 + bloc_y3
 
-
+    #Si le s4 coins sont dans la meme zone
     if id_x0 == id_x1 and id_x0 == id_x2 and id_x0 == id_x3:
         return [id_x0]
     
+    #Sinon on rajoute les zone contenant le centre du bloc (on regarde 4 points proche du centrepour si le centre est sur la jonction entre 2 zones => probeleme d'arrondi on aurait qu'une zone)
     else:
         x_mean = (x0 + x1 + x2 + x3) / 4
         y_mean = (y0 + y1 + y2 + y3) / 4
@@ -503,7 +517,6 @@ def jeSaisPasTrop(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
         bloc_x_mean_0 = int((48*(x_mean - 0.1)/largeur) // taille)
         bloc_y_mean_0 = int((24*(y_mean - 0.1)/hauteur) // taille)
         id_x_mean_0 = nb_bloc_y*bloc_x_mean_0 + bloc_y_mean_0
-
 
         bloc_x_mean_1 = int((48*(x_mean + 0.1)/largeur) // taille)
         bloc_y_mean_1 = int((24*(y_mean - 0.1)/hauteur) // taille)
@@ -532,6 +545,12 @@ def jeSaisPasTrop(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
 
 
 
+
+
+
+
+
+#Liste des tenons (pour zone 1x1) sur lesquelles sont les blocs
 def liste_tenon_bloc(world):
 
     liste_result = [[[] for _ in range(24)] for _ in range(world.shape[0]-1)]
@@ -550,88 +569,81 @@ def liste_tenon_bloc(world):
     return liste_result
 
 
-def saveLog(liste_area,area_best,grasp,release,total_nb_grasp,time,features):
+def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
-    # Obtention de la date et de l'heure actuelle
-    date_heure_actuelle = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    np.savetxt(nom_fichier + "_results.csv", results.reshape(18,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "_nb_prediction.csv", nb_prediction.reshape(18,-1), delimiter=',',fmt='%.4f')
 
-    # Nom du fichier avec la date et l'heure
-    nom_fichier = f"logs/{date_heure_actuelle}.json"
-
-    print(total_nb_grasp)
-
-    liste = liste_area + [area_best] + [grasp] + [release] + [total_nb_grasp] + [time] + [features]
-
-    with open(nom_fichier, 'w') as f:
-        json.dump(liste, f)
+    with open(nom_fichier + "_time.csv", 'w', newline='') as fichier_csv:
+        writer = csv.writer(fichier_csv)
+        
+        # Écrire chaque sous-liste dans une ligne du fichier CSV
+        for sous_liste in duree_execution:
+            writer.writerow(sous_liste)
 
     return nom_fichier
 
 def loadLog(nom_fichier):
-    with open(nom_fichier, 'r') as f:
-        donnees = json.load(f)
-
-    liste_area1, liste_area2, liste_area4, liste_area8, liste_area_best, liste_grasp, liste_release, total_nb_grasp, timer, features = donnees[:]
-
-    return liste_area1, liste_area2, liste_area4, liste_area8, liste_area_best, liste_grasp, liste_release, total_nb_grasp, timer, features
-
-def showComparaisonAlgorithm(liste_temps, total_nb_grasp,linestyles,list_name,method,action):
-        plt.close()
-        fig, ax = plt.subplots(1, 2)
-
-        for ind in [0,1]:
-            for u in range(len(liste_temps[ind])):
-                l_y = []
-                l_x = []
-                if len(liste_temps[ind][u]) > 0:
-                    for i in range(-3000, 25, 25):
-                        q = np.array(liste_temps[ind][u])
-                        qwerty = q[q <= i]
-                        val = 100 * len(qwerty) / total_nb_grasp[ind]
-                        l_y.append(val)
-                        l_x.append(i)
-
-                    for i in range(0, 3025, 25):
-
-                        q = np.array(liste_temps[ind][u])
-                        qwerty = q[q >= i]
-                        val = 100 * len(qwerty) / total_nb_grasp[ind]
-                        l_y.append(val)
-                        l_x.append(i)
-
-                else:
-                    l = np.zeros((61))
-                ax[ind].plot(l_x, l_y, linestyle = linestyles[u] , label = list_name[u])
-
-            ax[ind].set_title(method[ind],fontsize = 24)
+    results = np.genfromtxt(nom_fichier + "_results.csv", delimiter=",")
+    nb_prediction = np.genfromtxt(nom_fichier + "_nb_prediction.csv", delimiter=",")
+    #duree_execution = np.genfromtxt(nom_fichier + "_time.csv", delimiter=",")
+    duree_execution = []
+    with open(nom_fichier + "_time.csv", 'r', newline='') as fichier_csv:
+        reader = csv.reader(fichier_csv)
         
-        ax[0].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
-        ax[1].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
-
-        box = ax[0].get_position()
-        ax[0].set_position([box.x0, box.y0 + box.height * 0.1,
-                        box.width, box.height * 0.9])
-        
-        box = ax[1].get_position()
-        ax[1].set_position([box.x0, box.y0 + box.height * 0.1,
-                        box.width, box.height * 0.9])
-
-        # Put a legend below current axis
-        ax[0].legend(loc='upper center', bbox_to_anchor=(1.1, -0.05),
-                fancybox=True, shadow=True, ncol=6, fontsize = 20) 
-
-        ax[0].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
-        ax[1].axis(xmin=-3000, xmax=3000, ymin=0, ymax=100)
-        
-        ax[0].set_xlabel('Time (ms)', fontsize = 22) 
-        ax[0].set_ylabel('Percentage of good prediction', fontsize = 22) 
-
-        ax[1].set_xlabel('Time (ms)', fontsize = 22) 
-        ax[1].set_ylabel('Percentage of good prediction', fontsize = 22) 
-
-        
-
-        fig.suptitle(action,fontsize = 30)
+        # Lire chaque ligne du fichier CSV
+        for ligne in reader:
+            # Convertir les éléments de la ligne en int si nécessaire
+            ligne = [float(element) for element in ligne]
+            # Ajouter la ligne lue à la liste de données lues
+            duree_execution.append(ligne)
+    return results,nb_prediction,duree_execution
 
 
-        plt.show()
+
+def listeTimneAction(world):
+    liste = []
+    t_init = world [1,0]
+    for t in range(1,world.shape[0]):
+        t = world[t,0]
+        liste.append(int(t - t_init))
+
+    return liste
+
+
+def savingTime(nom_dossier,participant,duree):
+
+
+    with open(nom_dossier + "/" + participant + "_time.csv", 'w', newline='') as fichier_csv:
+        writer = csv.writer(fichier_csv)
+    
+        writer.writerow(duree)
+
+    return
+
+def savingFeature(nom_dossier,participant,feature):
+
+    np.savetxt(nom_dossier + "/" + participant + "_feature.csv", feature[:,:,:].reshape(5,-1), delimiter=',',fmt='%.4f')
+
+    return
+
+def savingProba(nom_dossier,participant,proba):
+
+
+    np.savetxt(nom_dossier + "/" + participant + "_probability.csv", proba.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    return
+
+def savingInterpretation(nom_dossier,participant,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block):
+
+
+
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area4.csv", temp_area4.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area8.csv", temp_area8.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding_4.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding_8.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    np.savetxt(nom_dossier + "/" + participant + "_inter_block.csv", temp_block.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    return

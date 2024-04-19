@@ -12,10 +12,10 @@ hauteur = 38
 dist_min = -largeur/(2*48)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -86,7 +86,7 @@ len(liste_adjacence_release): int nombre de release
 list_time_good_grasp_predi: liste contenant pour chaque action grasp dont la derniere prediction est correct, depuis combien de temps est-ce qu'elle etait correct (en ms)
 list_time_good_release_predi: liste contenant pour chaque action release dont la derniere prediction est correct, depuis combien de temps est-ce qu'elle etait correct (en ms)
 """
-def analyseSituation(world, gaze_point, history_prediction,timestamp_action):
+def analyseSituation(world, history_prediction,timestamp_action):
     
 
     # Declaration des variables
@@ -95,205 +95,470 @@ def analyseSituation(world, gaze_point, history_prediction,timestamp_action):
     
     liste_adjacence_release = listeRelease(world)
 
-    list_time_good_grasp_predi = []
-    list_time_good_release_predi = []
 
-    timestamp_action_indice = 1
-
-    grasp_result = np.zeros((history_prediction.shape[1]))
-    find_result = np.zeros((history_prediction.shape[1]))
-
-
-    for i in range(history_prediction.shape[1]):
-
-        if (timestamp_action_indice-1)//2 < len(liste_holding) and history_prediction[0][i] == liste_holding[(timestamp_action_indice-1)//2]:
-            grasp_result[i] += 1
-
-            
-
-            if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 1:
-                
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start >= 0 and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
-                    time_predi_start -= 1
-
-                list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
-
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start < history_prediction.shape[1] and history_prediction[0][time_predi_start] == liste_holding[(timestamp_action_indice-1)//2]:
-                    time_predi_start += 1
-                
-                list_time_good_grasp_predi.append(time_predi_start - time_predi_end)
-
-        
-        if (timestamp_action_indice)//2 < len(liste_adjacence_release) and history_prediction[1][i] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-
-            find_result[i] += 1
-
-            if i == timestamp_action[timestamp_action_indice] and timestamp_action_indice %2 == 0:
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start >= 0 and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                    time_predi_start -= 1
-
-                list_time_good_release_predi.append(time_predi_start - time_predi_end )
-
-                time_predi_end = i
-                time_predi_start = i
-
-                while time_predi_start < history_prediction.shape[1] and history_prediction[1][time_predi_start] in liste_adjacence_release[(timestamp_action_indice-1)//2]:
-                    time_predi_start += 1
-                
-                list_time_good_release_predi.append(time_predi_start - time_predi_end)
-
-        if timestamp_action_indice < len(timestamp_action) - 1 and i+1 > timestamp_action[timestamp_action_indice]:
-            timestamp_action_indice += 1
-
-
-            
-    """
-    # Analyse des predictions de grasp lorsqu'on a un grasp (prediction juste et depuis cbm de temps)
-    good_last_grasp_prediction = 0
-    for i in range(len(liste_holding)):
-        if liste_holding[i] == history_prediction[0][liste_holding_t[i]-1]:
-            good_last_grasp_prediction += 1
-
-            time_predi_end = liste_holding_t[i]-1
-            time_predi_start = liste_holding_t[i]-1
-            while history_prediction[0][time_predi_start] == liste_holding[i]:
-                time_predi_start -= 1
-            list_time_good_grasp_predi.append(time_predi_start - time_predi_end - 1)
-
-            time_predi_end = liste_holding_t[i]-1
-            time_predi_start = liste_holding_t[i]-1
-            while history_prediction[0][time_predi_start] == liste_holding[i]:
-                time_predi_start += 1
-            list_time_good_grasp_predi.append(time_predi_start - time_predi_end - 1)
-
-    """
-    # Analyse des predictions de release lorsqu'on a un release (prediction juste et depuis cbm de temps)
-
-
-
-    grasp_ind = 1
     analyse_grasp = np.zeros((6001))
-    while grasp_ind < len(timestamp_action)-1:
-        grasp_action_indice = timestamp_action[grasp_ind]
-        for i in range(grasp_action_indice-3000,grasp_action_indice+3001,1):
-            if i >=0 and i<len(grasp_result):
-                analyse_grasp[int(i-(grasp_action_indice-3000))] += grasp_result[i]
+    nb_analyse_grasp = np.zeros((6001))
 
-        grasp_ind += 2
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
 
-    #print(len(list_time_good_grasp_predi),len(list_time_good_release_predi))
+    for t in range(1,len(timestamp_action)):
+
+        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
+                if history_prediction[0][time] == liste_holding[(t - 1) // 2]:
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+            else:
+                
+                if history_prediction[1][time] in liste_adjacence_release[(t-1)//2]:
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
 
     return (
-        list_time_good_grasp_predi,
-        list_time_good_release_predi,
         analyse_grasp,
+        nb_analyse_grasp,
+        analyse_release,
+        nb_analyse_release
     )
 
 
-def analyseRelease(quadrillage,liste_good_zones,timestamp_action):
-    good = 0
-    last_good = 0
-    total = 0
+def analyseRelease(quadrillage,liste_good_grasp_zones, liste_good_release_zones,timestamp_action):
 
-    list_t = []
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
 
-    timestamp_action_indice = 2
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
 
-    for i in range(1,quadrillage.shape[0]):
+    for t in range(1,len(timestamp_action)):
+        for time in range(max(0,timestamp_action[t]-3000),min(quadrillage.shape[1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
+                if quadrillage[0][time] in liste_good_grasp_zones[(t - 1) // 2]:
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+            else:
+                if quadrillage[1][time] in liste_good_release_zones[(t-1)//2]:
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
+    return analyse_grasp, nb_analyse_grasp, analyse_release, nb_analyse_release
+
+
+def analyseFixeAreaWeak(prediction,liste_good_grasp_zones, liste_good_release_zones,timestamp_action, nb_bloc):
+
+    nb_area_x = int(2*math.sqrt(nb_bloc/2))
+    nb_area_y = int(math.sqrt(nb_bloc/2))
+
+    taille = 48 / nb_area_x
+
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
+
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
+
+    for t in range(1,len(timestamp_action)):
+
+        
         
 
-        if quadrillage[i] >= 0:
-            if int((timestamp_action_indice-2)/2) >= len(liste_good_zones):
-                print(i,timestamp_action,quadrillage.shape[0])
-            elif quadrillage[i] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                good += 1
-            total +=1
+        for time in range(max(0,timestamp_action[t]-3000),min(prediction.shape[1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
 
+                id_predi = prediction[0][time]
+
+
+                x0_area = (id_predi // nb_area_y) * taille
+                y0_area = (id_predi % nb_area_y) * taille
+                x2_area = ((id_predi // nb_area_y) + 1) * taille
+                y2_area = ((id_predi % nb_area_y) + 1) * taille
                 
+                x0_block = round((48*liste_good_grasp_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_grasp_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_grasp_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_grasp_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_grasp_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_grasp_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_grasp_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_grasp_zones[(t - 1) // 2][7]/hauteur))
 
-           
-
-            if i == timestamp_action[timestamp_action_indice] and int((timestamp_action_indice-2)/2) < len(liste_good_zones) and quadrillage[i] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                last_good+=1
-
-                t_start = i - 1
-                t_end = i - 1
-                while t_start >= 0 and quadrillage[t_start] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                    t_start -= 1
-                list_t.append(t_start - t_end )
-
-                t_start = i - 1
-                t_end = i - 1
-                while t_start < quadrillage.shape[0] and quadrillage[t_start] in liste_good_zones[int((timestamp_action_indice-2)/2)]:
-                    t_start += 1
-                list_t.append(t_start - t_end)
-
-        if i+1 > timestamp_action[timestamp_action_indice]:
-            if timestamp_action_indice + 2 < len(timestamp_action):
-                timestamp_action_indice += 2
-    return good,total,last_good,list_t
+                if (
+                   (x0_area <= x0_block and x0_block < x2_area and y0_area <= y0_block and y0_block < y2_area)     
+                    or (x0_area < x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block < y2_area) 
+                    or (x0_area < x2_block and x2_block <= x2_area and y0_area < y2_block and y2_block <= y2_area) 
+                    or (x0_area <= x3_block and x3_block < x2_area and y0_area < y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
 
 
+            else:
+                id_predi = prediction[1][time]
+
+                x0_area = (id_predi // nb_area_y) * taille
+                y0_area = (id_predi % nb_area_y) * taille
+                x2_area = ((id_predi // nb_area_y) + 1) * taille
+                y2_area = ((id_predi % nb_area_y) + 1) * taille
+
+                x0_block = round((48*liste_good_release_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_release_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_release_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_release_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_release_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_release_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_release_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_release_zones[(t - 1) // 2][7]/hauteur))
 
 
-def evaluationBestArea(prediction, liste_good_area, timestamp_action):
+                #print("t",t)
+                #print(liste_good_release_zones[(t - 1) // 2])
+                #print("Bloc:")
+                #print(x0_block,y0_block)
+                #print(x1_block,y1_block)
+                #print(x2_block,y2_block)
+                #print(x3_block,y3_block)
+                #print("Area:")
+                #print(x0_area,y0_area)
+                #print(x2_area,y2_area)
 
-    good = 0 
-    total = 0
-    last_good = 0
-    timestamp_action_indice = 2
-    list_t = []
+                if (
+                   (x0_area <= x0_block and x0_block < x2_area and y0_area <= y0_block and y0_block < y2_area)     
+                    or (x0_area < x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block < y2_area) 
+                    or (x0_area < x2_block and x2_block <= x2_area and y0_area < y2_block and y2_block <= y2_area) 
+                    or (x0_area <= x3_block and x3_block < x2_area and y0_area < y3_block and y3_block <= y2_area)
+                ):
+                    #print("Ok")
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
 
 
+    return analyse_grasp, nb_analyse_grasp, analyse_release, nb_analyse_release
 
-    for i in range(prediction.shape[0]):
-        total += 1
+def analyseFixeAreaStrong(prediction,liste_good_grasp_zones, liste_good_release_zones,timestamp_action, nb_bloc):
 
-        if prediction[i] >= 0:
-            
-            x0 = round((48/largeur)*liste_good_area[int((timestamp_action_indice-2)/2)][0])
-            y0 = round((24/hauteur)*liste_good_area[int((timestamp_action_indice-2)/2)][1])
-            x2 = round((48/largeur)*liste_good_area[int((timestamp_action_indice-2)/2)][2])
-            y2 = round((24/hauteur)*liste_good_area[int((timestamp_action_indice-2)/2)][3])
-            x = prediction[i] // 24
-            y = prediction[i] % 24
+    nb_area_x = int(2*math.sqrt(nb_bloc/2))
+    nb_area_y = int(math.sqrt(nb_bloc/2))
 
-            if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
-                good += 1
+    taille = 48 / nb_area_x
 
-                if i == timestamp_action[timestamp_action_indice]:
-                    last_good+=1
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
 
-                    t_start = i - 1
-                    t_end = i - 1
-                    while t_start >= 0 and x2 - 8 <= (prediction[t_start] // 24) and (prediction[t_start] // 24) <= x0 and y2 - 8 <= (prediction[t_start] % 24) and (prediction[t_start] % 24) <= y0:
-                        t_start -= 1
-                    list_t.append(t_start - t_end )
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
 
-                    t_start = i - 1
-                    t_end = i - 1
-                    while t_start < prediction.shape[0] and x2 - 8 <= (prediction[t_start] // 24) and (prediction[t_start] // 24) <= x0 and y2 - 8 <= (prediction[t_start] % 24) and (prediction[t_start] % 24) <= y0:
-                        t_start += 1
-                    list_t.append(t_start - t_end)
+    for t in range(1,len(timestamp_action)):
 
         
-        if i+1 > timestamp_action[timestamp_action_indice]:
-            if timestamp_action_indice + 2 < len(timestamp_action):
-                timestamp_action_indice += 2
+        
 
-    return good,total,last_good,list_t
+        for time in range(max(0,timestamp_action[t]-3000),min(prediction.shape[1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
 
-def goodAreaCoord(world):
+                id_predi = prediction[0][time]
 
+                x0_area = (id_predi // nb_area_y) * taille
+                y0_area = (id_predi % nb_area_y) * taille
+                x2_area = ((id_predi // nb_area_y) + 1) * taille
+                y2_area = ((id_predi % nb_area_y) + 1) * taille
+                
+                x0_block = round((48*liste_good_grasp_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_grasp_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_grasp_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_grasp_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_grasp_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_grasp_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_grasp_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_grasp_zones[(t - 1) // 2][7]/hauteur))
+
+                if (
+                   (x0_area <= x0_block and x0_block < x2_area and y0_area <= y0_block and y0_block < y2_area)     
+                    and (x0_area <= x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block <= y2_area) 
+                    and (x0_area <= x2_block and x2_block <= x2_area and y0_area <= y2_block and y2_block <= y2_area) 
+                    and (x0_area <= x3_block and x3_block <= x2_area and y0_area <= y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+
+            else:
+                id_predi = prediction[1][time]
+
+                x0_area = (id_predi // nb_area_y) * taille
+                y0_area = (id_predi % nb_area_y) * taille
+                x2_area = ((id_predi // nb_area_y) + 1) * taille
+                y2_area = ((id_predi % nb_area_y) + 1) * taille
+
+                x0_block = round((48*liste_good_release_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_release_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_release_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_release_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_release_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_release_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_release_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_release_zones[(t - 1) // 2][7]/hauteur))
+
+                if (
+                   (x0_area <= x0_block and x0_block <= x2_area and y0_area <= y0_block and y0_block <= y2_area)     
+                    and (x0_area <= x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block <= y2_area) 
+                    and (x0_area <= x2_block and x2_block <= x2_area and y0_area <= y2_block and y2_block <= y2_area) 
+                    and (x0_area <= x3_block and x3_block <= x2_area and y0_area <= y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
+    return analyse_grasp, nb_analyse_grasp, analyse_release, nb_analyse_release
+
+
+def analyseSlidingAreaWeak(prediction,liste_good_grasp_zones, liste_good_release_zones,timestamp_action, nb_bloc):
+
+    nb_area_x = int(2*math.sqrt(nb_bloc/2))
+    nb_area_y = int(math.sqrt(nb_bloc/2))
+
+    taille = 48 / nb_area_x
+
+    print(taille,nb_area_y)
+
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
+
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
+
+    for t in range(1,len(timestamp_action)):
+
+        
+        
+
+        for time in range(max(0,timestamp_action[t]-3000),min(prediction.shape[1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
+
+                id_predi = prediction[0][time]
+
+                x0_area = (id_predi // round(math.sqrt( nb_area_1/2)))
+                y0_area = (id_predi % round(math.sqrt(nb_area_1/2)))
+                x2_area = ((id_predi // round(math.sqrt(nb_area_1/2))) + taille)
+                y2_area = ((id_predi % round(math.sqrt(nb_area_1/2))) + taille)
+                
+                x0_block = round((48*liste_good_grasp_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_grasp_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_grasp_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_grasp_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_grasp_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_grasp_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_grasp_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_grasp_zones[(t - 1) // 2][7]/hauteur))
+
+                if (
+                   (x0_area <= x0_block and x0_block < x2_area and y0_area <= y0_block and y0_block < y2_area)     
+                    or (x0_area < x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block < y2_area) 
+                    or (x0_area < x2_block and x2_block <= x2_area and y0_area < y2_block and y2_block <= y2_area) 
+                    or (x0_area <= x3_block and x3_block < x2_area and y0_area < y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+
+
+            else:
+                id_predi = prediction[1][time]
+
+                x0_area = (id_predi // round(math.sqrt( nb_area_1/2)))
+                y0_area = (id_predi % round(math.sqrt(nb_area_1/2)))
+                x2_area = ((id_predi // round(math.sqrt(nb_area_1/2))) + taille)
+                y2_area = ((id_predi % round(math.sqrt(nb_area_1/2))) + taille)
+
+                x0_block = round((48*liste_good_release_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_release_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_release_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_release_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_release_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_release_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_release_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_release_zones[(t - 1) // 2][7]/hauteur))
+
+                if (
+                   (x0_area <= x0_block and x0_block < x2_area and y0_area <= y0_block and y0_block < y2_area)     
+                    or (x0_area < x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block < y2_area) 
+                    or (x0_area < x2_block and x2_block <= x2_area and y0_area < y2_block and y2_block <= y2_area) 
+                    or (x0_area <= x3_block and x3_block < x2_area and y0_area < y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
+    return analyse_grasp, nb_analyse_grasp, analyse_release, nb_analyse_release
+
+def analyseSlidingAreaStrong(prediction,liste_good_grasp_zones, liste_good_release_zones,timestamp_action, nb_bloc):
+
+    nb_area_x = int(2*math.sqrt(nb_bloc/2))
+    nb_area_y = int(math.sqrt(nb_bloc/2))
+
+    taille = 48 / nb_area_x
+
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
+
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
+
+    for t in range(1,len(timestamp_action)):
+
+        
+        
+
+        for time in range(max(0,timestamp_action[t]-3000),min(prediction.shape[1],timestamp_action[t] + 3001)):
+            if (t - 1) % 2 == 0:
+
+                id_predi = prediction[0][time]
+
+                x0_area = (id_predi // round(math.sqrt( nb_area_1/2)))
+                y0_area = (id_predi % round(math.sqrt(nb_area_1/2)))
+                x2_area = ((id_predi // round(math.sqrt(nb_area_1/2))) + taille)
+                y2_area = ((id_predi % round(math.sqrt(nb_area_1/2))) + taille)
+                
+                x0_block = round((48*liste_good_grasp_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_grasp_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_grasp_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_grasp_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_grasp_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_grasp_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_grasp_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_grasp_zones[(t - 1) // 2][7]/hauteur))
+
+                if (
+                   (x0_area <= x0_block and x0_block < x2_area and y0_area <= y0_block and y0_block < y2_area)     
+                    and (x0_area <= x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block <= y2_area) 
+                    and (x0_area <= x2_block and x2_block <= x2_area and y0_area <= y2_block and y2_block <= y2_area) 
+                    and (x0_area <= x3_block and x3_block <= x2_area and y0_area <= y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+
+            else:
+                id_predi = prediction[1][time]
+
+                x0_area = (id_predi // round(math.sqrt( nb_area_1/2)))
+                y0_area = (id_predi % round(math.sqrt( nb_area_1/2)))
+                x2_area = ((id_predi // round(math.sqrt( nb_area_1/2))) + taille)
+                y2_area = ((id_predi % round(math.sqrt( nb_area_1/2))) + taille)
+
+                x0_block = round((48*liste_good_release_zones[(t - 1) // 2][0]/largeur))
+                y0_block = round((24*liste_good_release_zones[(t - 1) // 2][1]/hauteur))
+                x1_block = round((48*liste_good_release_zones[(t - 1) // 2][2]/largeur))
+                y1_block = round((24*liste_good_release_zones[(t - 1) // 2][3]/hauteur))
+                x2_block = round((48*liste_good_release_zones[(t - 1) // 2][4]/largeur))
+                y2_block = round((24*liste_good_release_zones[(t - 1) // 2][5]/hauteur))
+                x3_block = round((48*liste_good_release_zones[(t - 1) // 2][6]/largeur))
+                y3_block = round((24*liste_good_release_zones[(t - 1) // 2][7]/hauteur))
+
+                if (
+                   (x0_area <= x0_block and x0_block <= x2_area and y0_area <= y0_block and y0_block <= y2_area)     
+                    and (x0_area <= x1_block and x1_block <= x2_area and y0_area <= y1_block and y1_block <= y2_area) 
+                    and (x0_area <= x2_block and x2_block <= x2_area and y0_area <= y2_block and y2_block <= y2_area) 
+                    and (x0_area <= x3_block and x3_block <= x2_area and y0_area <= y3_block and y3_block <= y2_area) 
+                ):
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
+    return analyse_grasp, nb_analyse_grasp, analyse_release, nb_analyse_release
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def evaluationBestArea(prediction, liste_good_grasp_area, liste_good_release_area, timestamp_action):
+
+    analyse_grasp = np.zeros((6001))
+    nb_analyse_grasp = np.zeros((6001))
+
+    analyse_release = np.zeros((6001))
+    nb_analyse_release = np.zeros((6001))
+
+    for t in range(1,len(timestamp_action)):
+        for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1]-1,timestamp_action[t] + 3001)):
+
+            if (t - 1) % 2 == 0:
+                x = prediction[0][time] // 24
+                y = prediction[0][time] % 24
+            
+                x0 = round((48/largeur)*liste_good_grasp_area[int((t-1)//2)][0])
+                y0 = round((24/hauteur)*liste_good_grasp_area[int((t-1)//2)][1])
+                x2 = round((48/largeur)*liste_good_grasp_area[int((t-1)//2)][2])
+                y2 = round((24/hauteur)*liste_good_grasp_area[int((t-1)//2)][3])
+
+                if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
+                    analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+
+            else:
+                x = prediction[1][time] // 24
+                y = prediction[1][time] % 24
+
+                x0 = round((48/largeur)*liste_good_release_area[int((t-1)//2)][0])
+                y0 = round((24/hauteur)*liste_good_release_area[int((t-1)//2)][1])
+                x2 = round((48/largeur)*liste_good_release_area[int((t-1)//2)][2])
+                y2 = round((24/hauteur)*liste_good_release_area[int((t-1)//2)][3])
+
+                if x2 - 8 <= x and x <= x0 and y2 - 8 <= y and y <= y0:
+                    analyse_release[time - (timestamp_action[t] - 3000)] += 1
+                nb_analyse_release[time - (timestamp_action[t] - 3000)] += 1
+
+    return (analyse_grasp,
+        nb_analyse_grasp,
+        analyse_release,
+        nb_analyse_release)
+
+
+def goodGraspAreaCoord(world):
+    liste = []
+    for i in range(1, world.shape[0]-1):
+        for indice in range(24):
+            if world[i + 1, 10 * indice + 10] == 1:
+                sub_liste = []
+                sub_liste.append(world[i, 10 * indice + 1])
+                sub_liste.append(world[i, 10 * indice + 2])
+
+                sub_liste.append(world[i, 10 * indice + 5])
+                sub_liste.append(world[i, 10 * indice + 6])
+                liste.append(sub_liste)
+
+    return liste
+
+
+def goodReleaseAreaCoord(world):
     liste = []
     for i in range(2, world.shape[0]):
         for indice in range(24):
@@ -307,3 +572,4 @@ def goodAreaCoord(world):
                 liste.append(sub_liste)
 
     return liste
+
