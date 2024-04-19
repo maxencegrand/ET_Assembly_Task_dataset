@@ -5,8 +5,8 @@ timestamp,event,device
 1594,quit,SCREEN
 1685,enter,TABLE
 2296,quit,TABLE
+2375,grasp,BLOCK
 2422,enter,SCREEN
-2566,grasp,BLOCK
 3374,quit,SCREEN
 3530,enter,TABLE
 5072,release,BLOCK
