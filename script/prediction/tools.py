@@ -18,10 +18,10 @@ hauteur = 38
 dist_min = -largeur/(2*48)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -464,7 +464,7 @@ def quadrillageGrasp(world,nb_bloc):
     for i in range(1, world.shape[0] - 1):
         for indice in range(24):
             if world[i + 1, 10 * indice + 10] == 1:
-                l.append(BlockToZoneID(world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8],nb_bloc))
+                l.append([world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8]])
 
     return l
 
@@ -473,7 +473,7 @@ def quadrillageRelease(world,nb_bloc):
     for i in range(2, world.shape[0]):
         for indice in range(24):
             if world[i - 1, 10 * indice + 10] == 1:
-                l.append(BlockToZoneID(world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8],nb_bloc))
+                l.append([world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8]])
 
     return l
 
@@ -571,8 +571,8 @@ def liste_tenon_bloc(world):
 
 def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
-    np.savetxt(nom_fichier + "_results.csv", results.reshape(12,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_fichier + "_nb_prediction.csv", nb_prediction.reshape(12,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "_results.csv", results.reshape(18,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "_nb_prediction.csv", nb_prediction.reshape(18,-1), delimiter=',',fmt='%.4f')
 
     with open(nom_fichier + "_time.csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
@@ -634,15 +634,15 @@ def savingProba(nom_dossier,participant,proba):
 
     return
 
-def savingInterpretation(nom_dossier,participant,temp_area1,temp_area2,temp_area4,temp_area8,temp_area_sliding,temp_block):
+def savingInterpretation(nom_dossier,participant,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block):
 
 
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area1.csv", temp_area1.reshape(10,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area2.csv", temp_area2.reshape(10,-1), delimiter=',',fmt='%.4f')
+
     np.savetxt(nom_dossier + "/" + participant + "_inter_area4.csv", temp_area4.reshape(10,-1), delimiter=',',fmt='%.4f')
     np.savetxt(nom_dossier + "/" + participant + "_inter_area8.csv", temp_area8.reshape(10,-1), delimiter=',',fmt='%.4f')
 
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding_4.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding_8.reshape(10,-1), delimiter=',',fmt='%.4f')
 
     np.savetxt(nom_dossier + "/" + participant + "_inter_block.csv", temp_block.reshape(10,-1), delimiter=',',fmt='%.4f')
 

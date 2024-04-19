@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 os.environ['KERAS_BACKEND'] = 'torch'
 import keras
-from keras.models import Sequential
+from keras.models import load_model
 from keras.layers import LSTM, Dense, Reshape
 
 
@@ -36,7 +36,7 @@ from low_lvl_naif import low_level_naif
 from low_lvl_lstm import low_level_lstm
 from interpretation import interpretation
 from analyse import analyseSituation,analyseRelease,evaluationBestArea,analyseMethod,goodReleaseAreaCoord,goodGraspAreaCoord
-from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog,listeTimneAction
+from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog,listeTimneAction, CurrentWorld, savingFeature,savingInterpretation,savingProba,savingTime
 
 
 """
@@ -92,281 +92,241 @@ def parsingAllParticipantOneMethode():
         directory = "../../dataset/" + method + "/sitting/"
         for entry in os.scandir(directory):
             if method == "mobile":
-                liste_participant_mobile.append("../../dataset/" + method + "/sitting/" + entry.name)
+                liste_participant_mobile.append(entry.path)
             else:
-                liste_participant_sitting.append("../../dataset/" + method + "/sitting/" + entry.name)
+                liste_participant_sitting.append(entry.path)
     
     print(liste_participant_mobile)
 
-    left_ds, right_ds = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8)
-    left_ds_numpy = list(left_ds)
-    right_ds_numpy = list(right_ds)
-    #print(left_ds_numpy, right_ds_numpy)
+    left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8)
+    left_mobile_numpy = list(left_mobile)
+    right_mobile_numpy = list(right_mobile)
 
-    for ten in left_ds_numpy:
-        print(ten.numpy().decode('utf-8'))
+    left_sitting, right_sitting = keras.utils.split_dataset(np.array(liste_participant_sitting), left_size=0.8)
+    left_sitting_numpy = list(left_sitting)
+    right_sitting_numpy = list(right_sitting)
 
-    print("---")
+    left = [left_mobile_numpy,left_sitting_numpy]
+    right = [right_mobile_numpy,right_sitting_numpy]
 
-    for ten in right_ds_numpy:
-        print(ten.numpy().decode('utf-8'))
-
-
-    nb_action = 0
-    duree_max = 0
-
-    for number in left_ds_numpy:
-        participant = number.numpy().decode('utf-8')
-        for model in os.scandir(participant):
-
-            print(model.path + "/table.csv")
-            gaze_point = np.genfromtxt(
-                model.path + "/table.csv", delimiter=","
-            )
-            world = np.genfromtxt(
-                model.path + "/states.csv", delimiter=","
-            )
-
-            compte = np.zeros((world.shape[0] - 1))
-            nb_action += world.shape[0] - 1
-
-
-            t_init = gaze_point[1,0]
-            indice = 0
-            for t in range(1,gaze_point.shape[0]):
-                
-                t_gaze = gaze_point[t,0]
-
-                if indice < world.shape[0] - 2 and t_gaze >= world[indice+2,0]:
-                    indice += 1
-
-                compte[indice] += 1
-
-            if duree_max < compte.max():
-                duree_max = compte.max()
-                    
-                
-
-            
-
-    print(nb_action)
-    print(duree_max)
-
-    print("UwUwUwUwU")
-
-    training = np.zeros ((nb_action,int(duree_max),2))
-    y_training = np.zeros((nb_action,2,nb_area_1))
-    compteur_event = 0
-    compteur_y_event = 0
-
-    for number in left_ds_numpy:
-        participant = number.numpy().decode('utf-8')
-        for model in os.scandir(participant):
-
-            gaze_point = np.genfromtxt(
-                model.path + "/table.csv", delimiter=","
-            )
-            world = np.genfromtxt(
-                model.path + "/states.csv", delimiter=","
-            )
-
-            t_init = gaze_point[1,0]
-            indice = 0
-            indice_event = 0
-            for t in range(1,gaze_point.shape[0]):
-                
-                t_gaze = gaze_point[t,0]
-
-                if indice < world.shape[0] - 2 and t_gaze >= world[indice+2,0]:
-
-                        compteur_event += 1
-                        indice += 1
-                        indice_event = 0
-                if str(gaze_point[t,1]) != "nan":
-                    training[compteur_event] = gaze_point[t,1:2]
-            compteur_event += 1
-
-            for t in range(1,world.shape[0]):
-                for id_block in range(24):
-                    if world[t, 10 * id_block + 10] == 1:
-
-                        taille_bloc = ((((id_block//3)%2)+1)*4)
-
-                        x0_grasp = round((48/largeur)*world[t, 10 * id_block + 1])
-                        y0_grasp = round((24/hauteur)*world[t, 10 * id_block + 2])
-
-                        x2_grasp = round((48/largeur)*world[t, 10 * id_block + 5])
-                        y2_grasp = round((48/largeur)*world[t, 10 * id_block + 6])
-
-                        print("x0_grasp =",x0_grasp," // x2_grasp =",x2_grasp)
-                        for x_grasp in range(x0_grasp,x2_grasp):
-                            for y_grasp in range(y0_grasp,y2_grasp):
-                                y_training[compteur_y_event + t - 1][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
-                                y_training[compteur_y_event + t ][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
-
-                        x0_release = round((48/largeur)*world[t+1, 10 * id_block + 1])
-                        y0_release = round((24/hauteur)*world[t+1, 10 * id_block + 2])
-
-                        x2_release = round((48/largeur)*world[t+1, 10 * id_block + 5])
-                        y2_release = round((48/largeur)*world[t+1, 10 * id_block + 6])
-
-                        for x_release in range(x0_release,x2_release):
-                            for y_release in range(y0_release,y2_release):
-                                y_training[compteur_y_event + t - 1][1][x_release *24 + y_release] += 1 / taille_bloc
-                                y_training[compteur_y_event + t][1][x_release *24 + y_release] += 1 / taille_bloc
-                if np.sum(y_training[compteur_y_event + t - 1]) == 4:
-                    print(t,world.shape[0] - 1)
-                    print(model.path + "/table.csv")                    
-            compteur_y_event += world.shape[0] - 1
-    print(compteur_event)
-    print(np.max(np.sum(y_training,axis=(1,2))))
-
-
-    # Définir le modèle LSTM
-    model = Sequential()
-    model.add(LSTM(50, input_shape=(duree_max, 2)))
-    model.add(Dense(2 * nb_area_1, activation='relu'))  # Modifier la fonction d'activation selon votre problème
-    model.add(Reshape((2, nb_area_1))) 
-    model.compile(optimizer='adam', loss='mse')  # Choisir l'optimiseur et la fonction de perte appropriés
-
-    # Entraîner le modèle
-    history = model.fit(training, y_training, epochs=10, batch_size=32, validation_split=0.2)
+    model = load_model('modele.h5')
 
     print(model.summary())
 
-    # Extraire l'erreur d'entraînement et de validation
-    train_loss = history.history['loss']
-    val_loss = history.history['val_loss']  # Assurez-vous que val_loss est disponible dans history
+    first_layer_weights = model.layers[0].get_weights()
 
-    # Tracer le graphique de l'erreur en fonction des epochs
-    epochs = range(1, len(train_loss) + 1)
-    plt.plot(epochs, train_loss, 'b', label='Training loss')
-    plt.plot(epochs, val_loss, 'r', label='Validation loss')
-    plt.title('Training and validation loss')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show()
+    input_dims = first_layer_weights[0].shape
+
+    print("Dimension :", input_dims)
 
 
-    return
-    # On parcours la liste des dossiers correspondant aux participants
-    for method_pos,method in enumerate(["mobile", "stationnary"]):
-        directory = "../../dataset/" + method + "/sitting/"
-        for entry in os.scandir(directory):
+    for method_pos,side in enumerate(right):
+            for number in side:
+                participant = number.numpy().decode('utf-8')
+                print(participant)
+                for model in os.scandir(participant):
+                    print("Path :" , model.path)
+                    # verifie que les 2 fichiers existent
+                    if not(str(entry.path).split("/")[-1] == "30587763" and model == "tsb") and os.path.exists(
+                        str(model.path) + "/table.csv"
+                    ) and os.path.exists(str(model.path) + "/car/states.csv"):
 
-            # Choix du model : car, house, sc, tb, tc, tsb
-            list_model = ["car", "house", "sc", "tb", "tc", "tsb"]
-            #list_model = ["car"]
+                        print("---------------------------")
+                        print("Partcipant :", str(participant.path).split("/")[-1], str(model.path).split("/")[-1], method_pos)
 
-            for model in list_model:
+                        
 
-                # verifie que les 2 fichiers existent
-                if os.path.exists(
-                    str(entry.path) + "/" + model + "/table.csv"
-                ) and os.path.exists(str(entry.path) + "/car/states.csv"):
+                        # charge les deux fichiers dans des np.array
+                        gaze_point = np.genfromtxt(
+                            str(model.path) + "/table.csv", delimiter=","
+                        )
 
-                    print("---------------------------")
-                    print("Partcipant :", str(entry.path).split("/")[-1],model, method_pos)
+                        world = np.genfromtxt(
+                            str(model.path) + "/states.csv", delimiter=","
+                        )
+                        
+                        duree = int(max(world[-1,0], gaze_point[-1,0] ) - min(world[1,0], gaze_point[1,0] ) ) + 1
 
-                    temps_debut = time.time()
+                        nb_gaze = gaze_point.shape[0] - 1
 
-                    # charge les deux fichiers dans des np.array
-                    gaze_point = np.genfromtxt(
-                        str(entry.path) + "/" + model + "/table.csv", delimiter=","
-                    )
-                    world = np.genfromtxt(
-                        str(entry.path) + "/" + model + "/states.csv", delimiter=","
-                    )
-                    
-                    duration = int(gaze_point[-1,0] - gaze_point[1,0])+1
+                        timestamp_action = listeTimneAction(world)
+                        
 
-                    (
-                        feature,
-                        timestamp_action,
-                        liste_t_value,
+                        all_feature = np.zeros((5, nb_gaze, nb_area_1))
+                        probability_score = np.zeros((5, 2, nb_gaze, nb_area_1))
+                        probability = np.zeros((5, 2, nb_gaze, nb_area_1))
 
-                    ) = parsingOneSituation(gaze_point, world)
-                    
+                        t_init = world[1,0]
 
-                    probability1 = low_level_lstm(feature,timestamp_action,liste_t_value)
-                    probability = low_level_naif(feature,timestamp_action,liste_t_value)
+                        indice = 0
 
-                    area_prediction,area_best_prediction,liste_predi_id = interpretation(probability,timestamp_action,liste_t_value,world,duration)
+                        liste_t_value = []
 
-                    temps_fin = time.time()
+                        liste_temps_exec = []
 
-                    # Durée d'exécution en secondes
-                    delta_temps = temps_fin - temps_debut
+                        temp_area1 = np.zeros((5,2,nb_gaze))
+                        temp_area2 = np.zeros((5,2,nb_gaze))
+                        temp_area4 = np.zeros((5,2,nb_gaze))
+                        temp_area8 = np.zeros((5,2,nb_gaze))
 
-                    duree_execution[method_pos].append(delta_temps)
+                        temp_area_sliding = np.zeros((5,2,nb_gaze))
 
-                    total_nb_grasp[method_pos] = total_nb_grasp[method_pos] + (len(timestamp_action)-2)/2
-                    total_nb_release[method_pos] = total_nb_release[method_pos] + (len(timestamp_action)-2)/2
-                    
-                    nb_bloc = [nb_bloc_1,nb_bloc_2,nb_bloc_4,nb_bloc_8]
+                        temp_block = np.zeros((5,2,nb_gaze))
 
-                    for position, quadri in enumerate(area_prediction):
-                        liste_good_release_zones = quadrillageRelease(world,nb_bloc[position])
-                        liste_good_grasp_zones = quadrillageGrasp(world,nb_bloc[position])
-                        for posi,quadr in enumerate(quadri):
+                        for i in range(nb_gaze):
+                            temps_debut = time.time()
 
+                            current_world = CurrentWorld(gaze_point[i, 0], world)
+
+                            gaze_value = gaze_point [i + 1]
+                            t = gaze_value[0] - t_init
+                            liste_t_value.append(t)
+
+                            (
+                            feature,
+                            ) = parsingOneSituation(gaze_value)
+
+                            all_feature[:,i,:] = feature
+
+                            feature_event = np.zeros((5,))
+                                
+                            new_probability,new_probability_score,new_indice = low_level_naif(feature,t,timestamp_action,indice)
+                            probability[:,:,i,:] = new_probability
+
+
+                            area1max_indices,area2max_indices,area4max_indices,area8max_indices,area_best,liste_predi_id = interpretation(new_probability,new_indice,world,)
+                            
+                            temp_area1[:,:,i] = area1max_indices
+                            temp_area2[:,:,i] = area2max_indices
+                            temp_area4[:,:,i] = area4max_indices
+                            temp_area8[:,:,i] = area8max_indices
+
+                            temp_area_sliding[:,:,i] = area_best
+
+                            temp_block[:,:,i] = liste_predi_id
+
+                            indice = new_indice
+                            
+                            temps_fin = time.time()
+                            diff_temps = temps_fin - temps_debut
+                            liste_temps_exec.append(diff_temps)
+
+                        participant = method+"_sitting_"+str(participant.path).split("/")[-1]+"_"+model
+
+                        savingTime(nom_dossier,participant,liste_temps_exec)
+                        savingFeature(nom_dossier,participant,all_feature)
+                        savingProba(nom_dossier,participant,probability)
+                        savingInterpretation(nom_dossier,participant,temp_area1,temp_area2,temp_area4,temp_area8,temp_area_sliding,temp_block)
+
+                        for k in range(nb_gaze):
+                            if not np.array_equal(temp_area1[:,:,k], probability.argmax(axis=3)[:,:,k]):
+                                print("Problem :",k)
+                        
+                        result_area1 = np.zeros((5, 2, duree))
+                        result_area2 = np.zeros((5, 2, duree))
+                        result_area4 = np.zeros((5, 2, duree))
+                        result_area8 = np.zeros((5, 2, duree))
+                        result_sliding_area = np.zeros((5, 2, duree))
+                        result_block = np.zeros((5, 2, duree))
+
+                        time_indice = 0
+
+                        for t in range(duree):
+                            if time_indice < len(liste_t_value) and t == liste_t_value[time_indice]:
+
+                                result_area1[:,:,t] = temp_area1[:,:,time_indice]
+                                result_area2[:,:,t] = temp_area2[:,:,time_indice]
+                                result_area4[:,:,t] = temp_area4[:,:,time_indice]
+                                result_area8[:,:,t] = temp_area8[:,:,time_indice]
+                                result_sliding_area[:,:,t] = temp_area_sliding[:,:,time_indice]
+                                result_block[:,:,t] = temp_block[:,:,time_indice]
+
+                                time_indice += 1
+
+                            else:
+                                result_area1[:,:,t] = result_area1[:,:,t-1]
+                                result_area2[:,:,t] = result_area2[:,:,t-1]
+                                result_area4[:,:,t] = result_area4[:,:,t-1]
+                                result_area8[:,:,t] = result_area8[:,:,t-1]
+                                result_sliding_area[:,:,t] = result_sliding_area[:,:,t-1]
+                                result_block[:,:,t] = result_block[:,:,t-1]
+
+                        area_prediction = [result_area1,result_area2,result_area4,result_area8]
+                        area_best_prediction = result_sliding_area
+                        block_prediction = result_block
+
+                        # Durée d'exécution en secondes
+                        delta_temps = temps_fin - temps_debut
+
+                        duree_execution[method_pos].append(delta_temps)
+
+                        total_nb_grasp[method_pos] = total_nb_grasp[method_pos] + (len(timestamp_action)-2)/2
+                        total_nb_release[method_pos] = total_nb_release[method_pos] + (len(timestamp_action)-2)/2
+                        
+                        nb_bloc = [nb_area_1,nb_area_2,nb_area_4,nb_area_8]
+
+                        for position, quadri in enumerate(area_prediction):
+                            liste_good_release_zones = quadrillageRelease(world,nb_bloc[position])
+                            liste_good_grasp_zones = quadrillageGrasp(world,nb_bloc[position])
+                            for posi,quadr in enumerate(quadri):
+
+                                (
+                                analyse_area_grasp,
+                                nb_analyse_area_grasp,
+                                analyse_area_release,
+                                nb_analyse_area_release
+                                ) = analyseRelease(quadr, liste_good_grasp_zones, liste_good_release_zones,timestamp_action)
+
+                                global_analyse_area_grasp[position][method_pos][posi] += analyse_area_grasp
+                                global_analyse_area_release[position][method_pos][posi] += analyse_area_release
+
+                            global_nb_analyse_area_grasp[position][method_pos] += nb_analyse_area_grasp
+                            global_nb_analyse_area_release[position][method_pos] += nb_analyse_area_release
+
+                        liste_good_grasp_area_coord = goodGraspAreaCoord(world)
+                        liste_good_release_area_coord = goodReleaseAreaCoord(world)
+
+                        for posi,predi in enumerate(area_best_prediction):
                             (
                             analyse_area_grasp,
                             nb_analyse_area_grasp,
                             analyse_area_release,
                             nb_analyse_area_release
-                            ) = analyseRelease(quadr, liste_good_grasp_zones, liste_good_release_zones,timestamp_action)
+                            ) = evaluationBestArea(predi,liste_good_grasp_area_coord,liste_good_release_area_coord,timestamp_action)
 
-                            global_analyse_area_grasp[position][method_pos][posi] += analyse_area_grasp
-                            global_analyse_area_release[position][method_pos][posi] += analyse_area_release
+                            global_analyse_sliding_area_grasp[method_pos][posi] += analyse_area_grasp
+                            global_analyse_sliding_area_release[method_pos][posi] += analyse_area_release
 
-                        global_nb_analyse_area_grasp[position][method_pos] += nb_analyse_area_grasp
-                        global_nb_analyse_area_release[position][method_pos] += nb_analyse_area_release
+                        global_nb_analyse_sliding_area_grasp[method_pos] += nb_analyse_area_grasp
+                        global_nb_analyse_sliding_area_release[method_pos] += nb_analyse_area_release
 
-                    liste_good_release_area_coord = goodReleaseAreaCoord(world)
-                    liste_good_grasp_area_coord = goodGraspAreaCoord(world)
-                    for posi,predi in enumerate(area_best_prediction):
-                        (
-                        analyse_area_grasp,
-                        nb_analyse_area_grasp,
-                        analyse_area_release,
-                        nb_analyse_area_release
-                        ) = evaluationBestArea(predi,liste_good_grasp_area_coord,liste_good_release_area_coord,timestamp_action)
+                        for position, prediction in enumerate(block_prediction):
+                            # Analyse max min dist
+                            (
 
-                        global_analyse_sliding_area_grasp[method_pos][posi] += analyse_area_grasp
-                        global_analyse_sliding_area_release[method_pos][posi] += analyse_area_release
+                                analyse_grasp,
+                                nb_analyse_grasp,
+                                analyse_release,
+                                nb_analyse_release,
+                            ) = analyseSituation(world, prediction, timestamp_action)
+                            
+                            global_analyse_grasp[method_pos][position] = global_analyse_grasp[method_pos][position] + analyse_grasp
+                            global_analyse_release[method_pos][position] = global_analyse_release[method_pos][position] + analyse_release
 
-                    global_nb_analyse_sliding_area_grasp[method_pos] += nb_analyse_area_grasp
-                    global_nb_analyse_sliding_area_release[method_pos] += nb_analyse_area_release
-
-                    for position, prediction in enumerate(liste_predi_id):
-                        # Analyse max min dist
-                        (
-
-                            analyse_grasp,
-                            nb_analyse_grasp,
-                            analyse_release,
-                            nb_analyse_release,
-                        ) = analyseSituation(world, prediction, timestamp_action)
-                        
-                        global_analyse_grasp[method_pos][position] = global_analyse_grasp[method_pos][position] + analyse_grasp
-                        global_analyse_release[method_pos][position] = global_analyse_release[method_pos][position] + analyse_release
-
-                    global_nb_analyse_grasp[method_pos] += nb_analyse_grasp
-                    global_nb_analyse_release[method_pos] += nb_analyse_release
+                        global_nb_analyse_grasp[method_pos] += nb_analyse_grasp
+                        global_nb_analyse_release[method_pos] += nb_analyse_release
 
 
-        if analyse:
-            for position in range(nb_predi):
-                print("***")
-                print("Predi",position)
-                analyseMethod(
-                    method,
-                    liste_analyse_methode_grasp_temps[method_pos][position],
-                    liste_analyse_methode_release_temps[method_pos][position],
-                    total_nb_grasp[method_pos],
-                )
+    if analyse:
+        for position in range(nb_predi):
+            print("***")
+            print("Predi",position)
+            analyseMethod(
+                method,
+                liste_analyse_methode_grasp_temps[method_pos][position],
+                liste_analyse_methode_release_temps[method_pos][position],
+                total_nb_grasp[method_pos],
+            )
 
 
     results = np.zeros((12,2,nb_predi,6001))
@@ -399,7 +359,7 @@ def parsingAllParticipantOneMethode():
     nb_prediction[10] = global_nb_analyse_grasp
     nb_prediction[11] = global_nb_analyse_release
 
-    nom_fichier = saveLog(nom_fichier,results,nb_prediction,duree_execution)
+    nom_dossier = saveLog(nom_dossier,results,nb_prediction,duree_execution)
 
 
 

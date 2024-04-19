@@ -13,10 +13,10 @@ hauteur = 38
 dist_min = -largeur/(2*48)
 
 taille_zone = 1
-nb_bloc_1 = int((48/1)*(24/1))
-nb_bloc_2 = int((48/2)*(24/2))
-nb_bloc_4 = int((48/4)*(24/4))
-nb_bloc_8 = int((48/8)*(24/8))
+nb_area_1 = int((48/1)*(24/1))
+nb_area_2 = int((48/2)*(24/2))
+nb_area_4 = int((48/4)*(24/4))
+nb_area_8 = int((48/8)*(24/8))
 
 array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
@@ -37,28 +37,41 @@ array: np.array(duration) pour tout t, l'id du tenon en haut a gauche de la zone
 """
 def bestAreaMax(zone):
 
-    somme_min = 0
-    indice_min = 0
-    for i in range(nb_bloc_1):
+    somme_min_8 = 0
+    indice_min_8 = 0
+
+    somme_min_4 = 0
+    indice_min_4 = 0
+    for i in range(nb_area_1):
         
         x = i // 24
         y = i % 24
 
         if x <= 40 and y <= 16:
             # Utilisez des tranches pour obtenir les 8 lignes et 8 colonnes nécessaires pour chaque somme
-            rows = [zone[(x+i)*24+y:(x+i)*24+y+8] for i in range(8)]
+            rows_8 = [zone[(x+i)*24+y:(x+i)*24+y+8] for i in range(8)]
 
             # Utilisez np.sum() pour sommer les valeurs de chaque ligne
-            somme = np.sum(rows)
+            somme_8 = np.sum(rows_8)
 
-            if somme > somme_min:
-                somme_min = somme
-                indice_min = x * 24 + y
+            if somme_8 > somme_min_8:
+                somme_min_8 = somme_8
+                indice_min_8 = x * 24 + y
+
+        if x <= 44 and y <= 20:
+            rows_4 = [zone[(x+i)*24+y:(x+i)*24+y+4] for i in range(4)]
+
+            # Utilisez np.sum() pour sommer les valeurs de chaque ligne
+            somme_4 = np.sum(rows_4)
+
+            if somme_4 > somme_min_4:
+                somme_min_4 = somme_4
+                indice_min_4 = x * 24 + y
     
 
 
 
-    return indice_min
+    return indice_min_4,indice_min_8
 
 """
 interpretation renvoi les prediction des zones d'action ainsi que les prediction de grasp/ref
@@ -103,18 +116,22 @@ def interpretation(probability, timestamp_indice,world):
     ########### Prediction Zone Glissante ##########
     ################################################
 
-    area_best = np.zeros((5, 2))
-    #area_best[0][0] = bestAreaMax(area1[0][0])
-    #area_best[1][0] = bestAreaMax(area1[1][0])
-    #area_best[2][0] = bestAreaMax(area1[2][0])
-    #area_best[3][0] = bestAreaMax(area1[3][0])
-    #area_best[4][0] = bestAreaMax(area1[4][0])
+    area_best_4 = np.zeros((5, 2))
+    area_best_8 = np.zeros((5, 2))
+    
+    area_best_4[0][0],area_best_8[0][0] = bestAreaMax(area1[0][0])
+    area_best_4[1][0],area_best_8[1][0] = bestAreaMax(area1[1][0])
+    area_best_4[2][0],area_best_8[2][0] = bestAreaMax(area1[2][0])
+    area_best_4[3][0],area_best_8[3][0] = bestAreaMax(area1[3][0])
+    area_best_4[4][0],area_best_8[4][0] = bestAreaMax(area1[4][0])
 
-    #area_best[0][1] = bestAreaMax(area1[0][1])
-    #area_best[1][1] = bestAreaMax(area1[1][1])
-    #area_best[2][1] = bestAreaMax(area1[2][1])
-    #area_best[3][1] = bestAreaMax(area1[3][1])
-    #area_best[4][1] = bestAreaMax(area1[4][1])
+    area_best_4[0][1], area_best_8[0][1] = bestAreaMax(area1[0][1])
+    area_best_4[1][1], area_best_8[1][1] = bestAreaMax(area1[1][1])
+    area_best_4[2][1], area_best_8[2][1] = bestAreaMax(area1[2][1])
+    area_best_4[3][1], area_best_8[3][1] = bestAreaMax(area1[3][1])
+    area_best_4[4][1], area_best_8[4][1] = bestAreaMax(area1[4][1])
+
+
 
     ################################################
     ############### Prediction Grasp ###############
@@ -174,4 +191,4 @@ def interpretation(probability, timestamp_indice,world):
     liste_predi_id[4,1] = proba[4,1,:].argmax()
 
 
-    return area1max_indices,area2max_indices,area4max_indices,area8max_indices,area_best,liste_predi_id
+    return area4max_indices,area8max_indices,area_best_4,area_best_8,liste_predi_id
