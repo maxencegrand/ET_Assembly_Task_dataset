@@ -78,6 +78,8 @@ def parsingAllParticipantOneMethode():
 
     duree_execution = [[],[]]
 
+    
+
     # On parcours la liste des dossiers correspondant aux participants
     #for method_pos,method in enumerate(["mobile", "stationnary"]):
     for method_pos,method in enumerate(["mobile"]):    
