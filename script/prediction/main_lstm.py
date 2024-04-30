@@ -4,8 +4,6 @@ import os
 import time
 from datetime import datetime
 
-import matplotlib.pyplot as plt
-
 os.environ['KERAS_BACKEND'] = 'torch'
 import keras
 from keras.models import load_model
@@ -111,14 +109,20 @@ def parsingAllParticipantOneMethode():
     left = [left_mobile_numpy,left_sitting_numpy]
     right = [right_mobile_numpy,right_sitting_numpy]
 
-    model0 = load_model('modele0.keras')
-    model1 = load_model('modele0.keras')
-    model2 = load_model('modele0.keras')
-    model3 = load_model('modele0.keras')
-    model4 = load_model('modele0.keras')
+    model0 = load_model('modele0_LSTM.keras')
+    model1 = load_model('modele1_LSTM.keras')
+    model2 = load_model('modele2_LSTM.keras')
+    model3 = load_model('modele3_LSTM.keras')
+    model4 = load_model('modele4_LSTM.keras')
 
-    list_model = [model0,model1,model2,model3,model4]
+    model5 = load_model('modele5_LSTM.keras')
+    model6 = load_model('modele6_LSTM.keras')
+    model7 = load_model('modele7_LSTM.keras')
+    model8 = load_model('modele8_LSTM.keras')
+    model9 = load_model('modele8_LSTM.keras')
 
+    list_model = [[model0,model1,model2,model3,model4],[model5,model6,model7,model8,model9]]
+                  
     print(model0.summary())
 
     if backend.backend() == "tensorflow":
@@ -131,9 +135,11 @@ def parsingAllParticipantOneMethode():
         print("Numpy")
 
     input_dims = model0.input_shape[1]
-    print(input_dims) 
+    print(input_dims)
 
     for method_pos,side in enumerate(right):
+            if method_pos == 1:
+                continue
             for number in side:
                 participant = number.numpy().decode('utf-8')
                 print(participant)
@@ -142,7 +148,7 @@ def parsingAllParticipantOneMethode():
                     # verifie que les 2 fichiers existent
 
 
-                    if not(str(entry.path).split("/")[-1] == "30587763" and model == "tsb") and os.path.exists(
+                    if not(str(model.path).split("/")[-2] == "30587763" and str(model.path).split("/")[-1] == "tsb") and os.path.exists(
                         str(model.path) + "/table.csv"
                     ) and os.path.exists(str(model.path) + "/states.csv"):
 
@@ -210,16 +216,16 @@ def parsingAllParticipantOneMethode():
 
                             input_array[:,input_indice,:] = feature
 
-                            for k in range(nb_predi):    
-                                new_probability,new_indice = low_level_lstm(input_array[k],list_model[k],t,timestamp_action,indice)
+                            for k in range(nb_predi):
+                                temps_debut = time.time()
+                                new_probability,new_indice = low_level_lstm(input_array[k],list_model[method_pos][k],t,timestamp_action,indice)
+                                temps_fin = time.time()
+                                delta_temps = temps_fin - temps_debut
                                 probability[k,:,i,:] = new_probability
 
                             input_indice += 1
-                            if input_indice == 735:
-                                print(i , gaze_point[i, 0])
                                 
                             if indice != new_indice:
-                                print(i)
                                 input_array = np.zeros((nb_predi,input_dims,1152))
                                 input_indice = 0
 

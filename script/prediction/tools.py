@@ -1,8 +1,6 @@
 import numpy as np
 import math
 
-import matplotlib.colors
-from matplotlib.widgets import Slider
 import os
 from datetime import datetime
 import json
@@ -571,10 +569,10 @@ def liste_tenon_bloc(world):
 
 def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
-    np.savetxt(nom_fichier + "_results.csv", results.reshape(18,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_fichier + "_nb_prediction.csv", nb_prediction.reshape(18,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "/results.csv", results.reshape(18,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "/nb_prediction.csv", nb_prediction.reshape(18,-1), delimiter=',',fmt='%.4f')
 
-    with open(nom_fichier + "_time.csv", 'w', newline='') as fichier_csv:
+    with open(nom_fichier + "/time.csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
         
         # Écrire chaque sous-liste dans une ligne du fichier CSV
@@ -584,11 +582,11 @@ def saveLog(nom_fichier,results,nb_prediction,duree_execution):
     return nom_fichier
 
 def loadLog(nom_fichier):
-    results = np.genfromtxt(nom_fichier + "_results.csv", delimiter=",")
-    nb_prediction = np.genfromtxt(nom_fichier + "_nb_prediction.csv", delimiter=",")
+    results = np.genfromtxt(nom_fichier + "/results.csv", delimiter=",")
+    nb_prediction = np.genfromtxt(nom_fichier + "/nb_prediction.csv", delimiter=",")
     #duree_execution = np.genfromtxt(nom_fichier + "_time.csv", delimiter=",")
     duree_execution = []
-    with open(nom_fichier + "_time.csv", 'r', newline='') as fichier_csv:
+    with open(nom_fichier + "/time.csv", 'r', newline='') as fichier_csv:
         reader = csv.reader(fichier_csv)
         
         # Lire chaque ligne du fichier CSV
@@ -611,39 +609,39 @@ def listeTimneAction(world):
     return liste
 
 
-def savingTime(nom_dossier,participant,duree):
+def savingTime(nom_dossier,participant,timestamp,type_time,duree):
 
 
-    with open(nom_dossier + "/" + participant + "_time.csv", 'w', newline='') as fichier_csv:
+    with open(nom_dossier + "/" + participant + str(timestamp) + "/time_" + type_time + ".csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
     
         writer.writerow(duree)
 
     return
 
-def savingFeature(nom_dossier,participant,feature):
+def savingFeature(nom_dossier,participant,timestamp,feature):
 
-    np.savetxt(nom_dossier + "/" + participant + "_feature.csv", feature[:,:,:].reshape(5,-1), delimiter=',',fmt='%.4f')
-
-    return
-
-def savingProba(nom_dossier,participant,proba):
-
-
-    np.savetxt(nom_dossier + "/" + participant + "_probability.csv", proba.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/"  + "feature.csv", feature[:,:,:].reshape(5,-1), delimiter=',',fmt='%.4f')
 
     return
 
-def savingInterpretation(nom_dossier,participant,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block):
+def savingProba(nom_dossier,participant,timestamp,proba):
+
+
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/probability.csv", proba.reshape(10,-1), delimiter=',',fmt='%.4f')
+
+    return
+
+def savingInterpretation(nom_dossier,participant,timestamp,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block):
 
 
 
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area4.csv", temp_area4.reshape(10,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area8.csv", temp_area8.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area4.csv", temp_area4.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area8.csv", temp_area8.reshape(10,-1), delimiter=',',fmt='%.4f')
 
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding_4.reshape(10,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_dossier + "/" + participant + "_inter_area_sliding.csv", temp_area_sliding_8.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area_sliding.csv", temp_area_sliding_4.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area_sliding.csv", temp_area_sliding_8.reshape(10,-1), delimiter=',',fmt='%.4f')
 
-    np.savetxt(nom_dossier + "/" + participant + "_inter_block.csv", temp_block.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_block.csv", temp_block.reshape(10,-1), delimiter=',',fmt='%.4f')
 
     return

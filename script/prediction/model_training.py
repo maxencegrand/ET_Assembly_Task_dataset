@@ -7,7 +7,7 @@ from datetime import datetime
 os.environ['KERAS_BACKEND'] = 'torch'
 import keras
 from keras.models import Sequential,Model
-from keras.layers import LSTM, Dense, Reshape, Input
+from keras.layers import GRU, LSTM, Dense, Reshape, Input
 
 from feature_computation import parsingOneSituation
 
@@ -236,7 +236,7 @@ def parsingAllParticipantOneMethode():
             input_layer = Input(shape=(int(duree_max), nb_area_1))
 
             # Construire le reste du modèle
-            x = LSTM(50)(input_layer)
+            x = LSTM(int(duree_max))(input_layer)
             x = Dense(2 * nb_area_1, activation='relu')(x)
             x = Reshape((2, nb_area_1))(x)
 
@@ -245,11 +245,31 @@ def parsingAllParticipantOneMethode():
             model.compile(optimizer='adam', loss='mean_squared_error')  # Choisir l'optimiseur et la fonction de perte appropriés
 
             # Entraîner le modèle
-            history = model.fit(training, y_training, epochs=10, batch_size=1, validation_split=0.2)
+            history = model.fit(training, y_training, epochs=10, batch_size=32, validation_split=0.2)
 
-            model.save('modele'+ str(5*method_pos+k)+'.keras')
+            model.save('test_modele'+ str(5*method_pos+k)+'_LSTM.keras')
 
             print(model.summary())
+
+
+            # Définir la forme de l'entrée
+            input_layer2 = Input(shape=(int(duree_max), nb_area_1))
+
+            # Construire le reste du modèle
+            y = GRU(int(duree_max))(input_layer2)
+            y = Dense(2 * nb_area_1, activation='relu')(y)
+            y = Reshape((2, nb_area_1))(y)
+
+            # Créer le modèle en spécifiant les entrées et les sorties
+            model2 = Model(inputs=input_layer2, outputs=y)
+            model2.compile(optimizer='adam', loss='mean_squared_error')  # Choisir l'optimiseur et la fonction de perte appropriés
+
+            # Entraîner le modèle
+            history = model2.fit(training, y_training, epochs=10, batch_size=32, validation_split=0.2)
+
+            model.save('test_modele'+ str(5*method_pos+k)+'_GRU.keras')
+
+            print(model2.summary())
 
     return
     

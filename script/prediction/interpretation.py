@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import os
+import time
 
 from tools import liste_tenon_bloc
 
@@ -107,8 +108,6 @@ def interpretation(probability, timestamp_indice,world):
     area4 = np.reshape(area4, (5, 2, 12 * 6))
     area8 = np.reshape(area8, (5, 2, 6 * 3))
 
-    area1max_indices = np.argmax(area1, axis=2)
-    area2max_indices = np.argmax(area2, axis=2)
     area4max_indices = np.argmax(area4, axis=2)
     area8max_indices = np.argmax(area8, axis=2)
 
@@ -130,8 +129,6 @@ def interpretation(probability, timestamp_indice,world):
     area_best_4[2][1], area_best_8[2][1] = bestAreaMax(area1[2][1])
     area_best_4[3][1], area_best_8[3][1] = bestAreaMax(area1[3][1])
     area_best_4[4][1], area_best_8[4][1] = bestAreaMax(area1[4][1])
-
-
 
     ################################################
     ############### Prediction Grasp ###############

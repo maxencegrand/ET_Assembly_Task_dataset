@@ -318,7 +318,6 @@ def analyseSlidingAreaWeak(prediction,liste_good_grasp_zones, liste_good_release
 
     taille = 48 / nb_area_x
 
-    print(taille,nb_area_y)
 
     analyse_grasp = np.zeros((6001))
     nb_analyse_grasp = np.zeros((6001))
