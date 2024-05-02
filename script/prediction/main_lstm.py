@@ -56,7 +56,8 @@ def parsingAllParticipantOneMethode():
     date_heure_actuelle = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Nom du fichier avec la date et l'heure
-    nom_fichier = f"logs/{date_heure_actuelle}"
+    nom_dossier = f"logs/{date_heure_actuelle}"
+    os.mkdir(nom_dossier)
 
     nb_predi = 5
 
@@ -256,10 +257,10 @@ def parsingAllParticipantOneMethode():
                         else:
                             path = "stationnary/sitting/"+str(model.path).split("/")[-2]+"/"+str(model.path).split("/")[-1]+"/"
 
-                        savingTime(nom_dossier,path,liste_temps_exec)
-                        savingFeature(nom_dossier,path,all_feature)
-                        savingProba(nom_dossier,path,probability)
-                        savingInterpretation(nom_dossier,path,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block)
+                        #savingTime(nom_dossier,path,liste_temps_exec)
+                        #savingFeature(nom_dossier,path,all_feature)
+                        #savingProba(nom_dossier,path,probability)
+                        #savingInterpretation(nom_dossier,path,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block)
                         
 
                         result_area4 = np.zeros((5, 2, duree))
@@ -437,7 +438,7 @@ def parsingAllParticipantOneMethode():
     nb_prediction[16] = global_nb_analyse_grasp_block
     nb_prediction[17] = global_nb_analyse_release_block
 
-    nom_dossier = saveLog(nom_dossier,results,nb_prediction,duree_execution)
+    saveLog(nom_dossier,results,nb_prediction,duree_execution)
 
 
 
