@@ -1,0 +1,13 @@
+timestamp,event,device
+0,enter,TABLE
+147,quit,TABLE
+1148,enter,TABLE
+1533,quit,TABLE
+1702,enter,SCREEN
+1814,quit,SCREEN
+1877,enter,SCREEN
+2035,quit,SCREEN
+2271,enter,TABLE
+2624,grasp,BLOCK
+3736,release,BLOCK
+3796,quit,TABLE
