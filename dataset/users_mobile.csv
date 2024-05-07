@@ -14,6 +14,7 @@ id,position,glasses,eye0,eye1,screen,pupil,car,tb,house,sc,tc,tsb
 68635455,sitting,0,1,0,2,2,1,1,1,1,1,1
 74765700,sitting,0,1,0,3,3,1,1,1,1,1,1
 96434938,sitting,0,1,1,4,3,1,1,1,1,1,1
+98811232,sitting,0,1,0,2,1,1,1,1,1,1,1
 21347602,sitting,0,1,1,4,1,1,1,1,1,1,1
 21843109,sitting,0,1,1,4,3,1,1,1,1,1,1
 41271188,sitting,1,0,1,4,1,1,1,1,1,1,1
@@ -29,3 +30,4 @@ id,position,glasses,eye0,eye1,screen,pupil,car,tb,house,sc,tc,tsb
 96783900,standing,0,1,1,2,2,1,1,1,1,1,1
 245213,standing,1,1,1,3,3,1,1,1,1,1,1
 49201083,standing,1,1,1,4,3,1,1,1,1,1,1
+68685044,standing,1,1,1,4,3,1,1,1,1,1,1
