@@ -64,8 +64,8 @@ if __name__ == "__main__":
 
         results,nb_prediction,duree_execution = loadLog(nom_fichier)
 
-        results = results.reshape(26,2,nb_predi,6001)
-        nb_prediction = nb_prediction.reshape(26,2,6001)
+        results = results.reshape(28,2,nb_predi,6001)
+        nb_prediction = nb_prediction.reshape(28,2,6001)
 
 
         area4_grasp_weak = results[0]
@@ -152,12 +152,12 @@ if __name__ == "__main__":
 
         showComparaisonAlgorithm(semantic_grasp_0,nb_semantic_grasp_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 0",100/1,100/1)
         showComparaisonAlgorithm(semantic_grasp_1,nb_semantic_grasp_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1",100/3,100/3)
-        showComparaisonAlgorithm(semantic_grasp_1b,nb_semantic_grasp_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1",100/3,100/3)
+        showComparaisonAlgorithm(semantic_grasp_1b,nb_semantic_grasp_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1 bis",100/3,100/3)
         showComparaisonAlgorithm(semantic_grasp_2,nb_semantic_grasp_2,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 2",100/5,100/5)
         
         showComparaisonAlgorithm(semantic_release_0,nb_semantic_release_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 0",100/1,100/1)
         showComparaisonAlgorithm(semantic_release_1,nb_semantic_release_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1",100/3,100/3)
-        showComparaisonAlgorithm(semantic_release_1b,nb_semantic_release_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1",100/3,100/3)
+        showComparaisonAlgorithm(semantic_release_1b,nb_semantic_release_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1 bis",100/3,100/3)
         showComparaisonAlgorithm(semantic_release_2,nb_semantic_release_2,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 2",100/5,100/5)
         
         
