@@ -47,9 +47,13 @@ def low_level_lstm(input_array,model,timestamp,timestamp_action,timestamp_indice
 
     input_array = input_array.reshape((1,duree,table))
 
-    new_probability = model.predict(input_array, verbose=0)
+    t1 = time.time()
+    model_result = model.predict(input_array, verbose=0)
+    t2 =time.time()
 
-    new_probability = new_probability.reshape(2,nb_area_1)
+    new_probability = np.zeros((2,model_result.shape[1]))
+    new_probability[0] = model_result
+    new_probability[1] = model_result
     
     #print(timestamp, timestamp_action[timestamp_indice])
 

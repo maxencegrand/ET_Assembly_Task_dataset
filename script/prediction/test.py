@@ -7,11 +7,14 @@ import os
 
 import numpy as np
 
-# Créer un tableau NumPy à enregistrer
-data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+import numpy as np
 
-# Spécifier le chemin du fichier CSV
-nom_fichier = "donnees.csv"
+# Suppose que vous avez un tableau NumPy appelé 'arr'
+arr = np.array([[1, 2, 3],
+                [4, 2, 6],
+                [2, 8, 9]])
 
-# Enregistrer le tableau NumPy dans un fichier CSV
-np.savetxt(nom_fichier, data, delimiter=',')
+# Remplacer les 2 par 0
+arr = np.where(arr == 2, 0, arr)
+
+print(arr)

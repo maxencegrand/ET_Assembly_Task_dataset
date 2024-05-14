@@ -5,7 +5,7 @@ import numpy as np
 def main(argument):
     print("Le nom du fichier fourni est:", argument)
 
-def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,action):
+def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,action,random_min,random_max):
         plt.close()
         fig, ax = plt.subplots(1, 2)
 
@@ -21,6 +21,9 @@ def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,ac
         
         ax[0].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
         ax[1].hlines(y=50,xmin=-3000,xmax=3000,label = "50%", color = "r")
+
+        ax[0].axhspan(ymin=random_min, ymax=random_max, xmin=-3000, xmax=3000,label = "random", color = "gray")
+        ax[1].axhspan(ymin=random_min, ymax=random_max, xmin=-3000, xmax=3000,label = "random", color = "gray")
 
         box = ax[0].get_position()
         ax[0].set_position([box.x0, box.y0 + box.height * 0.1,
@@ -61,8 +64,8 @@ if __name__ == "__main__":
 
         results,nb_prediction,duree_execution = loadLog(nom_fichier)
 
-        results = results.reshape(18,2,nb_predi,6001)
-        nb_prediction = nb_prediction.reshape(18,2,6001)
+        results = results.reshape(26,2,nb_predi,6001)
+        nb_prediction = nb_prediction.reshape(26,2,6001)
 
 
         area4_grasp_weak = results[0]
@@ -85,9 +88,21 @@ if __name__ == "__main__":
         sliding_area8_grasp_strong = results[11]
         sliding_area8_release_strong = results[15]
 
-        block_grasp = results[16]
-        block_release = results[17]
+        semantic_grasp_0 = results[16]
+        semantic_grasp_1 = results[17]
+        semantic_grasp_1b = results[18]
+        semantic_grasp_2 = results[19]
 
+        semantic_release_0 = results[20]
+        semantic_release_1 = results[21]
+        semantic_release_1b = results[22]
+        semantic_release_2 = results[23]
+
+        block_grasp = results[24]
+        block_release = results[25]
+
+        norme_grasp = results[26]
+        norme_release = results[27]
 
 
         nb_area4_grasp_weak = nb_prediction[0]
@@ -110,31 +125,59 @@ if __name__ == "__main__":
         nb_sliding_area8_grasp_strong = nb_prediction[11]
         nb_sliding_area8_release_strong = nb_prediction[15]
 
-        nb_block_grasp = nb_prediction[16]
-        nb_block_release = nb_prediction[17]
+        nb_semantic_grasp_0 = nb_prediction[16]
+        nb_semantic_grasp_1 = nb_prediction[17]
+        nb_semantic_grasp_1b = nb_prediction[18]
+        nb_semantic_grasp_2 = nb_prediction[19]
+
+        nb_semantic_release_0 = nb_prediction[20]
+        nb_semantic_release_1 = nb_prediction[21]
+        nb_semantic_release_1b = nb_prediction[22]
+        nb_semantic_release_2 = nb_prediction[23]
+
+        nb_block_grasp = nb_prediction[24]
+        nb_block_release = nb_prediction[25]
+
+        nb_norme_grasp = nb_prediction[26]
+        nb_norme_release = nb_prediction[27]
 
         linestyles = ["-","--","-.",":",(0, (3, 2, 1, 2, 1, 2))]
 
-        showComparaisonAlgorithm(block_grasp,nb_block_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Grasp")
-        showComparaisonAlgorithm(block_release,nb_block_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Reference Block during Release")
 
-        showComparaisonAlgorithm(area4_grasp_weak,nb_area4_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 4x4 Weak")
-        showComparaisonAlgorithm(area4_grasp_strong,nb_area4_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 4x4 Strong")
-        showComparaisonAlgorithm(sliding_area4_grasp_weak,nb_sliding_area4_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Sliding Area 4x4 Weak")
-        showComparaisonAlgorithm(sliding_area4_grasp_strong,nb_sliding_area4_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Sliding Area 4x4 Strong")
+        showComparaisonAlgorithm(block_grasp,nb_block_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Grasp",100/24,100/24)
+        showComparaisonAlgorithm(block_release,nb_block_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Reference Block during Release",100/24,100/24)
 
-        showComparaisonAlgorithm(area8_grasp_weak,nb_area8_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 8x8 Weak")
-        showComparaisonAlgorithm(area8_grasp_strong,nb_area8_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 8x8 Strong")
-        showComparaisonAlgorithm(sliding_area8_grasp_weak,nb_sliding_area8_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Sliding Area 8x8 Weak")
-        showComparaisonAlgorithm(sliding_area8_grasp_strong,nb_sliding_area8_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Sliding Area 8x8 Strong")
+        showComparaisonAlgorithm(norme_grasp,nb_norme_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Grasp",0,0)
+        showComparaisonAlgorithm(norme_release,nb_norme_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Release",0,0)
+
+        showComparaisonAlgorithm(semantic_grasp_0,nb_semantic_grasp_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 0",100/1,100/1)
+        showComparaisonAlgorithm(semantic_grasp_1,nb_semantic_grasp_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1",100/3,100/3)
+        showComparaisonAlgorithm(semantic_grasp_1b,nb_semantic_grasp_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1",100/3,100/3)
+        showComparaisonAlgorithm(semantic_grasp_2,nb_semantic_grasp_2,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 2",100/5,100/5)
+        
+        showComparaisonAlgorithm(semantic_release_0,nb_semantic_release_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 0",100/1,100/1)
+        showComparaisonAlgorithm(semantic_release_1,nb_semantic_release_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1",100/3,100/3)
+        showComparaisonAlgorithm(semantic_release_1b,nb_semantic_release_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1",100/3,100/3)
+        showComparaisonAlgorithm(semantic_release_2,nb_semantic_release_2,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 2",100/5,100/5)
+        
+        
+        showComparaisonAlgorithm(area4_grasp_weak,nb_area4_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 4x4 Weak",100/72,4*100/72)
+        showComparaisonAlgorithm(area4_grasp_strong,nb_area4_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 4x4 Strong",0,100/72)
+        showComparaisonAlgorithm(sliding_area4_grasp_weak,nb_sliding_area4_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Overlapping Area 4x4 Weak",25*100/945,35*100/945)
+        showComparaisonAlgorithm(sliding_area4_grasp_strong,nb_sliding_area4_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Overlapping Area 4x4 Strong",3*100/945,9*100/945)
+
+        showComparaisonAlgorithm(area8_grasp_weak,nb_area8_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 8x8 Weak",100/18,4*100/18)
+        showComparaisonAlgorithm(area8_grasp_strong,nb_area8_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Fixe Area 8x8 Strong",0,100/18)
+        showComparaisonAlgorithm(sliding_area8_grasp_weak,nb_sliding_area8_grasp_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Overlapping Area 8x8 Weak",81*100/697,99*100/697)
+        showComparaisonAlgorithm(sliding_area8_grasp_strong,nb_sliding_area8_grasp_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Grasp Area, Overlapping Area 8x8 Strong",35*100/697,49*100/697)
 
 
-        showComparaisonAlgorithm(area4_release_weak,nb_area4_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 4x4 Weak")
-        showComparaisonAlgorithm(area4_release_strong,nb_area4_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 4x4 Strong")
-        showComparaisonAlgorithm(sliding_area4_release_weak,nb_sliding_area4_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Sliding Area 4x4 Weak")
-        showComparaisonAlgorithm(sliding_area4_release_strong,nb_sliding_area4_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Sliding Area 4x4 Strong")
+        showComparaisonAlgorithm(area4_release_weak,nb_area4_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 4x4 Weak",100/72,4*100/72)
+        showComparaisonAlgorithm(area4_release_strong,nb_area4_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 4x4 Strong",0,100/72)
+        showComparaisonAlgorithm(sliding_area4_release_weak,nb_sliding_area4_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Overlapping Area 4x4 Weak",25*100/945,35*100/945)
+        showComparaisonAlgorithm(sliding_area4_release_strong,nb_sliding_area4_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Overlapping Area 4x4 Strong",3*100/945,9*100/945)
 
-        showComparaisonAlgorithm(area8_release_weak,nb_area8_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 8x8 Weak")
-        showComparaisonAlgorithm(area8_release_strong,nb_area8_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 8x8 Strong")
-        showComparaisonAlgorithm(sliding_area8_release_weak,nb_sliding_area8_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Sliding Area 8x8 Weak")
-        showComparaisonAlgorithm(sliding_area8_release_strong,nb_sliding_area8_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Sliding Area 8x8 Strong")
+        showComparaisonAlgorithm(area8_release_weak,nb_area8_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 8x8 Weak",100/18,4*100/18)
+        showComparaisonAlgorithm(area8_release_strong,nb_area8_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Fixe Area 8x8 Strong",0,100/18)
+        showComparaisonAlgorithm(sliding_area8_release_weak,nb_sliding_area8_release_weak,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Overlapping Area 8x8 Weak",81*100/697,99*100/697)
+        showComparaisonAlgorithm(sliding_area8_release_strong,nb_sliding_area8_release_strong,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Release Area, Overlapping Area 8x8 Strong",35*100/697,49*100/697)

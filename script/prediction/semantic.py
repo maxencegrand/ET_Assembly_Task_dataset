@@ -23,15 +23,9 @@ def generateTableZone():
     x2 = 48
     y2 = 20
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -47,15 +41,9 @@ def generateLeftZone():
     x2 = 10
     y2 = 20
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -71,17 +59,10 @@ def generateMiddleZone():
     x2 = 34
     y2 = 20
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
-
     # Écrire les données dans le fichier CSV
     with open('../csv/zone_middle.csv', 'w', newline='') as file:
         writer = csv.writer(file)
@@ -95,15 +76,9 @@ def generateRightZone():
     x2 = 48
     y2 = 20
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -120,15 +95,9 @@ def generateBlueZone():
     x2 = 10
     y2 = 10
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -144,15 +113,9 @@ def generateRedZone():
     x2 = 10
     y2 = 20
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -168,15 +131,9 @@ def generateGreenZone():
     x2 = 48
     y2 = 10
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -192,15 +149,9 @@ def generateYellowZone():
     x2 = 48
     y2 = 20
 
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
-
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -211,20 +162,14 @@ def generateYellowZone():
 
 def generateCarZone():
     x0 = 21
-    y0 = 11
+    y0 = 8
 
     x2 = 27
-    y2 = 19
-
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
+    y2 = 16
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -234,21 +179,15 @@ def generateCarZone():
 
 
 def generateHouseZone():
-    x0 = 18
-    y0 = 8
+    x0 = 19
+    y0 = 4
 
-    x2 = 26
-    y2 = 20
-
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
+    x2 = 27
+    y2 = 16
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -258,21 +197,15 @@ def generateHouseZone():
 
 
 def generateScZone():
-    x0 = 18
-    y0 = 12
+    x0 = 19
+    y0 = 8
 
-    x2 = 30
-    y2 = 18
-
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
+    x2 = 31
+    y2 = 14
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -282,21 +215,15 @@ def generateScZone():
 
 
 def generateTbZone():
-    x0 = 22
-    y0 = 12
+    x0 = 23
+    y0 = 8
 
-    x2 = 28
-    y2 = 14
-
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
+    x2 = 29
+    y2 = 10
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -306,21 +233,15 @@ def generateTbZone():
 
 
 def generateTcZone():
-    x0 = 22
-    y0 = 10
+    x0 = 19
+    y0 = 6
 
-    x2 = 32
-    y2 = 16
-
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
+    x2 = 29
+    y2 = 12
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV
@@ -330,21 +251,15 @@ def generateTcZone():
 
 
 def generateTsbZone():
-    x0 = 24
-    y0 = 10
+    x0 = 13
+    y0 = 8
 
-    x2 = 34
-    y2 = 16
-
-    new_x0 = (x0 * largeur)/48
-    new_y0 = (y0 * largeur)/48
-
-    new_x2 = (x2 * largeur)/48
-    new_y2 = (y2 * largeur)/48
+    x2 = 23
+    y2 = 14
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
-        [new_x0, new_y0, new_x2, new_y2]
+        [x0, y0, x2, y2]
     ]
 
     # Écrire les données dans le fichier CSV

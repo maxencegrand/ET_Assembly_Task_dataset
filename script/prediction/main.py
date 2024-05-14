@@ -29,7 +29,7 @@ array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
 from interpretation import interpretation
-from analyse import analyseSituation,analyseFixeAreaWeak,analyseFixeAreaStrong,analyseSlidingAreaWeak,analyseSlidingAreaStrong,analyseMethod
+from analyse import analyseSituation,analyseFixeAreaWeak,analyseFixeAreaStrong,analyseSlidingAreaWeak,analyseSlidingAreaStrong,analyseMethod,trueSemantic,analyseSemantic, analyseNorme, analyseSemanticBis
 from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog,listeTimneAction,CurrentWorld,savingTime,savingFeature,savingProba,savingInterpretation
 
 
@@ -78,10 +78,20 @@ def parsingAllParticipantOneMethode():
     global_analyse_release_area_strong = np.zeros((4,2,nb_predi,6001))
     global_nb_analyse_release_area_strong = np.zeros((4,2,6001))
 
+    global_analyse_semantic_grasp = np.zeros((4,2,nb_predi,6001))
+    global_nb_analyse_semantic_grasp = np.zeros((4,2,6001))
+    global_analyse_semantic_release = np.zeros((4,2,nb_predi,6001))
+    global_nb_analyse_semantic_release = np.zeros((4,2,6001))
+
     global_analyse_grasp_block = np.zeros((2,nb_predi,6001))
     global_nb_analyse_grasp_block = np.zeros((2,6001))
     global_analyse_release_block = np.zeros((2,nb_predi,6001))
     global_nb_analyse_release_block = np.zeros((2,6001))
+
+    global_analyse_norme_grasp = np.zeros((2,nb_predi,6001))
+    global_nb_analyse_norme_grasp = np.zeros((2,6001))
+    global_analyse_norme_release = np.zeros((2,nb_predi,6001))
+    global_nb_analyse_norme_release = np.zeros((2,6001))
 
     nb_analyse = 0
 
@@ -123,6 +133,7 @@ def parsingAllParticipantOneMethode():
             method = "mobile"
         else:
             method = "stationnary"
+            continue
             
         for number in side:
             participant = number.numpy().decode('utf-8')
@@ -155,6 +166,7 @@ def parsingAllParticipantOneMethode():
                             str(model.path) + "/states.csv", delimiter=","
                         )
                     
+
                         proba_juste = np.zeros((world.shape[0] - 1,2,nb_area_1))
 
                         for t in range(1,world.shape[0]):
@@ -216,8 +228,16 @@ def parsingAllParticipantOneMethode():
 
                         temp_area_sliding_4 = np.zeros((5,2,nb_gaze))
                         temp_area_sliding_8 = np.zeros((5,2,nb_gaze))
+                        
+                        temp_area_semantic_0 = np.zeros((5,2,nb_gaze))
+                        temp_area_semantic_1 = np.zeros((5,2,nb_gaze))
+                        temp_area_semantic_2 = np.zeros((5,2,nb_gaze))
+
 
                         temp_block = np.zeros((5,2,nb_gaze))
+
+
+                        norme_array = np.zeros((nb_predi,2,nb_gaze))
 
                         for i in range(nb_gaze):
                             temps_feature = time.time()
@@ -246,17 +266,19 @@ def parsingAllParticipantOneMethode():
                             
                             for f in range(nb_predi):
                                 if(max(0,new_indice - 1) % 2 == 0):
-                                    norme_grasp[f] += np.linalg.norm(proba_juste[new_indice] - new_probability[f], ord=1)
-                                    nb_norme_grasp += 1
+                                    norme_array[f,0] += np.linalg.norm(proba_juste[new_indice] - new_probability[f], ord=1)
+                                    norme_array[f,1] += np.linalg.norm(proba_juste[new_indice - 1] - new_probability[f], ord=1)
+
                                 else:
-                                    norme_release[f] += np.linalg.norm(proba_juste[new_indice] - new_probability[f], ord=1)
-                                    nb_norme_release += 1
+                                    norme_array[f,0] += np.linalg.norm(proba_juste[new_indice - 1] - new_probability[f], ord=1)
+                                    norme_array[f,1] += np.linalg.norm(proba_juste[new_indice] - new_probability[f], ord=1)
+
 
                             probability[:,:,i,:] = new_probability
                             probability_score[:,:,i,:] = new_probability_score
 
                             temps_interpretation = time.time()
-                            area4max_indices,area8max_indices,area_best_4,area_best_8,liste_predi_id = interpretation(new_probability,new_indice,world,)
+                            area4max_indices,area8max_indices,area_best_4,area_best_8,semantic0,semantic1,semantic2,liste_predi_id = interpretation(new_probability,new_indice,world,str(model.path).split("/")[-1])
                             
                             temps_fin = time.time()
 
@@ -265,6 +287,10 @@ def parsingAllParticipantOneMethode():
 
                             temp_area_sliding_4[:,:,i] = area_best_4
                             temp_area_sliding_8[:,:,i] = area_best_8
+
+                            temp_area_semantic_0[:,:,i] = semantic0
+                            temp_area_semantic_1[:,:,i] = semantic1
+                            temp_area_semantic_2[:,:,i] = semantic2
 
                             temp_block[:,:,i] = liste_predi_id
 
@@ -298,7 +324,12 @@ def parsingAllParticipantOneMethode():
                         result_area8 = np.zeros((5, 2, duree))
                         result_sliding_area4 = np.zeros((5, 2, duree))
                         result_sliding_area8 = np.zeros((5, 2, duree))
+                        result_semantic_0 = np.zeros((5, 2, duree))
+                        result_semantic_1 = np.zeros((5, 2, duree))
+                        result_semantic_2 = np.zeros((5, 2, duree))
                         result_block = np.zeros((5, 2, duree))
+
+                        result_norme = np.zeros((5, 2, duree))
 
                         time_indice = 0
 
@@ -309,7 +340,12 @@ def parsingAllParticipantOneMethode():
                                 result_area8[:,:,t] = temp_area8[:,:,time_indice]
                                 result_sliding_area4[:,:,t] = temp_area_sliding_4[:,:,time_indice]
                                 result_sliding_area8[:,:,t] = temp_area_sliding_8[:,:,time_indice]
+                                result_semantic_0[:,:,t] = temp_area_semantic_0[:,:,time_indice]
+                                result_semantic_1[:,:,t] = temp_area_semantic_1[:,:,time_indice]
+                                result_semantic_2[:,:,t] = temp_area_semantic_2[:,:,time_indice]
                                 result_block[:,:,t] = temp_block[:,:,time_indice]
+
+                                result_norme[:,:,t] = norme_array[:,:,time_indice]
 
                                 time_indice += 1
 
@@ -318,7 +354,12 @@ def parsingAllParticipantOneMethode():
                                 result_area8[:,:,t] = result_area8[:,:,t-1]
                                 result_sliding_area4[:,:,t] = result_sliding_area4[:,:,t-1]
                                 result_sliding_area8[:,:,t] = result_sliding_area8[:,:,t-1]
+                                result_semantic_0[:,:,t] = result_semantic_0[:,:,t-1]
+                                result_semantic_1[:,:,t] = result_semantic_1[:,:,t-1]
+                                result_semantic_2[:,:,t] = result_semantic_2[:,:,t-1]
                                 result_block[:,:,t] = result_block[:,:,t-1]
+
+                                result_norme[:,:,t] = result_norme[:,:,t-1]
 
                         area_prediction = [result_area4,result_area8,result_sliding_area4,result_sliding_area8]
 
@@ -396,6 +437,25 @@ def parsingAllParticipantOneMethode():
                                 global_nb_analyse_release_area_strong[position][method_pos] += nb_analyse_area_release
 
 
+                        result_semantic_1b = np.where(result_semantic_1 == 2, 0, result_semantic_1)
+
+                        list_semantic = [result_semantic_0, result_semantic_1, result_semantic_2, result_semantic_1b]
+
+                        for lvl,semantic in enumerate(list_semantic):
+                            for position, prediction in enumerate(semantic):
+                                # Analyse max min dist
+                                (
+                                    analyse_grasp,
+                                    nb_analyse_grasp,
+                                    analyse_release,
+                                    nb_analyse_release,
+                                ) = analyseSemanticBis(world, prediction, timestamp_action,str(model.path).split("/")[-1],lvl)
+                                
+                                global_analyse_semantic_grasp[lvl][method_pos][position] = global_analyse_semantic_grasp[lvl][method_pos][position] + analyse_grasp
+                                global_analyse_semantic_release[lvl][method_pos][position] = global_analyse_semantic_release[lvl][method_pos][position] + analyse_release
+
+                            global_nb_analyse_semantic_grasp[lvl][method_pos] += nb_analyse_grasp
+                            global_nb_analyse_semantic_release[lvl][method_pos] += nb_analyse_release
 
 
                         for position, prediction in enumerate(block_prediction):
@@ -414,6 +474,22 @@ def parsingAllParticipantOneMethode():
                         global_nb_analyse_release_block[method_pos] += nb_analyse_release
 
 
+                        for position in range(nb_predi):
+                            (
+                                analyse_grasp,
+                                nb_analyse_grasp,
+                                analyse_release,
+                                nb_analyse_release,
+                            ) = analyseNorme(result_norme[position], timestamp_action)
+
+                            global_analyse_norme_grasp[method_pos][position] += analyse_grasp
+                            global_analyse_norme_release[method_pos][position] += analyse_release
+
+                        global_nb_analyse_norme_grasp[method_pos] += nb_analyse_grasp
+                        global_nb_analyse_norme_release[method_pos] += nb_analyse_release
+
+
+
         if analyse:
             for position in range(nb_predi):
                 print("***")
@@ -426,7 +502,7 @@ def parsingAllParticipantOneMethode():
                 )
 
 
-    results = np.zeros((18,2,nb_predi,6001))
+    results = np.zeros((28,2,nb_predi,6001))
 
     results[0] = global_analyse_grasp_area_weak[0]
     results[1] = global_analyse_grasp_area_weak[1]
@@ -444,10 +520,20 @@ def parsingAllParticipantOneMethode():
     results[13] = global_analyse_release_area_strong[1]
     results[14] = global_analyse_release_area_strong[2]
     results[15] = global_analyse_release_area_strong[3]
-    results[16] = global_analyse_grasp_block
-    results[17] = global_analyse_release_block
+    results[16] = global_analyse_semantic_grasp[0]
+    results[17] = global_analyse_semantic_grasp[1]
+    results[18] = global_analyse_semantic_grasp[2]
+    results[19] = global_analyse_semantic_grasp[3]
+    results[20] = global_analyse_semantic_release[0]
+    results[21] = global_analyse_semantic_release[1]
+    results[22] = global_analyse_semantic_release[2]
+    results[23] = global_analyse_semantic_release[3]
+    results[24] = global_analyse_grasp_block
+    results[25] = global_analyse_release_block
+    results[26] = global_analyse_norme_grasp
+    results[27] = global_analyse_norme_release
 
-    nb_prediction = np.zeros((18,2,6001))
+    nb_prediction = np.zeros((28,2,6001))
 
     nb_prediction[0] = global_nb_analyse_grasp_area_weak[0]
     nb_prediction[1] = global_nb_analyse_grasp_area_weak[1]
@@ -465,8 +551,18 @@ def parsingAllParticipantOneMethode():
     nb_prediction[13] = global_nb_analyse_release_area_strong[1]
     nb_prediction[14] = global_nb_analyse_release_area_strong[2]
     nb_prediction[15] = global_nb_analyse_release_area_strong[3]
-    nb_prediction[16] = global_nb_analyse_grasp_block
-    nb_prediction[17] = global_nb_analyse_release_block
+    nb_prediction[16] = global_nb_analyse_semantic_grasp[0]
+    nb_prediction[17] = global_nb_analyse_semantic_grasp[1]
+    nb_prediction[18] = global_nb_analyse_semantic_grasp[2]
+    nb_prediction[19] = global_nb_analyse_semantic_grasp[3]
+    nb_prediction[20] = global_nb_analyse_semantic_release[0]
+    nb_prediction[21] = global_nb_analyse_semantic_release[1]
+    nb_prediction[22] = global_nb_analyse_semantic_release[2]
+    nb_prediction[23] = global_nb_analyse_semantic_release[3]
+    nb_prediction[24] = global_nb_analyse_grasp_block
+    nb_prediction[25] = global_nb_analyse_release_block
+    nb_prediction[26] = global_nb_analyse_norme_grasp
+    nb_prediction[27] = global_nb_analyse_norme_release
 
     nom_dossier = saveLog(nom_dossier,results,nb_prediction,duree_execution)
 

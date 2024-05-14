@@ -3,6 +3,7 @@ import math
 import os
 import time
 from datetime import datetime
+import pickle
 
 os.environ['KERAS_BACKEND'] = 'torch'
 import keras
@@ -79,15 +80,22 @@ def parsingAllParticipantOneMethode():
     left = [left_mobile_numpy,left_sitting_numpy]
     right = [right_mobile_numpy,right_sitting_numpy]
 
+
+    liste_duree = []
+
     for method_pos,side in enumerate(left):   
         nb_action = 0
         duree_max = 0
-
+        """
+        Premier passing pour trouver l'action la plus grande
+        """
         for number in side:
             participant = number.numpy().decode('utf-8')
             for model in os.scandir(participant):
+                #On vŕifie que le participant existe et est non problematique (bug dans dataset)
                 if not(participant.split("/")[-1] == "37931545" and str(model.path).split("/")[-1] == "tsb") and not(participant.split("/")[-1] == "30587763" and str(model.path).split("/")[-1] == "tsb") and os.path.exists(str(model.path) + "/table.csv") and os.path.exists(str(model.path) + "/states.csv"):
                     
+                    #On charge les données
                     gaze_point = np.genfromtxt(
                         model.path + "/table.csv", delimiter=","
                     )
@@ -98,13 +106,14 @@ def parsingAllParticipantOneMethode():
 
 
                     
-
+                    #Compte de taille nombre d'action
                     compte = np.zeros((world.shape[0] - 1))
-                    nb_action += world.shape[0] - 1
+                    nb_action += world.shape[0] - 2
 
                     t_init = gaze_point[1,0]
                     indice = 0
 
+                    #On mesure la longueur de chaque action
                     for t in range(1,gaze_point.shape[0]):
                         
                         t_gaze = gaze_point[t,0]
@@ -114,6 +123,10 @@ def parsingAllParticipantOneMethode():
 
                         compte[indice] += 1
 
+                    for u in range(compte.shape[0]):
+                        liste_duree.append(compte[u])
+
+                    #Si l'action est plus grande que duree_max, on actualise duree_max
                     if duree_max < compte.max():
                         duree_max = compte.max()
                         print("Max:", str(model.path))
@@ -121,8 +134,15 @@ def parsingAllParticipantOneMethode():
                 
 
                 
-
+        sorted_data = sorted(liste_duree)
+    
+        # Trouvez l'indice correspondant à 90% des valeurs
+        good_index = int(0.95 * len(sorted_data))
         
+        # Récupérez la valeur à cet indice
+        good_size = int(sorted_data[good_index])
+        
+        print("indice 95%",good_size)
 
         print(nb_action)
         print(duree_max)
@@ -137,14 +157,19 @@ def parsingAllParticipantOneMethode():
         
 
 
-        
+        """
+        deuxieme passing pour recuperer l'ensemble des actions (découpage par action) + faire la matrice des proba theorique
+
+        On le fait en nb_predi fois afin de limiter l'utilisation d ela ram au detriment du temps
+        """
         for k in range(nb_predi):
             print('modele'+ str(5*method_pos+k)+'.h5')
-            training = np.zeros ((nb_action,int(duree_max),nb_area_1), dtype = np.float32)
+            #float32 -> 7 chiffres significatif, cela devrait etre suffissant
+            training = np.zeros ((nb_action,int(good_size),nb_area_1), dtype = np.float32)
 
             print(training.shape)
 
-            y_training = np.zeros((nb_action,2,nb_area_1), dtype = np.float32)
+            y_training = np.zeros((nb_action,nb_area_1), dtype = np.float32)
 
             taille_octets = training.nbytes
 
@@ -154,10 +179,9 @@ def parsingAllParticipantOneMethode():
             compteur_event = 0
             compteur_y_event = 0
 
-            u = 0 
-
-
-
+            """
+            debut deuxieme passing 
+            """
             for number in side:
                 participant = number.numpy().decode('utf-8')
                 for model in os.scandir(participant):
@@ -172,46 +196,63 @@ def parsingAllParticipantOneMethode():
                         world = np.genfromtxt(
                             model.path + "/states.csv", delimiter=","
                         )
-                        
-                        t_init = gaze_point[1,0]
+
                         indice = 0
-                        indice_event = 0
+
+                        #Pour chaque gaze point
                         for t in range(1,gaze_point.shape[0]):
-                            
+                            #On recupere le timestamp
                             t_gaze = gaze_point[t,0]
 
-                            if indice < world.shape[0] - 2 and t_gaze >= world[indice+2,0]:
-
+                            #On vérifie si on n'est pas passé a l'action suivante
+                            if indice < world.shape[0] - 3 and t_gaze >= world[indice+2,0]:
+                                    #compteur d'action (global)
                                     compteur_event += 1
+                                    #compteur d'action (local, cad sur ce participant/cette figure)
                                     indice += 1
+                                    #compteur gaze point lors de cette action
                                     indice_event = 0
 
-                            if str(gaze_point[t,1]) != "nan":
-                                u += 1
-                                result, = parsingOneSituation(gaze_point[t])
-                                training[compteur_event][indice_event]  = result[k]
-                            
-                            indice_event += 1
+                                    previous_data = gaze_point[max(0,t - good_size):t]
+
+                                    if previous_data.shape[0] < good_size:
+                                        previous_data = np.pad(previous_data,((good_size - previous_data.shape[0],0),*[(0, 0)] * (previous_data.ndim - 1)),mode="constant",constant_values=0)
+
+                                    for u in range(previous_data.shape[0]):
+                                        result, = parsingOneSituation(previous_data[u])
+                                        training[compteur_event][u]  = result[k]
+                                    
 
                         compteur_event += 1
 
+                        #construction de y_training
+
+                        #Pour chaque action
                         for t in range(1,world.shape[0]):
+                            #Je parcours la liste des blocs
                             for id_block in range(24):
+                                #Si l'un d'eux est holding
                                 if world[t, 10 * id_block + 10] == 1:
+                                    #Alors a l'instant t on a l'emplacement du grasp
+                                    #Et a l'instant t+1 on a l'emplacement du release
 
                                     taille_bloc = ((((id_block//3)%2)+1)*4)
 
+                                    #Pour t (grasp) 
+                                    #Passage coordonnees a emplacement tenon/coord matrice
                                     x0_grasp = round((48/largeur)*world[t, 10 * id_block + 1])
                                     y0_grasp = round((24/hauteur)*world[t, 10 * id_block + 2])
 
                                     x2_grasp = round((48/largeur)*world[t, 10 * id_block + 5])
                                     y2_grasp = round((48/largeur)*world[t, 10 * id_block + 6])
-
+                                    
+                                    #on change l'emplacement du bloc par 1/taille du bloc
                                     for x_grasp in range(x0_grasp,x2_grasp):
                                         for y_grasp in range(y0_grasp,y2_grasp):
-                                            y_training[compteur_y_event + t - 2][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
-                                            y_training[compteur_y_event + t -1][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
+                                            y_training[compteur_y_event + t - 2][x_grasp *24 + y_grasp] += 1 / taille_bloc
 
+
+                                    #Pour t+1 (release)
                                     x0_release = round((48/largeur)*world[t+1, 10 * id_block + 1])
                                     y0_release = round((24/hauteur)*world[t+1, 10 * id_block + 2])
 
@@ -220,25 +261,21 @@ def parsingAllParticipantOneMethode():
 
                                     for x_release in range(x0_release,x2_release):
                                         for y_release in range(y0_release,y2_release):
-                                            y_training[compteur_y_event + t][1][x_release *24 + y_release] += 1 / taille_bloc
-                                            y_training[compteur_y_event + t - 1][1][x_release *24 + y_release] += 1 / taille_bloc
+                                            y_training[compteur_y_event + t - 1][x_release *24 + y_release] += 1 / taille_bloc
                             
-                        compteur_y_event += world.shape[0] - 1
+                        compteur_y_event += world.shape[0] - 2
 
-            print("u:", u)
-            print(compteur_event)
-            print(np.max(np.sum(y_training,axis=(1,2))))
+
 
 
         
 
             # Définir la forme de l'entrée
-            input_layer = Input(shape=(int(duree_max), nb_area_1))
+            input_layer = Input(shape=(int(good_size), nb_area_1))
 
             # Construire le reste du modèle
-            x = LSTM(int(duree_max))(input_layer)
-            x = Dense(2 * nb_area_1, activation='relu')(x)
-            x = Reshape((2, nb_area_1))(x)
+            x = LSTM(int(good_size))(input_layer)
+            x = Dense(nb_area_1, activation='relu')(x)
 
             # Créer le modèle en spécifiant les entrées et les sorties
             model = Model(inputs=input_layer, outputs=x)
@@ -249,32 +286,15 @@ def parsingAllParticipantOneMethode():
 
             model.save('test_modele'+ str(5*method_pos+k)+'_LSTM.keras')
 
+            # Enregistrer l'historique dans un fichier
+            with open('history_'+str(k)+'.pkl', 'wb') as f:
+                pickle.dump(history.history, f)
+
             print(model.summary())
 
 
-            # Définir la forme de l'entrée
-            input_layer2 = Input(shape=(int(duree_max), nb_area_1))
-
-            # Construire le reste du modèle
-            y = GRU(int(duree_max))(input_layer2)
-            y = Dense(2 * nb_area_1, activation='relu')(y)
-            y = Reshape((2, nb_area_1))(y)
-
-            # Créer le modèle en spécifiant les entrées et les sorties
-            model2 = Model(inputs=input_layer2, outputs=y)
-            model2.compile(optimizer='adam', loss='mean_squared_error')  # Choisir l'optimiseur et la fonction de perte appropriés
-
-            # Entraîner le modèle
-            history = model2.fit(training, y_training, epochs=10, batch_size=32, validation_split=0.2)
-
-            model.save('test_modele'+ str(5*method_pos+k)+'_GRU.keras')
-
-            print(model2.summary())
-
     return
     
-
-
 
 
 if __name__ == "__main__":

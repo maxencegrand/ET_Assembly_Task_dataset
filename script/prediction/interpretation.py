@@ -5,6 +5,8 @@ import time
 
 from tools import liste_tenon_bloc
 
+from enum import Enum
+
 plot_1 = False
 analyse = True
 plot_analyse = False
@@ -19,10 +21,39 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone_table = np.genfromtxt("../csv/zone_table.csv", delimiter=",")
+
+array_zone_left = np.genfromtxt("../csv/zone_left.csv", delimiter=",")
+array_zone_middle = np.genfromtxt("../csv/zone_middle.csv", delimiter=",")
+array_zone_right = np.genfromtxt("../csv/zone_right.csv", delimiter=",")
+
+array_zone_blue = np.genfromtxt("../csv/zone_blue.csv", delimiter=",")
+array_zone_red = np.genfromtxt("../csv/zone_red.csv", delimiter=",")
+array_zone_green = np.genfromtxt("../csv/zone_green.csv", delimiter=",")
+array_zone_yellow = np.genfromtxt("../csv/zone_yellow.csv", delimiter=",")
+
+array_zone_car = np.genfromtxt("../csv/zone_car.csv", delimiter=",")
+array_zone_house = np.genfromtxt("../csv/zone_house.csv", delimiter=",")
+array_zone_sc = np.genfromtxt("../csv/zone_sc.csv", delimiter=",")
+array_zone_tb = np.genfromtxt("../csv/zone_tb.csv", delimiter=",")
+array_zone_tc = np.genfromtxt("../csv/zone_tc.csv", delimiter=",")
+array_zone_tsb = np.genfromtxt("../csv/zone_tsb.csv", delimiter=",")
+
+class Level0(Enum):
+    TABLE = 1
+
+
+class Level1(Enum):
+    LEFT = 1
+    MIDDLE = 2
+    RIGHT = 3
+
+class Level2(Enum):
+    BLUE = 1
+    RED = 2
+    GREEN = 3
+    YELLOW = 4
+    FIG = 5
 
 """
 bestAreaMax renvoi l'emplacement de la meilleur zone 8x8 
@@ -74,6 +105,90 @@ def bestAreaMax(zone):
 
     return indice_min_4,indice_min_8
 
+
+def semantic_prediction_level0(zone):
+    score = np.zeros((1))
+    liste_zone = [array_zone_table]
+    for zone_id,zone_coord in enumerate(liste_zone):
+        x0 = zone_coord[1,0]
+        y0 = zone_coord[1,1]
+
+        x1 = zone_coord[1,2]
+        y1 = zone_coord[1,3]
+
+        somme = 0
+        count = 0
+
+        for x in range(int(x0),int(x1)):
+            for y in range(int(y0),int(y1)):
+                indice = x * 24 + y
+                somme += zone[indice]
+                count += 1
+
+        score[zone_id] = somme / count
+
+    return score.argmax()
+
+def semantic_prediction_level1(zone):
+    score = np.zeros((3))
+    liste_zone = [array_zone_left,array_zone_middle,array_zone_right]
+    for zone_id,zone_coord in enumerate(liste_zone):
+        x0 = zone_coord[1,0]
+        y0 = zone_coord[1,1]
+
+        x1 = zone_coord[1,2]
+        y1 = zone_coord[1,3]
+
+        somme = 0
+        count = 0
+
+        for x in range(int(x0),int(x1)):
+            for y in range(int(y0),int(y1)):
+                indice = x * 24 + y
+                somme += zone[indice]
+                count += 1
+
+        score[zone_id] = somme / count
+
+    return score.argmax()
+
+def semantic_prediction_level2(zone,fig):
+    score = np.zeros((5))
+    liste_zone = [array_zone_blue,array_zone_red,array_zone_green,array_zone_yellow]
+    if fig == "car":
+        liste_zone.append(array_zone_car)
+    if fig == "house":
+        liste_zone.append(array_zone_house)
+    if fig == "sc":
+        liste_zone.append(array_zone_sc)
+    if fig == "tb":
+        liste_zone.append(array_zone_tb)
+    if fig == "tc":
+        liste_zone.append(array_zone_tc)
+    if fig == "tsb":
+        liste_zone.append(array_zone_tsb)
+
+    for zone_id,zone_coord in enumerate(liste_zone):
+        x0 = zone_coord[1,0]
+        y0 = zone_coord[1,1]
+
+        x1 = zone_coord[1,2]
+        y1 = zone_coord[1,3]
+
+        somme = 0
+        count = 0
+
+        for x in range(int(x0),int(x1)):
+            for y in range(int(y0),int(y1)):
+                indice = x * 24 + y
+                somme += zone[indice]
+                count += 1
+
+        score[zone_id] = somme / count
+
+    return score.argmax()
+
+
 """
 interpretation renvoi les prediction des zones d'action ainsi que les prediction de grasp/ref
 
@@ -90,7 +205,7 @@ area_best: la prediction de zone glissante
 liste_predi_id: Prediction de bloc (grasp lors des grasp et ref lors des releases)
 
 """
-def interpretation(probability, timestamp_indice,world):
+def interpretation(probability, timestamp_indice,world,fig):
 
     ################################################
     ############# Prediction Zone Fixe #############
@@ -129,6 +244,51 @@ def interpretation(probability, timestamp_indice,world):
     area_best_4[2][1], area_best_8[2][1] = bestAreaMax(area1[2][1])
     area_best_4[3][1], area_best_8[3][1] = bestAreaMax(area1[3][1])
     area_best_4[4][1], area_best_8[4][1] = bestAreaMax(area1[4][1])
+
+    ################################################
+    ########### Prediction Zone Semantic 0 #########
+    ################################################
+
+    area_semantique_0 = np.zeros((5, 2))
+    area_semantique_1 = np.zeros((5, 2))
+    area_semantique_2 = np.zeros((5, 2))
+
+    
+    area_semantique_0[0][0] = semantic_prediction_level0(area1[0][0])
+    area_semantique_0[1][0] = semantic_prediction_level0(area1[1][0])
+    area_semantique_0[2][0] = semantic_prediction_level0(area1[2][0])
+    area_semantique_0[3][0] = semantic_prediction_level0(area1[3][0])
+    area_semantique_0[4][0] = semantic_prediction_level0(area1[4][0])
+
+    area_semantique_0[0][1] = semantic_prediction_level0(area1[0][1])
+    area_semantique_0[1][1] = semantic_prediction_level0(area1[1][1])
+    area_semantique_0[2][1] = semantic_prediction_level0(area1[2][1])
+    area_semantique_0[3][1] = semantic_prediction_level0(area1[3][1])
+    area_semantique_0[4][1] = semantic_prediction_level0(area1[4][1])
+
+    area_semantique_1[0][0] = semantic_prediction_level1(area1[0][0])
+    area_semantique_1[1][0] = semantic_prediction_level1(area1[1][0])
+    area_semantique_1[2][0] = semantic_prediction_level1(area1[2][0])
+    area_semantique_1[3][0] = semantic_prediction_level1(area1[3][0])
+    area_semantique_1[4][0] = semantic_prediction_level1(area1[4][0])
+
+    area_semantique_1[0][1] = semantic_prediction_level1(area1[0][1])
+    area_semantique_1[1][1] = semantic_prediction_level1(area1[1][1])
+    area_semantique_1[2][1] = semantic_prediction_level1(area1[2][1])
+    area_semantique_1[3][1] = semantic_prediction_level1(area1[3][1])
+    area_semantique_1[4][1] = semantic_prediction_level1(area1[4][1])
+
+    area_semantique_2[0][0] = semantic_prediction_level2(area1[0][0],fig)
+    area_semantique_2[1][0] = semantic_prediction_level2(area1[1][0],fig)
+    area_semantique_2[2][0] = semantic_prediction_level2(area1[2][0],fig)
+    area_semantique_2[3][0] = semantic_prediction_level2(area1[3][0],fig)
+    area_semantique_2[4][0] = semantic_prediction_level2(area1[4][0],fig)
+
+    area_semantique_2[0][1] = semantic_prediction_level2(area1[0][1],fig)
+    area_semantique_2[1][1] = semantic_prediction_level2(area1[1][1],fig)
+    area_semantique_2[2][1] = semantic_prediction_level2(area1[2][1],fig)
+    area_semantique_2[3][1] = semantic_prediction_level2(area1[3][1],fig)
+    area_semantique_2[4][1] = semantic_prediction_level2(area1[4][1],fig)
 
     ################################################
     ############### Prediction Grasp ###############
@@ -188,4 +348,4 @@ def interpretation(probability, timestamp_indice,world):
     liste_predi_id[4,1] = proba[4,1,:].argmax()
 
 
-    return area4max_indices,area8max_indices,area_best_4,area_best_8,liste_predi_id
+    return area4max_indices,area8max_indices,area_best_4,area_best_8, area_semantique_0, area_semantique_1, area_semantique_2, liste_predi_id
