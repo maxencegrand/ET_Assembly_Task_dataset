@@ -5,12 +5,14 @@ import time
 from datetime import datetime
 import pickle
 
+
 os.environ['KERAS_BACKEND'] = 'torch'
 import keras
 from keras.models import Sequential,Model
 from keras.layers import GRU, LSTM, Dense, Reshape, Input
 
 from feature_computation import parsingOneSituation
+from seed import liste_seed
 
 plot_1 = False
 analyse = True
@@ -31,6 +33,7 @@ array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
 array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
 array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
 
+seeds = liste_seed()
 
 
 
@@ -45,7 +48,7 @@ Output
 
 None
 """
-def parsingAllParticipantOneMethode():
+def parsingAllParticipantOneMethode(seed):
 
     # Obtention de la date et de l'heure actuelle
     date_heure_actuelle = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -69,11 +72,11 @@ def parsingAllParticipantOneMethode():
     
     print(liste_participant_mobile)
 
-    left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8)
+    left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8, seed = seed)
     left_mobile_numpy = list(left_mobile)
     right_mobile_numpy = list(right_mobile)
 
-    left_sitting, right_sitting = keras.utils.split_dataset(np.array(liste_participant_sitting), left_size=0.8)
+    left_sitting, right_sitting = keras.utils.split_dataset(np.array(liste_participant_sitting), left_size=0.8, seed = seed)
     left_sitting_numpy = list(left_sitting)
     right_sitting_numpy = list(right_sitting)
 
@@ -135,6 +138,12 @@ def parsingAllParticipantOneMethode():
 
                 
         sorted_data = sorted(liste_duree)
+
+        
+
+
+
+
     
         # Trouvez l'indice correspondant à 90% des valeurs
         good_index = int(0.95 * len(sorted_data))
@@ -167,7 +176,7 @@ def parsingAllParticipantOneMethode():
             #float32 -> 7 chiffres significatif, cela devrait etre suffissant
             training = np.zeros ((nb_action,int(good_size),nb_area_1), dtype = np.float32)
 
-            print(training.shape)
+            print("t",training.shape)
 
             y_training = np.zeros((nb_action,nb_area_1), dtype = np.float32)
 
@@ -176,7 +185,7 @@ def parsingAllParticipantOneMethode():
             # Afficher la taille en octets
             print("Taille du tableau en octets:", taille_octets/(1024 ** 3))
 
-            compteur_event = 0
+            compteur_event = -1
             compteur_y_event = 0
 
             """
@@ -185,7 +194,6 @@ def parsingAllParticipantOneMethode():
             for number in side:
                 participant = number.numpy().decode('utf-8')
                 for model in os.scandir(participant):
-
 
                     if not(participant.split("/")[-1] == "37931545" and str(model.path).split("/")[-1] == "tsb") and not(participant.split("/")[-1] == "30587763" and str(model.path).split("/")[-1] == "tsb") and os.path.exists(
                         str(model.path) + "/table.csv"
@@ -197,7 +205,7 @@ def parsingAllParticipantOneMethode():
                             model.path + "/states.csv", delimiter=","
                         )
 
-                        indice = 0
+                        indice = 1
 
                         #Pour chaque gaze point
                         for t in range(1,gaze_point.shape[0]):
@@ -205,7 +213,7 @@ def parsingAllParticipantOneMethode():
                             t_gaze = gaze_point[t,0]
 
                             #On vérifie si on n'est pas passé a l'action suivante
-                            if indice < world.shape[0] - 3 and t_gaze >= world[indice+2,0]:
+                            if indice < world.shape[0] - 1 and t_gaze >= world[indice + 1,0]:
                                     #compteur d'action (global)
                                     compteur_event += 1
                                     #compteur d'action (local, cad sur ce participant/cette figure)
@@ -221,9 +229,9 @@ def parsingAllParticipantOneMethode():
                                     for u in range(previous_data.shape[0]):
                                         result, = parsingOneSituation(previous_data[u])
                                         training[compteur_event][u]  = result[k]
-                                    
 
-                        compteur_event += 1
+                                    
+                                    
 
                         #construction de y_training
 
@@ -263,11 +271,8 @@ def parsingAllParticipantOneMethode():
                                         for y_release in range(y0_release,y2_release):
                                             y_training[compteur_y_event + t - 1][x_release *24 + y_release] += 1 / taille_bloc
                             
+
                         compteur_y_event += world.shape[0] - 2
-
-
-
-
         
 
             # Définir la forme de l'entrée
@@ -284,10 +289,10 @@ def parsingAllParticipantOneMethode():
             # Entraîner le modèle
             history = model.fit(training, y_training, epochs=10, batch_size=32, validation_split=0.2)
 
-            model.save('test_modele'+ str(5*method_pos+k)+'_LSTM.keras')
+            model.save(str(seed)+'_modele'+ str(5*method_pos+k)+'_LSTM.keras')
 
             # Enregistrer l'historique dans un fichier
-            with open('history_'+str(k)+'.pkl', 'wb') as f:
+            with open('history_'+ str(seed) + "_" + str(5*method_pos+k)+'.pkl', 'wb') as f:
                 pickle.dump(history.history, f)
 
             print(model.summary())
@@ -298,4 +303,5 @@ def parsingAllParticipantOneMethode():
 
 
 if __name__ == "__main__":
-    parsingAllParticipantOneMethode()
+    for seed in seeds:
+        parsingAllParticipantOneMethode(seed)

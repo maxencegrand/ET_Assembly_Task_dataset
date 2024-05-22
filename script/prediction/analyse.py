@@ -610,9 +610,9 @@ def trueSemanticBis(world,fig,level):
     
     if level == 0:
         liste_zone = [[array_zone_table]]
-    if level == 1:
+    elif level == 1:
         liste_zone = [[array_zone_left],[array_zone_middle],[array_zone_right]]
-    if level == 2:
+    elif level == 2:
         liste_zone = [[array_zone_blue],[array_zone_red],[array_zone_green],[array_zone_yellow]]
         if fig == "car":
             liste_zone.append([array_zone_car])
@@ -672,8 +672,6 @@ def trueSemanticBis(world,fig,level):
 
                 for zones_id,zones in enumerate(liste_zone):
                     for zone_id,zone in enumerate(zones):
-
-                        
                         if zone[1,0] <= x0 \
                             and x0 <= zone[1,2]\
                             and zone[1,1] <= y0\
@@ -691,7 +689,7 @@ def analyseSemanticBis(world, history_prediction,timestamp_action, fig, level):
     
 
     # Declaration des variables
-    liste_semantic = trueSemanticBis(world,fig,level)  
+    liste_semantic = trueSemanticBis(world,fig,level)
     analyse_grasp = np.zeros((6001))
     nb_analyse_grasp = np.zeros((6001))
 
@@ -704,6 +702,7 @@ def analyseSemanticBis(world, history_prediction,timestamp_action, fig, level):
             if (t - 1) % 2 == 0:
                 if history_prediction[0][time] == liste_semantic[t - 1]:
                     analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
+
                 nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
             else:
                 

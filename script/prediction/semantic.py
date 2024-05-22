@@ -53,11 +53,11 @@ def generateLeftZone():
 
 
 def generateMiddleZone():
-    x0 = 18
-    y0 = 8
+    x0 = 14
+    y0 = 4
 
     x2 = 34
-    y2 = 20
+    y2 = 18
 
     data = [
         ['x0', 'y0', 'x2', 'y2'],
@@ -251,10 +251,10 @@ def generateTcZone():
 
 
 def generateTsbZone():
-    x0 = 13
+    x0 = 23
     y0 = 8
 
-    x2 = 23
+    x2 = 33
     y2 = 14
 
     data = [

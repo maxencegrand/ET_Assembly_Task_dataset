@@ -90,13 +90,13 @@ if __name__ == "__main__":
 
         semantic_grasp_0 = results[16]
         semantic_grasp_1 = results[17]
-        semantic_grasp_1b = results[18]
-        semantic_grasp_2 = results[19]
+        semantic_grasp_1b = results[19]
+        semantic_grasp_2 = results[18]
 
         semantic_release_0 = results[20]
         semantic_release_1 = results[21]
-        semantic_release_1b = results[22]
-        semantic_release_2 = results[23]
+        semantic_release_1b = results[23]
+        semantic_release_2 = results[22]
 
         block_grasp = results[24]
         block_release = results[25]
@@ -127,13 +127,13 @@ if __name__ == "__main__":
 
         nb_semantic_grasp_0 = nb_prediction[16]
         nb_semantic_grasp_1 = nb_prediction[17]
-        nb_semantic_grasp_1b = nb_prediction[18]
-        nb_semantic_grasp_2 = nb_prediction[19]
+        nb_semantic_grasp_1b = nb_prediction[19]
+        nb_semantic_grasp_2 = nb_prediction[18]
 
         nb_semantic_release_0 = nb_prediction[20]
         nb_semantic_release_1 = nb_prediction[21]
-        nb_semantic_release_1b = nb_prediction[22]
-        nb_semantic_release_2 = nb_prediction[23]
+        nb_semantic_release_1b = nb_prediction[23]
+        nb_semantic_release_2 = nb_prediction[22]
 
         nb_block_grasp = nb_prediction[24]
         nb_block_release = nb_prediction[25]
@@ -152,12 +152,12 @@ if __name__ == "__main__":
 
         showComparaisonAlgorithm(semantic_grasp_0,nb_semantic_grasp_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 0",100/1,100/1)
         showComparaisonAlgorithm(semantic_grasp_1,nb_semantic_grasp_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1",100/3,100/3)
-        showComparaisonAlgorithm(semantic_grasp_1b,nb_semantic_grasp_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1 bis",100/3,100/3)
+        showComparaisonAlgorithm(semantic_grasp_1b,nb_semantic_grasp_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1 bis",100/2,100/2)
         showComparaisonAlgorithm(semantic_grasp_2,nb_semantic_grasp_2,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 2",100/5,100/5)
         
         showComparaisonAlgorithm(semantic_release_0,nb_semantic_release_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 0",100/1,100/1)
         showComparaisonAlgorithm(semantic_release_1,nb_semantic_release_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1",100/3,100/3)
-        showComparaisonAlgorithm(semantic_release_1b,nb_semantic_release_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1 bis",100/3,100/3)
+        showComparaisonAlgorithm(semantic_release_1b,nb_semantic_release_1b,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 1 bis",100/2,100/2)
         showComparaisonAlgorithm(semantic_release_2,nb_semantic_release_2,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Release 2",100/5,100/5)
         
         

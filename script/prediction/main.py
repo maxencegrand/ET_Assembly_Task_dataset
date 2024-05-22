@@ -147,7 +147,7 @@ def parsingAllParticipantOneMethode():
 
                         print("---------------------------")
                         print("Partcipant :", str(model.path).split("/")[-2], str(model.path).split("/")[-1], method_pos)
-
+                        
                         #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(model.path).split("/")[-2] + "/" + str(model.path).split("/")[-1])  
 
                         if  method_pos == 0:

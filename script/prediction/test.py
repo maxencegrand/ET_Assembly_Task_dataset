@@ -1,20 +1,27 @@
-
+import pickle
 import matplotlib.pyplot as plt
-import matplotlib
-import numpy as np
-import os
 
+# Charger le fichier history_0.pkl
+with open('old_model_2/history_3.pkl', 'rb') as f:
+    history = pickle.load(f)
 
-import numpy as np
+# Afficher les clés disponibles dans l'historique
+print(history.keys())
 
-import numpy as np
+# Extraire les données d'historique
+loss = history['loss']
+# Ajouter d'autres métriques si elles sont disponibles dans votre fichier history_0.pkl
 
-# Suppose que vous avez un tableau NumPy appelé 'arr'
-arr = np.array([[1, 2, 3],
-                [4, 2, 6],
-                [2, 8, 9]])
+# Extraire les données d'historique
+val_loss = history['val_loss']
 
-# Remplacer les 2 par 0
-arr = np.where(arr == 2, 0, arr)
+# Plot
+plt.plot(loss, label='Perte (loss)')
+plt.plot(val_loss, label='Perte (val_loss)')
+# Ajouter d'autres métriques si elles sont disponibles dans votre fichier history_0.pkl
 
-print(arr)
+plt.xlabel('Epochs')
+plt.ylabel('Valeurs')
+plt.title('Évolution de la perte (loss) au cours des epochs')
+plt.legend()
+plt.show()

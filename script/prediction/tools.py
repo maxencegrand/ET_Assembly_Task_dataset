@@ -569,8 +569,8 @@ def liste_tenon_bloc(world):
 
 def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
-    np.savetxt(nom_fichier + "/results.csv", results.reshape(26,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_fichier + "/nb_prediction.csv", nb_prediction.reshape(26,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "/results.csv", results.reshape(28,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(nom_fichier + "/nb_prediction.csv", nb_prediction.reshape(28,-1), delimiter=',',fmt='%.4f')
 
     with open(nom_fichier + "/time.csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
