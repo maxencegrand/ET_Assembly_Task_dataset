@@ -38,8 +38,13 @@ def low_level_naif(feature,timestamp,timestamp_action,timestamp_indice,past_prob
 
     new_probability = np.zeros((5, 2, nb_area_1))
     new_probability_score = np.zeros((5, 2, nb_area_1))
-        
-    if timestamp_indice < len(timestamp_action)-1 and timestamp == timestamp_action[timestamp_indice]:
+
+    #print("------")
+    #print(timestamp_indice)
+    #print(timestamp_action)
+    #print(timestamp)
+
+    if timestamp_indice < len(timestamp_action)-1 and timestamp >= timestamp_action[timestamp_indice]:
 
 
         new_probability_score[0, (timestamp_indice + 1) % 2] = past_probability_score[0, (timestamp_indice + 1) % 2] + feature[0]

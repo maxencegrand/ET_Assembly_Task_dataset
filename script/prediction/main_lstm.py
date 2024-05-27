@@ -110,13 +110,14 @@ def parsingAllParticipantOneMethode():
     print(liste_participant_mobile)
 
     liste_seeds = liste_seed()
+    
     for seed in liste_seeds:
 
-        left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8, seed = seed)
+        left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8, shuffle=True, seed = int(seed))
         left_mobile_numpy = list(left_mobile)
         right_mobile_numpy = list(right_mobile)
 
-        left_sitting, right_sitting = keras.utils.split_dataset(np.array(liste_participant_sitting), left_size=0.8, seed = seed)
+        left_sitting, right_sitting = keras.utils.split_dataset(np.array(liste_participant_sitting), left_size=0.8, shuffle=True, seed = int(seed))
         left_sitting_numpy = list(left_sitting)
         right_sitting_numpy = list(right_sitting)
 

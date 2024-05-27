@@ -233,17 +233,17 @@ def interpretation(probability, timestamp_indice,world,fig):
     area_best_4 = np.zeros((5, 2))
     area_best_8 = np.zeros((5, 2))
     
-    area_best_4[0][0],area_best_8[0][0] = bestAreaMax(area1[0][0])
-    area_best_4[1][0],area_best_8[1][0] = bestAreaMax(area1[1][0])
-    area_best_4[2][0],area_best_8[2][0] = bestAreaMax(area1[2][0])
-    area_best_4[3][0],area_best_8[3][0] = bestAreaMax(area1[3][0])
-    area_best_4[4][0],area_best_8[4][0] = bestAreaMax(area1[4][0])
+    #area_best_4[0][0],area_best_8[0][0] = bestAreaMax(area1[0][0])
+    #area_best_4[1][0],area_best_8[1][0] = bestAreaMax(area1[1][0])
+    #area_best_4[2][0],area_best_8[2][0] = bestAreaMax(area1[2][0])
+    #area_best_4[3][0],area_best_8[3][0] = bestAreaMax(area1[3][0])
+    #area_best_4[4][0],area_best_8[4][0] = bestAreaMax(area1[4][0])
 
-    area_best_4[0][1], area_best_8[0][1] = bestAreaMax(area1[0][1])
-    area_best_4[1][1], area_best_8[1][1] = bestAreaMax(area1[1][1])
-    area_best_4[2][1], area_best_8[2][1] = bestAreaMax(area1[2][1])
-    area_best_4[3][1], area_best_8[3][1] = bestAreaMax(area1[3][1])
-    area_best_4[4][1], area_best_8[4][1] = bestAreaMax(area1[4][1])
+    #area_best_4[0][1], area_best_8[0][1] = bestAreaMax(area1[0][1])
+    #area_best_4[1][1], area_best_8[1][1] = bestAreaMax(area1[1][1])
+    #area_best_4[2][1], area_best_8[2][1] = bestAreaMax(area1[2][1])
+    #area_best_4[3][1], area_best_8[3][1] = bestAreaMax(area1[3][1])
+    #area_best_4[4][1], area_best_8[4][1] = bestAreaMax(area1[4][1])
 
     ################################################
     ########### Prediction Zone Semantic 0 #########

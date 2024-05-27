@@ -8,7 +8,7 @@ def main(argument):
 def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,action,random_min,random_max):
         plt.close()
         fig, ax = plt.subplots(1, 2)
-
+        
         for ind in [0,1]:
 
             ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][0][::25]/nb_results[ind][::25], linestyle = linestyles[0] , label = list_name[0])
@@ -16,6 +16,11 @@ def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,ac
             ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][2][::25]/nb_results[ind][::25], linestyle = linestyles[2] , label = list_name[2])
             ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][3][::25]/nb_results[ind][::25], linestyle = linestyles[3] , label = list_name[3])
             ax[ind].plot(np.arange(-3000,3001,25),100*results[ind][4][::25]/nb_results[ind][::25], linestyle = linestyles[4] , label = list_name[4])
+
+            indice = FindX(results[ind][2]/nb_results[ind])
+            if indice >= 0:
+                ax[ind].vlines(x=indice - 3000 ,ymin=0,ymax=100,label = "50%", linestyle = linestyles[2], color = "g")
+                ax[ind].set_xticks(list(ax[ind].get_xticks()) + [indice - 3000])
 
             ax[ind].set_title(method[ind],fontsize = 24)
         
@@ -52,10 +57,16 @@ def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,ac
 
         plt.show()
 
+def FindX(array):
+    for i in range(array.shape[0]):
+        if array[i] >= 0.5:
+            return i
+    return -1
+
 if __name__ == "__main__":
     # Vérifier si un argument a été fourni
     if len(sys.argv) != 2:
-        print("Utilisation: python plot_graph.py <path>")
+        print("Utilisation: python3 plot_graph.py <path>")
     else:
         nb_predi = 5
         # Appel de la fonction main avec l'argument fourni
@@ -147,8 +158,8 @@ if __name__ == "__main__":
         showComparaisonAlgorithm(block_grasp,nb_block_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Grasp",100/24,100/24)
         showComparaisonAlgorithm(block_release,nb_block_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions to find Reference Block during Release",100/24,100/24)
 
-        showComparaisonAlgorithm(norme_grasp,nb_norme_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Grasp",0,0)
-        showComparaisonAlgorithm(norme_release,nb_norme_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Release",0,0)
+        showComparaisonAlgorithm(norme_grasp/1152,nb_norme_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Grasp",0,0)
+        showComparaisonAlgorithm(norme_release/1152,nb_norme_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Release",0,0)
 
         showComparaisonAlgorithm(semantic_grasp_0,nb_semantic_grasp_0,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 0",100/1,100/1)
         showComparaisonAlgorithm(semantic_grasp_1,nb_semantic_grasp_1,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Comparison between the different predictions for Semantic Grasp 1",100/3,100/3)

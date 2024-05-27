@@ -57,7 +57,7 @@ def low_level_lstm(input_array,model,timestamp,timestamp_action,timestamp_indice
     
     #print(timestamp, timestamp_action[timestamp_indice])
 
-    if timestamp_indice < len(timestamp_action)-1 and timestamp == timestamp_action[timestamp_indice]:
+    if timestamp_indice < len(timestamp_action)-1 and timestamp >= timestamp_action[timestamp_indice]:
 
         timestamp_indice += 1       
 
