@@ -50,6 +50,7 @@ def parsingOneSituation(gaze_value):
         d_min = math.inf
         i_min = math.inf
 
+        #Distance au bord
         '''
         for z in range(nb_area_1):
             zone = array_zone1[z + 1]
@@ -65,20 +66,23 @@ def parsingOneSituation(gaze_value):
 
         feature[0, i_min] += 1
         feature[1, i_min] += (dist_max - d_min)/(dist_max - dist_min)
-
         '''
+
+        #Distance au centre
         for z in range(nb_area_1):
             zone = array_zone1[z + 1]
             zone_x_mean = (zone[1] + zone[5])/2
             zone_y_mean = (zone[2] + zone[6])/2
             d = math.sqrt((zone_x_mean - gaze_value[1])**2 + (zone_y_mean - gaze_value[2])**2)
             
-            feature[2, z] += (dist_max - d)/(dist_max - dist_min)
-            feature[3, z] += 1/(d-dist_min)
+            feature[2, z] += (dist_max - d)/(dist_max)
+            feature[3, z] += 1/(d)
 
-            K = math.log2((dist_max - dist_min) / (-2*dist_min) + 1)
+            cote = -2*dist_min
+
+            K = math.log2((dist_max) / (cote) + 1)
             
-            feature[4, z] += (K - math.log2((d - dist_min) / (-2*dist_min) + 1))/K
+            feature[4, z] += (K - math.log2((d) / (cote) + 1))/K
 
             if d < d_min:
                 d_min = d

@@ -113,6 +113,8 @@ def parsingAllParticipantOneMethode():
     
     for seed in liste_seeds:
 
+        print("seed", seed)
+
         left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8, shuffle=True, seed = int(seed))
         left_mobile_numpy = list(left_mobile)
         right_mobile_numpy = list(right_mobile)
@@ -154,6 +156,7 @@ def parsingAllParticipantOneMethode():
         
 
         for method_pos,side in enumerate(right):
+
                 input_dims = list_model[method_pos][0].input_shape[1]
                 for number in side:
                     participant = number.numpy().decode('utf-8')
@@ -185,7 +188,9 @@ def parsingAllParticipantOneMethode():
                             proba_juste = np.zeros((world.shape[0] - 1,2,nb_area_1))
 
                             for t in range(1,world.shape[0]):
+                                #Pour chaque bloc
                                 for id_block in range(24):
+                                    #Si le bloc est grasp
                                     if world[t, 10 * id_block + 10] == 1:
 
                                         taille_bloc = ((((id_block//3)%2)+1)*4)
@@ -201,7 +206,7 @@ def parsingAllParticipantOneMethode():
                                                 if t-2 <0:
                                                     print("bdm;lbdfklnbdnfkl")
                                                 proba_juste[t - 2][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
-                                                proba_juste[t -1][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
+                                                proba_juste[t - 1][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
 
                                         x0_release = round((48/largeur)*world[t+1, 10 * id_block + 1])
                                         y0_release = round((24/hauteur)*world[t+1, 10 * id_block + 2])
@@ -284,12 +289,13 @@ def parsingAllParticipantOneMethode():
 
                                 for f in range(nb_predi):
                                     if(max(0,new_indice - 1) % 2 == 0):
-                                        norme_array[f,0] += np.linalg.norm(proba_juste[new_indice] - probability[f,:,i,:], ord=1)
-                                        norme_array[f,1] += np.linalg.norm(proba_juste[new_indice - 1] - probability[f,:,i,:], ord=1)
+                                        norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - probability[f,0,i,:], ord=1)
+                                        norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - probability[f,1,i,:], ord=1)
+                                        
 
                                     else:
-                                        norme_array[f,0] += np.linalg.norm(proba_juste[new_indice - 1] - probability[f,:,i,:], ord=1)
-                                        norme_array[f,1] += np.linalg.norm(proba_juste[new_indice] - probability[f,:,i,:], ord=1)
+                                        norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - probability[f,0,i,:], ord=1)
+                                        norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - probability[f,1,i,:], ord=1)
 
                                 input_indice += 1
                                     

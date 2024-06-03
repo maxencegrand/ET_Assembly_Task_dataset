@@ -139,7 +139,6 @@ def parsingAllParticipantOneMethode():
 
             if method_pos == 0:
                 method = "mobile"
-                continue
             else:
                 method = "stationnary"
             print(method)
@@ -278,7 +277,14 @@ def parsingAllParticipantOneMethode():
                                     if(max(0,new_indice - 1) % 2 == 0):
                                         norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - new_probability[f][0], ord=1)
                                         norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - new_probability[f][1], ord=1)
-                                        
+
+                                        #print(np.sum(proba_juste[new_indice - 1][0]))
+                                        #print(np.sum(new_probability[f][0]))
+                                        #print(norme_array[f,0,i])
+                                        #print(np.sum(proba_juste[new_indice - 1][1]))
+                                        #print(np.sum(new_probability[f][1]))
+                                        #print(norme_array[f,1,i])
+                                        #print("---")
 
                                     else:
                                         norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - new_probability[f][0], ord=1)
@@ -486,7 +492,7 @@ def parsingAllParticipantOneMethode():
                             global_nb_analyse_grasp_block[method_pos] += nb_analyse_grasp
                             global_nb_analyse_release_block[method_pos] += nb_analyse_release
 
-
+                            print("analyse")
                             for position in range(nb_predi):
                                 (
                                     analyse_grasp,

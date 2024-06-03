@@ -732,7 +732,7 @@ def analyseNorme(history_norme,timestamp_action):
 
         for time in range(max(0,timestamp_action[t]-3000),min(timestamp_action[-1],timestamp_action[t] + 3001)):
             if (t - 1) % 2 == 0:
-
+                print(history_norme[0,time])
                 analyse_grasp[time - (timestamp_action[t] - 3000)] += history_norme[0,time]
                 nb_analyse_grasp[time - (timestamp_action[t] - 3000)] += 1
             else:
