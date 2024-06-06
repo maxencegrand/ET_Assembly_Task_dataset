@@ -1,19 +1,10 @@
 # Eye Tracking Assembly Task dataset
 
-## Eye Tracking Configuration
+This work is a part of the LIG-SIC Eyes-Of-Cobot Project.
 
-### Mobile Configuration
+> This work is under development. All data and code will soon be migrated to the [Eyes-of-Cobot gricad group](https://gricad-gitlab.univ-grenoble-alpes.fr/eyesofcobot/eyesofcobot).
 
-### Stationary Configuration
-
-## Assembly Task
 
 ## Dataset
 
-* gazepoint.csv removed
-* All relative coordinates convert into mm/pxl coordinates
-* table states change only with grasp/release event
-* gazepoints are in table.csv/screen.csv
-
-
-## Dataviz
+## Prediction
