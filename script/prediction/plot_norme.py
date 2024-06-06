@@ -11,6 +11,8 @@ def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,ac
         
         for ind in [0,1]:
 
+            ax[ind].set_xticks(list(ax[ind].get_xticks()) + [-3000,-2000,-1000,0])
+
             ax[ind].plot(np.arange(-3000,3001,25),results[ind][0][::25]/nb_results[ind][::25], linestyle = linestyles[0] , label = list_name[0])
             ax[ind].plot(np.arange(-3000,3001,25),results[ind][1][::25]/nb_results[ind][::25], linestyle = linestyles[1] , label = list_name[1])
             ax[ind].plot(np.arange(-3000,3001,25),results[ind][2][::25]/nb_results[ind][::25], linestyle = linestyles[2] , label = list_name[2])
@@ -37,8 +39,8 @@ def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,ac
         ax[0].legend(loc='upper center', bbox_to_anchor=(1.1, -0.05),
                 fancybox=True, shadow=True, ncol=6, fontsize = 20) 
 
-        ax[0].axis(xmin=-3000, xmax=3000, ymin=0, ymax=2)
-        ax[1].axis(xmin=-3000, xmax=3000, ymin=0, ymax=2)
+        ax[0].axis(xmin=-3000, xmax=0, ymin=1.3, ymax=2)
+        ax[1].axis(xmin=-3000, xmax=0, ymin=1.3, ymax=2)
         
         ax[0].set_xlabel('Time (ms)', fontsize = 22) 
         ax[0].set_ylabel('Percentage of good prediction', fontsize = 22) 
@@ -47,7 +49,7 @@ def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,ac
         ax[1].set_ylabel('Percentage of good prediction', fontsize = 22) 
 
         
-        fig.suptitle(action,fontsize = 30)
+        #fig.suptitle(action,fontsize = 30)
 
 
         plt.show()

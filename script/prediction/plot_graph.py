@@ -2,6 +2,8 @@ from tools import loadLog
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import pyexcel_ods3
+
 def main(argument):
     print("Le nom du fichier fourni est:", argument)
 
@@ -155,36 +157,234 @@ if __name__ == "__main__":
         print(norme_grasp.max() + norme_release.max())
         print(nb_norme_grasp.max() + nb_norme_release.max())
 
+        print(block_grasp.shape,nb_sliding_area4_grasp_weak.shape)
+        for cam in range(0):
+            for f in range(5):
+                print("Feature",f+1)
+                print("t-3",block_grasp[cam][f][0]/nb_block_grasp[cam][0], "t-2", block_grasp[cam][f][1000]/nb_block_grasp[cam][1000], "t-1",block_grasp[cam][f][2000]/nb_block_grasp[cam][2000],"t-0.5",block_grasp[cam][f][2500]/nb_block_grasp[cam][2500],"t",block_grasp[cam][f][3000]/nb_block_grasp[cam][3000])
+                print("t-3",block_release[cam][f][0]/nb_block_release[cam][0], "t-2", block_release[cam][f][1000]/nb_block_release[cam][1000], "t-1",block_release[cam][f][2000]/nb_block_release[cam][2000],"t-0.5",block_release[cam][f][2500]/nb_block_release[cam][2500],"t",block_release[cam][f][3000]/nb_block_release[cam][3000])
+                print("t-3",semantic_grasp_0[cam][f][0]/nb_semantic_grasp_0[cam][0], "t-2", semantic_grasp_0[cam][f][1000]/nb_semantic_grasp_0[cam][1000], "t-1",semantic_grasp_0[cam][f][2000]/nb_semantic_grasp_0[cam][2000],"t-0.5",semantic_grasp_0[cam][f][2500]/nb_semantic_grasp_0[cam][2500],"t",semantic_grasp_0[cam][f][3000]/nb_semantic_grasp_0[cam][3000])
+                print("t-3",semantic_grasp_1[cam][f][0]/nb_semantic_grasp_1[cam][0], "t-2", semantic_grasp_1[cam][f][1000]/nb_semantic_grasp_1[cam][1000], "t-1",semantic_grasp_1[cam][f][2000]/nb_semantic_grasp_1[cam][2000],"t-0.5",semantic_grasp_1[cam][f][2500]/nb_semantic_grasp_1[cam][2500],"t",semantic_grasp_1[cam][f][3000]/nb_semantic_grasp_1[cam][3000])
+                print("t-3",semantic_grasp_1b[cam][f][0]/nb_semantic_grasp_1b[cam][0], "t-2", semantic_grasp_1b[cam][f][1000]/nb_semantic_grasp_1b[cam][1000], "t-1",semantic_grasp_1b[cam][f][2000]/nb_semantic_grasp_1b[cam][2000],"t-0.5",semantic_grasp_1b[cam][f][2500]/nb_semantic_grasp_1b[cam][2500],"t",semantic_grasp_1b[cam][f][3000]/nb_semantic_grasp_1b[cam][3000])
+                print("t-3",semantic_grasp_2[cam][f][0]/nb_semantic_grasp_2[cam][0], "t-2", semantic_grasp_2[cam][f][1000]/nb_semantic_grasp_2[cam][1000], "t-1",semantic_grasp_2[cam][f][2000]/nb_semantic_grasp_2[cam][2000],"t-0.5",semantic_grasp_2[cam][f][2500]/nb_semantic_grasp_2[cam][2500],"t",semantic_grasp_2[cam][f][3000]/nb_semantic_grasp_2[cam][3000])
+                print("t-3",semantic_release_0[cam][f][0]/nb_semantic_release_0[cam][0], "t-2", semantic_release_0[cam][f][1000]/nb_semantic_release_0[cam][1000], "t-1",semantic_release_0[cam][f][2000]/nb_semantic_release_0[cam][2000],"t-0.5",semantic_release_0[cam][f][2500]/nb_semantic_release_0[cam][2500],"t",semantic_release_0[cam][f][3000]/nb_semantic_release_0[cam][3000])
+                print("t-3",semantic_release_1[cam][f][0]/nb_semantic_release_1[cam][0], "t-2", semantic_release_1[cam][f][1000]/nb_semantic_release_1[cam][1000], "t-1",semantic_release_1[cam][f][2000]/nb_semantic_release_1[cam][2000],"t-0.5",semantic_release_1[cam][f][2500]/nb_semantic_release_1[cam][2500],"t",semantic_release_1[cam][f][3000]/nb_semantic_release_1[cam][3000])
+                print("t-3",semantic_release_1b[cam][f][0]/nb_semantic_release_1b[cam][0], "t-2", semantic_release_1b[cam][f][1000]/nb_semantic_release_1b[cam][1000], "t-1",semantic_release_1b[cam][f][2000]/nb_semantic_release_1b[cam][2000],"t-0.5",semantic_release_1b[cam][f][2500]/nb_semantic_release_1b[cam][2500],"t",semantic_release_1b[cam][f][3000]/nb_semantic_release_1b[cam][3000])
+                print("t-3",semantic_release_2[cam][f][0]/nb_semantic_release_2[cam][0], "t-2", semantic_release_2[cam][f][1000]/nb_semantic_release_2[cam][1000], "t-1",semantic_release_2[cam][f][2000]/nb_semantic_release_2[cam][2000],"t-0.5",semantic_release_2[cam][f][2500]/nb_semantic_release_2[cam][2500],"t",semantic_release_2[cam][f][3000]/nb_semantic_release_2[cam][3000])
+                print("t-3",area4_grasp_weak[cam][f][0]/nb_area4_grasp_weak[cam][0], "t-2", area4_grasp_weak[cam][f][1000]/nb_area4_grasp_weak[cam][1000], "t-1",area4_grasp_weak[cam][f][2000]/nb_area4_grasp_weak[cam][2000],"t-0.5",area4_grasp_weak[cam][f][2500]/nb_area4_grasp_weak[cam][2500],"t",area4_grasp_weak[cam][f][3000]/nb_area4_grasp_weak[cam][3000])
+                print("t-3",area4_grasp_strong[cam][f][0]/nb_area4_grasp_strong[cam][0], "t-2", area4_grasp_strong[cam][f][1000]/nb_area4_grasp_strong[cam][1000], "t-1",area4_grasp_strong[cam][f][2000]/nb_area4_grasp_strong[cam][2000],"t-0.5",area4_grasp_strong[cam][f][2500]/nb_area4_grasp_strong[cam][2500],"t",area4_grasp_strong[cam][f][3000]/nb_area4_grasp_strong[cam][3000])
+                print("t-3",sliding_area4_grasp_weak[cam][f][0]/nb_sliding_area4_grasp_weak[cam][0], "t-2", sliding_area4_grasp_weak[cam][f][1000]/nb_sliding_area4_grasp_weak[cam][1000], "t-1",sliding_area4_grasp_weak[cam][f][2000]/nb_sliding_area4_grasp_weak[cam][2000],"t-0.5",sliding_area4_grasp_weak[cam][f][2500]/nb_sliding_area4_grasp_weak[cam][2500],"t",sliding_area4_grasp_weak[cam][f][3000]/nb_sliding_area4_grasp_weak[cam][3000])
+                print("t-3",sliding_area4_grasp_strong[cam][f][0]/nb_sliding_area4_grasp_strong[cam][0], "t-2", sliding_area4_grasp_strong[cam][f][1000]/nb_sliding_area4_grasp_strong[cam][1000], "t-1",sliding_area4_grasp_strong[cam][f][2000]/nb_sliding_area4_grasp_strong[cam][2000],"t-0.5",sliding_area4_grasp_strong[cam][f][2500]/nb_sliding_area4_grasp_strong[cam][2500],"t",sliding_area4_grasp_strong[cam][f][3000]/nb_sliding_area4_grasp_strong[cam][3000])
+                print("t-3",area8_grasp_weak[cam][f][0]/nb_area8_grasp_weak[cam][0], "t-2", area8_grasp_weak[cam][f][1000]/nb_area8_grasp_weak[cam][1000], "t-1",area8_grasp_weak[cam][f][2000]/nb_area8_grasp_weak[cam][2000],"t-0.5",area8_grasp_weak[cam][f][2500]/nb_area8_grasp_weak[cam][2500],"t",area8_grasp_weak[cam][f][3000]/nb_area8_grasp_weak[cam][3000])
+                print("t-3",area8_grasp_strong[cam][f][0]/nb_area8_grasp_strong[cam][0], "t-2", area8_grasp_strong[cam][f][1000]/nb_area8_grasp_strong[cam][1000], "t-1",area8_grasp_strong[cam][f][2000]/nb_area8_grasp_strong[cam][2000],"t-0.5",area8_grasp_strong[cam][f][2500]/nb_area8_grasp_strong[cam][2500],"t",area8_grasp_strong[cam][f][3000]/nb_area8_grasp_strong[cam][3000])
+                print("t-3",sliding_area8_grasp_weak[cam][f][0]/nb_sliding_area8_grasp_weak[cam][0], "t-2", sliding_area8_grasp_weak[cam][f][1000]/nb_sliding_area8_grasp_weak[cam][1000], "t-1",sliding_area8_grasp_weak[cam][f][2000]/nb_sliding_area8_grasp_weak[cam][2000],"t-0.5",sliding_area8_grasp_weak[cam][f][2500]/nb_sliding_area8_grasp_weak[cam][2500],"t",sliding_area8_grasp_weak[cam][f][3000]/nb_sliding_area8_grasp_weak[cam][3000])
+                print("t-3",sliding_area8_grasp_strong[cam][f][0]/nb_sliding_area8_grasp_strong[cam][0], "t-2", sliding_area8_grasp_strong[cam][f][1000]/nb_sliding_area8_grasp_strong[cam][1000], "t-1",sliding_area8_grasp_strong[cam][f][2000]/nb_sliding_area8_grasp_strong[cam][2000],"t-0.5",sliding_area8_grasp_strong[cam][f][2500]/nb_sliding_area8_grasp_strong[cam][2500],"t",sliding_area8_grasp_strong[cam][f][3000]/nb_sliding_area8_grasp_strong[cam][3000])
+                print("t-3",area4_release_weak[cam][f][0]/nb_area4_release_weak[cam][0], "t-2", area4_release_weak[cam][f][1000]/nb_area4_release_weak[cam][1000], "t-1",area4_release_weak[cam][f][2000]/nb_area4_release_weak[cam][2000],"t-0.5",area4_release_weak[cam][f][2500]/nb_area4_release_weak[cam][2500],"t",area4_release_weak[cam][f][3000]/nb_area4_release_weak[cam][3000])
+                print("t-3",area4_release_strong[cam][f][0]/nb_area4_release_strong[cam][0], "t-2", area4_release_strong[cam][f][1000]/nb_area4_release_strong[cam][1000], "t-1",area4_release_strong[cam][f][2000]/nb_area4_release_strong[cam][2000],"t-0.5",area4_release_strong[cam][f][2500]/nb_area4_release_strong[cam][2500],"t",area4_release_strong[cam][f][3000]/nb_area4_release_strong[cam][3000])
+                print("t-3",sliding_area4_release_weak[cam][f][0]/nb_sliding_area4_release_weak[cam][0], "t-2", sliding_area4_release_weak[cam][f][1000]/nb_sliding_area4_release_weak[cam][1000], "t-1",sliding_area4_release_weak[cam][f][2000]/nb_sliding_area4_release_weak[cam][2000],"t-0.5",sliding_area4_release_weak[cam][f][2500]/nb_sliding_area4_release_weak[cam][2500],"t",sliding_area4_release_weak[cam][f][3000]/nb_sliding_area4_release_weak[cam][3000])
+                print("t-3",sliding_area4_release_strong[cam][f][0]/nb_sliding_area4_release_strong[cam][0], "t-2", sliding_area4_release_strong[cam][f][1000]/nb_sliding_area4_release_strong[cam][1000], "t-1",sliding_area4_release_strong[cam][f][2000]/nb_sliding_area4_release_strong[cam][2000],"t-0.5",sliding_area4_release_strong[cam][f][2500]/nb_sliding_area4_release_strong[cam][2500],"t",sliding_area4_release_strong[cam][f][3000]/nb_sliding_area4_release_strong[cam][3000])
+                print("t-3",area8_release_weak[cam][f][0]/nb_area8_release_weak[cam][0], "t-2", area8_release_weak[cam][f][1000]/nb_area8_release_weak[cam][1000], "t-1",area8_release_weak[cam][f][2000]/nb_area8_release_weak[cam][2000],"t-0.5",area8_release_weak[cam][f][2500]/nb_area8_release_weak[cam][2500],"t",area8_release_weak[cam][f][3000]/nb_area8_release_weak[cam][3000])
+                print("t-3",area8_release_strong[cam][f][0]/nb_area8_release_strong[cam][0], "t-2", area8_release_strong[cam][f][1000]/nb_area8_release_strong[cam][1000], "t-1",area8_release_strong[cam][f][2000]/nb_area8_release_strong[cam][2000],"t-0.5",area8_release_strong[cam][f][2500]/nb_area8_release_strong[cam][2500],"t",area8_release_strong[cam][f][3000]/nb_area8_release_strong[cam][3000])
+                print("t-3",sliding_area8_release_weak[cam][f][0]/nb_sliding_area8_release_weak[cam][0], "t-2", sliding_area8_release_weak[cam][f][1000]/nb_sliding_area8_release_weak[cam][1000], "t-1",sliding_area8_release_weak[cam][f][2000]/nb_sliding_area8_release_weak[cam][2000],"t-0.5",sliding_area8_release_weak[cam][f][2500]/nb_sliding_area8_release_weak[cam][2500],"t",sliding_area8_release_weak[cam][f][3000]/nb_sliding_area8_release_weak[cam][3000])
+                print("t-3",sliding_area8_release_strong[cam][f][0]/nb_sliding_area8_release_strong[cam][0], "t-2", sliding_area8_release_strong[cam][f][1000]/nb_sliding_area8_release_strong[cam][1000], "t-1",sliding_area8_release_strong[cam][f][2000]/nb_sliding_area8_release_strong[cam][2000],"t-0.5",sliding_area8_release_strong[cam][f][2500]/nb_sliding_area8_release_strong[cam][2500],"t",sliding_area8_release_strong[cam][f][3000]/nb_sliding_area8_release_strong[cam][3000])
+                input()
 
-        for f in range(5):
-            print("Feature",f+1)
-            print("t-3",block_grasp[0][f]/nb_block_grasp[0][f], "t-2", block_grasp[1000][f]/nb_block_grasp[1000][f], "t-1",block_grasp[2000][f]/nb_block_grasp[2000][f],"t-0.5",block_grasp[2500][f]/nb_block_grasp[2500][f],"t",block_grasp[3000][f]/nb_block_grasp[3000][f])
-            print("t-3",block_release[0][f]/nb_block_release[0][f], "t-2", block_release[1000][f]/nb_block_release[1000][f], "t-1",block_release[2000][f]/nb_block_release[2000][f],"t-0.5",block_release[2500][f]/nb_block_release[2500][f],"t",block_release[3000][f]/nb_block_release[3000][f])
-            print("t-3",semantic_grasp_0[0][f]/nb_semantic_grasp_0[0][f], "t-2", semantic_grasp_0[1000][f]/nb_semantic_grasp_0[1000][f], "t-1",semantic_grasp_0[2000][f]/nb_semantic_grasp_0[2000][f],"t-0.5",semantic_grasp_0[2500][f]/nb_semantic_grasp_0[2500][f],"t",semantic_grasp_0[3000][f]/nb_semantic_grasp_0[3000][f])
-            print("t-3",semantic_grasp_1[0][f]/nb_semantic_grasp_1[0][f], "t-2", semantic_grasp_1[1000][f]/nb_semantic_grasp_1[1000][f], "t-1",semantic_grasp_1[2000][f]/nb_semantic_grasp_1[2000][f],"t-0.5",semantic_grasp_1[2500][f]/nb_semantic_grasp_1[2500][f],"t",semantic_grasp_1[3000][f]/nb_semantic_grasp_1[3000][f])
-            print("t-3",semantic_grasp_1b[0][f]/nb_semantic_grasp_1b[0][f], "t-2", semantic_grasp_1b[1000][f]/nb_semantic_grasp_1b[1000][f], "t-1",semantic_grasp_1b[2000][f]/nb_semantic_grasp_1b[2000][f],"t-0.5",semantic_grasp_1b[2500][f]/nb_semantic_grasp_1b[2500][f],"t",semantic_grasp_1b[3000][f]/nb_semantic_grasp_1b[3000][f])
-            print("t-3",semantic_grasp_2[0][f]/nb_semantic_grasp_2[0][f], "t-2", semantic_grasp_2[1000][f]/nb_semantic_grasp_2[1000][f], "t-1",semantic_grasp_2[2000][f]/nb_semantic_grasp_2[2000][f],"t-0.5",semantic_grasp_2[2500][f]/nb_semantic_grasp_2[2500][f],"t",semantic_grasp_2[3000][f]/nb_semantic_grasp_2[3000][f])
-            print("t-3",semantic_release_0[0][f]/nb_semantic_release_0[0][f], "t-2", semantic_release_0[1000][f]/nb_semantic_release_0[1000][f], "t-1",semantic_release_0[2000][f]/nb_semantic_release_0[2000][f],"t-0.5",semantic_release_0[2500][f]/nb_semantic_release_0[2500][f],"t",semantic_release_0[3000][f]/nb_semantic_release_0[3000][f])
-            print("t-3",semantic_release_1[0][f]/nb_semantic_release_1[0][f], "t-2", semantic_release_1[1000][f]/nb_semantic_release_1[1000][f], "t-1",semantic_release_1[2000][f]/nb_semantic_release_1[2000][f],"t-0.5",semantic_release_1[2500][f]/nb_semantic_release_1[2500][f],"t",semantic_release_1[3000][f]/nb_semantic_release_1[3000][f])
-            print("t-3",semantic_release_1b[0][f]/nb_semantic_release_1b[0][f], "t-2", semantic_release_1b[1000][f]/nb_semantic_release_1b[1000][f], "t-1",semantic_release_1b[2000][f]/nb_semantic_release_1b[2000][f],"t-0.5",semantic_release_1b[2500][f]/nb_semantic_release_1b[2500][f],"t",semantic_release_1b[3000][f]/nb_semantic_release_1b[3000][f])
-            print("t-3",semantic_release_2[0][f]/nb_semantic_release_2[0][f], "t-2", semantic_release_2[1000][f]/nb_semantic_release_2[1000][f], "t-1",semantic_release_2[2000][f]/nb_semantic_release_2[2000][f],"t-0.5",semantic_release_2[2500][f]/nb_semantic_release_2[2500][f],"t",semantic_release_2[3000][f]/nb_semantic_release_2[3000][f])
-            print("t-3",area4_grasp_weak[0][f]/nb_area4_grasp_weak[0][f], "t-2", area4_grasp_weak[1000][f]/nb_area4_grasp_weak[1000][f], "t-1",area4_grasp_weak[2000][f]/nb_area4_grasp_weak[2000][f],"t-0.5",area4_grasp_weak[2500][f]/nb_area4_grasp_weak[2500][f],"t",area4_grasp_weak[3000][f]/nb_area4_grasp_weak[3000][f])
-            print("t-3",area4_grasp_strong[0][f]/nb_area4_grasp_strong[0][f], "t-2", area4_grasp_strong[1000][f]/nb_area4_grasp_strong[1000][f], "t-1",area4_grasp_strong[2000][f]/nb_area4_grasp_strong[2000][f],"t-0.5",area4_grasp_strong[2500][f]/nb_area4_grasp_strong[2500][f],"t",area4_grasp_strong[3000][f]/nb_area4_grasp_strong[3000][f])
-            print("t-3",sliding_area4_grasp_weak[0][f]/nb_sliding_area4_grasp_weak[0][f], "t-2", sliding_area4_grasp_weak[1000][f]/nb_sliding_area4_grasp_weak[1000][f], "t-1",sliding_area4_grasp_weak[2000][f]/nb_sliding_area4_grasp_weak[2000][f],"t-0.5",sliding_area4_grasp_weak[2500][f]/nb_sliding_area4_grasp_weak[2500][f],"t",sliding_area4_grasp_weak[3000][f]/nb_sliding_area4_grasp_weak[3000][f])
-            print("t-3",sliding_area4_grasp_strong[0][f]/nb_sliding_area4_grasp_strong[0][f], "t-2", sliding_area4_grasp_strong[1000][f]/nb_sliding_area4_grasp_strong[1000][f], "t-1",sliding_area4_grasp_strong[2000][f]/nb_sliding_area4_grasp_strong[2000][f],"t-0.5",sliding_area4_grasp_strong[2500][f]/nb_sliding_area4_grasp_strong[2500][f],"t",sliding_area4_grasp_strong[3000][f]/nb_sliding_area4_grasp_strong[3000][f])
-            print("t-3",area8_grasp_weak[0][f]/nb_area8_grasp_weak[0][f], "t-2", area8_grasp_weak[1000][f]/nb_area8_grasp_weak[1000][f], "t-1",area8_grasp_weak[2000][f]/nb_area8_grasp_weak[2000][f],"t-0.5",area8_grasp_weak[2500][f]/nb_area8_grasp_weak[2500][f],"t",area8_grasp_weak[3000][f]/nb_area8_grasp_weak[3000][f])
-            print("t-3",area8_grasp_strong[0][f]/nb_area8_grasp_strong[0][f], "t-2", area8_grasp_strong[1000][f]/nb_area8_grasp_strong[1000][f], "t-1",area8_grasp_strong[2000][f]/nb_area8_grasp_strong[2000][f],"t-0.5",area8_grasp_strong[2500][f]/nb_area8_grasp_strong[2500][f],"t",area8_grasp_strong[3000][f]/nb_area8_grasp_strong[3000][f])
-            print("t-3",sliding_area8_grasp_weak[0][f]/nb_sliding_area8_grasp_weak[0][f], "t-2", sliding_area8_grasp_weak[1000][f]/nb_sliding_area8_grasp_weak[1000][f], "t-1",sliding_area8_grasp_weak[2000][f]/nb_sliding_area8_grasp_weak[2000][f],"t-0.5",sliding_area8_grasp_weak[2500][f]/nb_sliding_area8_grasp_weak[2500][f],"t",sliding_area8_grasp_weak[3000][f]/nb_sliding_area8_grasp_weak[3000][f])
-            print("t-3",sliding_area8_grasp_strong[0][f]/nb_sliding_area8_grasp_strong[0][f], "t-2", sliding_area8_grasp_strong[1000][f]/nb_sliding_area8_grasp_strong[1000][f], "t-1",sliding_area8_grasp_strong[2000][f]/nb_sliding_area8_grasp_strong[2000][f],"t-0.5",sliding_area8_grasp_strong[2500][f]/nb_sliding_area8_grasp_strong[2500][f],"t",sliding_area8_grasp_strong[3000][f]/nb_sliding_area8_grasp_strong[3000][f])
-            print("t-3",area4_release_weak[0][f]/nb_area4_release_weak[0][f], "t-2", area4_release_weak[1000][f]/nb_area4_release_weak[1000][f], "t-1",area4_release_weak[2000][f]/nb_area4_release_weak[2000][f],"t-0.5",area4_release_weak[2500][f]/nb_area4_release_weak[2500][f],"t",area4_release_weak[3000][f]/nb_area4_release_weak[3000][f])
-            print("t-3",area4_release_strong[0][f]/nb_area4_release_strong[0][f], "t-2", area4_release_strong[1000][f]/nb_area4_release_strong[1000][f], "t-1",area4_release_strong[2000][f]/nb_area4_release_strong[2000][f],"t-0.5",area4_release_strong[2500][f]/nb_area4_release_strong[2500][f],"t",area4_release_strong[3000][f]/nb_area4_release_strong[3000][f])
-            print("t-3",sliding_area4_release_weak[0][f]/nb_sliding_area4_release_weak[0][f], "t-2", sliding_area4_release_weak[1000][f]/nb_sliding_area4_release_weak[1000][f], "t-1",sliding_area4_release_weak[2000][f]/nb_sliding_area4_release_weak[2000][f],"t-0.5",sliding_area4_release_weak[2500][f]/nb_sliding_area4_release_weak[2500][f],"t",sliding_area4_release_weak[3000][f]/nb_sliding_area4_release_weak[3000][f])
-            print("t-3",sliding_area4_release_strong[0][f]/nb_sliding_area4_release_strong[0][f], "t-2", sliding_area4_release_strong[1000][f]/nb_sliding_area4_release_strong[1000][f], "t-1",sliding_area4_release_strong[2000][f]/nb_sliding_area4_release_strong[2000][f],"t-0.5",sliding_area4_release_strong[2500][f]/nb_sliding_area4_release_strong[2500][f],"t",sliding_area4_release_strong[3000][f]/nb_sliding_area4_release_strong[3000][f])
-            print("t-3",area8_release_weak[0][f]/nb_area8_release_weak[0][f], "t-2", area8_release_weak[1000][f]/nb_area8_release_weak[1000][f], "t-1",area8_release_weak[2000][f]/nb_area8_release_weak[2000][f],"t-0.5",area8_release_weak[2500][f]/nb_area8_release_weak[2500][f],"t",area8_release_weak[3000][f]/nb_area8_release_weak[3000][f])
-            print("t-3",area8_release_strong[0][f]/nb_area8_release_strong[0][f], "t-2", area8_release_strong[1000][f]/nb_area8_release_strong[1000][f], "t-1",area8_release_strong[2000][f]/nb_area8_release_strong[2000][f],"t-0.5",area8_release_strong[2500][f]/nb_area8_release_strong[2500][f],"t",area8_release_strong[3000][f]/nb_area8_release_strong[3000][f])
-            print("t-3",sliding_area8_release_weak[0][f]/nb_sliding_area8_release_weak[0][f], "t-2", sliding_area8_release_weak[1000][f]/nb_sliding_area8_release_weak[1000][f], "t-1",sliding_area8_release_weak[2000][f]/nb_sliding_area8_release_weak[2000][f],"t-0.5",sliding_area8_release_weak[2500][f]/nb_sliding_area8_release_weak[2500][f],"t",sliding_area8_release_weak[3000][f]/nb_sliding_area8_release_weak[3000][f])
-            print("t-3",sliding_area8_release_strong[0][f]/nb_sliding_area8_release_strong[0][f], "t-2", sliding_area8_release_strong[1000][f]/nb_sliding_area8_release_strong[1000][f], "t-1",sliding_area8_release_strong[2000][f]/nb_sliding_area8_release_strong[2000][f],"t-0.5",sliding_area8_release_strong[2500][f]/nb_sliding_area8_release_strong[2500][f],"t",sliding_area8_release_strong[3000][f]/nb_sliding_area8_release_strong[3000][f])
-            input()
+        data = []
+
+        for cam in range(2):
+            for f in range(5):
+                sheet_name = f"Cam{cam+1}_Feature{f+1}"  # Nom de la feuille
+
+                # Créer une liste pour les données de la feuille actuelle
+                sheet_data = []
+
+                # Ajouter les valeurs à la liste des données de la feuille actuelle
+                sheet_data.append(["Header1", "Header2", "Header3", "Header4", "Header5"])  # En-tête des colonnes
+                
+                data.append([area4_grasp_strong[cam][f][0] / nb_area4_grasp_strong[cam][0],
+                                area4_grasp_strong[cam][f][1000] / nb_area4_grasp_strong[cam][1000],
+                                area4_grasp_strong[cam][f][2000] / nb_area4_grasp_strong[cam][2000],
+                                area4_grasp_strong[cam][f][2500] / nb_area4_grasp_strong[cam][2500],
+                                area4_grasp_strong[cam][f][3000] / nb_area4_grasp_strong[cam][3000]])
+
+                data.append([area4_grasp_weak[cam][f][0] / nb_area4_grasp_weak[cam][0],
+                                area4_grasp_weak[cam][f][1000] / nb_area4_grasp_weak[cam][1000],
+                                area4_grasp_weak[cam][f][2000] / nb_area4_grasp_weak[cam][2000],
+                                area4_grasp_weak[cam][f][2500] / nb_area4_grasp_weak[cam][2500],
+                                area4_grasp_weak[cam][f][3000] / nb_area4_grasp_weak[cam][3000]])
+
+                data.append([area8_grasp_strong[cam][f][0] / nb_area8_grasp_strong[cam][0],
+                                area8_grasp_strong[cam][f][1000] / nb_area8_grasp_strong[cam][1000],
+                                area8_grasp_strong[cam][f][2000] / nb_area8_grasp_strong[cam][2000],
+                                area8_grasp_strong[cam][f][2500] / nb_area8_grasp_strong[cam][2500],
+                                area8_grasp_strong[cam][f][3000] / nb_area8_grasp_strong[cam][3000]])
+                
+                data.append([area8_grasp_weak[cam][f][0] / nb_area8_grasp_weak[cam][0],
+                                area8_grasp_weak[cam][f][1000] / nb_area8_grasp_weak[cam][1000],
+                                area8_grasp_weak[cam][f][2000] / nb_area8_grasp_weak[cam][2000],
+                                area8_grasp_weak[cam][f][2500] / nb_area8_grasp_weak[cam][2500],
+                                area8_grasp_weak[cam][f][3000] / nb_area8_grasp_weak[cam][3000]])
+                
+                data.append([sliding_area4_grasp_strong[cam][f][0] / nb_sliding_area4_grasp_strong[cam][0],
+                                sliding_area4_grasp_strong[cam][f][1000] / nb_sliding_area4_grasp_strong[cam][1000],
+                                sliding_area4_grasp_strong[cam][f][2000] / nb_sliding_area4_grasp_strong[cam][2000],
+                                sliding_area4_grasp_strong[cam][f][2500] / nb_sliding_area4_grasp_strong[cam][2500],
+                                sliding_area4_grasp_strong[cam][f][3000] / nb_sliding_area4_grasp_strong[cam][3000]])
+                
+                
+                data.append([sliding_area4_grasp_weak[cam][f][0] / nb_sliding_area4_grasp_weak[cam][0],
+                                sliding_area4_grasp_weak[cam][f][1000] / nb_sliding_area4_grasp_weak[cam][1000],
+                                sliding_area4_grasp_weak[cam][f][2000] / nb_sliding_area4_grasp_weak[cam][2000],
+                                sliding_area4_grasp_weak[cam][f][2500] / nb_sliding_area4_grasp_weak[cam][2500],
+                                sliding_area4_grasp_weak[cam][f][3000] / nb_sliding_area4_grasp_weak[cam][3000]])
+                
+                
+                data.append([sliding_area8_grasp_strong[cam][f][0] / nb_sliding_area8_grasp_strong[cam][0],
+                                sliding_area8_grasp_strong[cam][f][1000] / nb_sliding_area8_grasp_strong[cam][1000],
+                                sliding_area8_grasp_strong[cam][f][2000] / nb_sliding_area8_grasp_strong[cam][2000],
+                                sliding_area8_grasp_strong[cam][f][2500] / nb_sliding_area8_grasp_strong[cam][2500],
+                                sliding_area8_grasp_strong[cam][f][3000] / nb_sliding_area8_grasp_strong[cam][3000]])
+                
+                data.append([sliding_area8_grasp_weak[cam][f][0] / nb_sliding_area8_grasp_weak[cam][0],
+                                sliding_area8_grasp_weak[cam][f][1000] / nb_sliding_area8_grasp_weak[cam][1000],
+                                sliding_area8_grasp_weak[cam][f][2000] / nb_sliding_area8_grasp_weak[cam][2000],
+                                sliding_area8_grasp_weak[cam][f][2500] / nb_sliding_area8_grasp_weak[cam][2500],
+                                sliding_area8_grasp_weak[cam][f][3000] / nb_sliding_area8_grasp_weak[cam][3000]])
+                
+                data.append([semantic_grasp_0[cam][f][0] / nb_semantic_grasp_0[cam][0],
+                                semantic_grasp_0[cam][f][1000] / nb_semantic_grasp_0[cam][1000],
+                                semantic_grasp_0[cam][f][2000] / nb_semantic_grasp_0[cam][2000],
+                                semantic_grasp_0[cam][f][2500] / nb_semantic_grasp_0[cam][2500],
+                                semantic_grasp_0[cam][f][3000] / nb_semantic_grasp_0[cam][3000]])
+                
+                data.append([semantic_grasp_1[cam][f][0] / nb_semantic_grasp_1[cam][0],
+                                semantic_grasp_1[cam][f][1000] / nb_semantic_grasp_1[cam][1000],
+                                semantic_grasp_1[cam][f][2000] / nb_semantic_grasp_1[cam][2000],
+                                semantic_grasp_1[cam][f][2500] / nb_semantic_grasp_1[cam][2500],
+                                semantic_grasp_1[cam][f][3000] / nb_semantic_grasp_1[cam][3000]])
+                
+                data.append([semantic_grasp_1b[cam][f][0] / nb_semantic_grasp_1b[cam][0],
+                                semantic_grasp_1b[cam][f][1000] / nb_semantic_grasp_1b[cam][1000],
+                                semantic_grasp_1b[cam][f][2000] / nb_semantic_grasp_1b[cam][2000],
+                                semantic_grasp_1b[cam][f][2500] / nb_semantic_grasp_1b[cam][2500],
+                                semantic_grasp_1b[cam][f][3000] / nb_semantic_grasp_1b[cam][3000]])
+                
+                data.append([semantic_grasp_2[cam][f][0] / nb_semantic_grasp_2[cam][0],
+                                semantic_grasp_2[cam][f][1000] / nb_semantic_grasp_2[cam][1000],
+                                semantic_grasp_2[cam][f][2000] / nb_semantic_grasp_2[cam][2000],
+                                semantic_grasp_2[cam][f][2500] / nb_semantic_grasp_2[cam][2500],
+                                semantic_grasp_2[cam][f][3000] / nb_semantic_grasp_2[cam][3000]])                
+
+                data.append([block_grasp[cam][f][0] / nb_block_grasp[cam][0],
+                                block_grasp[cam][f][1000] / nb_block_grasp[cam][1000],
+                                block_grasp[cam][f][2000] / nb_block_grasp[cam][2000],
+                                block_grasp[cam][f][2500] / nb_block_grasp[cam][2500],
+                                block_grasp[cam][f][3000] / nb_block_grasp[cam][3000]])
+                
+
+                
+                """release"""
+                
+                
+                data.append([area4_release_strong[cam][f][0] / nb_area4_release_strong[cam][0],
+                                area4_release_strong[cam][f][1000] / nb_area4_release_strong[cam][1000],
+                                area4_release_strong[cam][f][2000] / nb_area4_release_strong[cam][2000],
+                                area4_release_strong[cam][f][2500] / nb_area4_release_strong[cam][2500],
+                                area4_release_strong[cam][f][3000] / nb_area4_release_strong[cam][3000]])
+                
+
+                data.append([area4_release_weak[cam][f][0] / nb_area4_release_weak[cam][0],
+                                area4_release_weak[cam][f][1000] / nb_area4_release_weak[cam][1000],
+                                area4_release_weak[cam][f][2000] / nb_area4_release_weak[cam][2000],
+                                area4_release_weak[cam][f][2500] / nb_area4_release_weak[cam][2500],
+                                area4_release_weak[cam][f][3000] / nb_area4_release_weak[cam][3000]])
+                
+                data.append([area8_release_strong[cam][f][0] / nb_area8_release_strong[cam][0],
+                                area8_release_strong[cam][f][1000] / nb_area8_release_strong[cam][1000],
+                                area8_release_strong[cam][f][2000] / nb_area8_release_strong[cam][2000],
+                                area8_release_strong[cam][f][2500] / nb_area8_release_strong[cam][2500],
+                                area8_release_strong[cam][f][3000] / nb_area8_release_strong[cam][3000]])
+
+                data.append([area8_release_weak[cam][f][0] / nb_area8_release_weak[cam][0],
+                                area8_release_weak[cam][f][1000] / nb_area8_release_weak[cam][1000],
+                                area8_release_weak[cam][f][2000] / nb_area8_release_weak[cam][2000],
+                                area8_release_weak[cam][f][2500] / nb_area8_release_weak[cam][2500],
+                                area8_release_weak[cam][f][3000] / nb_area8_release_weak[cam][3000]])
+                
+                data.append([sliding_area4_release_strong[cam][f][0] / nb_sliding_area4_release_strong[cam][0],
+                                sliding_area4_release_strong[cam][f][1000] / nb_sliding_area4_release_strong[cam][1000],
+                                sliding_area4_release_strong[cam][f][2000] / nb_sliding_area4_release_strong[cam][2000],
+                                sliding_area4_release_strong[cam][f][2500] / nb_sliding_area4_release_strong[cam][2500],
+                                sliding_area4_release_strong[cam][f][3000] / nb_sliding_area4_release_strong[cam][3000]])
+                
+                data.append([sliding_area4_release_weak[cam][f][0] / nb_sliding_area4_release_weak[cam][0],
+                                sliding_area4_release_weak[cam][f][1000] / nb_sliding_area4_release_weak[cam][1000],
+                                sliding_area4_release_weak[cam][f][2000] / nb_sliding_area4_release_weak[cam][2000],
+                                sliding_area4_release_weak[cam][f][2500] / nb_sliding_area4_release_weak[cam][2500],
+                                sliding_area4_release_weak[cam][f][3000] / nb_sliding_area4_release_weak[cam][3000]])                
+                
+                data.append([sliding_area8_release_strong[cam][f][0] / nb_sliding_area8_release_strong[cam][0],
+                                sliding_area8_release_strong[cam][f][1000] / nb_sliding_area8_release_strong[cam][1000],
+                                sliding_area8_release_strong[cam][f][2000] / nb_sliding_area8_release_strong[cam][2000],
+                                sliding_area8_release_strong[cam][f][2500] / nb_sliding_area8_release_strong[cam][2500],
+                                sliding_area8_release_strong[cam][f][3000] / nb_sliding_area8_release_strong[cam][3000]])
+
+
+                data.append([sliding_area8_release_weak[cam][f][0] / nb_sliding_area8_release_weak[cam][0],
+                                sliding_area8_release_weak[cam][f][1000] / nb_sliding_area8_release_weak[cam][1000],
+                                sliding_area8_release_weak[cam][f][2000] / nb_sliding_area8_release_weak[cam][2000],
+                                sliding_area8_release_weak[cam][f][2500] / nb_sliding_area8_release_weak[cam][2500],
+                                sliding_area8_release_weak[cam][f][3000] / nb_sliding_area8_release_weak[cam][3000]])
+                
+
+                
+                data.append([semantic_release_0[cam][f][0] / nb_semantic_release_0[cam][0],
+                                semantic_release_0[cam][f][1000] / nb_semantic_release_0[cam][1000],
+                                semantic_release_0[cam][f][2000] / nb_semantic_release_0[cam][2000],
+                                semantic_release_0[cam][f][2500] / nb_semantic_release_0[cam][2500],
+                                semantic_release_0[cam][f][3000] / nb_semantic_release_0[cam][3000]])
+                
+                data.append([semantic_release_1[cam][f][0] / nb_semantic_release_1[cam][0],
+                                semantic_release_1[cam][f][1000] / nb_semantic_release_1[cam][1000],
+                                semantic_release_1[cam][f][2000] / nb_semantic_release_1[cam][2000],
+                                semantic_release_1[cam][f][2500] / nb_semantic_release_1[cam][2500],
+                                semantic_release_1[cam][f][3000] / nb_semantic_release_1[cam][3000]])
+                
+                data.append([semantic_release_1b[cam][f][0] / nb_semantic_release_1b[cam][0],
+                                semantic_release_1b[cam][f][1000] / nb_semantic_release_1b[cam][1000],
+                                semantic_release_1b[cam][f][2000] / nb_semantic_release_1b[cam][2000],
+                                semantic_release_1b[cam][f][2500] / nb_semantic_release_1b[cam][2500],
+                                semantic_release_1b[cam][f][3000] / nb_semantic_release_1b[cam][3000]])
+                
+                data.append([semantic_release_2[cam][f][0] / nb_semantic_release_2[cam][0],
+                                semantic_release_2[cam][f][1000] / nb_semantic_release_2[cam][1000],
+                                semantic_release_2[cam][f][2000] / nb_semantic_release_2[cam][2000],
+                                semantic_release_2[cam][f][2500] / nb_semantic_release_2[cam][2500],
+                                semantic_release_2[cam][f][3000] / nb_semantic_release_2[cam][3000]])
+                
+                data.append([block_release[cam][f][0] / nb_block_release[cam][0],
+                                block_release[cam][f][1000] / nb_block_release[cam][1000],
+                                block_release[cam][f][2000] / nb_block_release[cam][2000],
+                                block_release[cam][f][2500] / nb_block_release[cam][2500],
+                                block_release[cam][f][3000] / nb_block_release[cam][3000]])
+                
+                data.append([-2,-2,-2,-2,-2])
+
+                # Répétez pour chaque ensemble de données
+
+                # Ajouter la liste des données de la feuille actuelle à la liste des données générales
+                #data.append((sheet_name, sheet_data))
+
+        # Spécifier le chemin du fichier de sortie
+        output_file = "output_Model.ods"
+
+        nb_chiffres_significatifs = 1
+
+        liste_de_listes_en_string = [[format(100*float(nombre), '.{}f'.format(nb_chiffres_significatifs)) for nombre in liste] for liste in data]
+
+
+        # Écrire les données dans le fichier ODS
+        pyexcel_ods3.save_data(output_file, {"Feuille 1": liste_de_listes_en_string})
 
 
 
