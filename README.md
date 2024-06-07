@@ -14,4 +14,17 @@ The data were acquired by involving 80 psychology students in a study conducted 
 
 ## Dataset
 
+The dataset contains ocular data collected during the assembly of figures using Lego Duplo. Complete documentation of the dataset can be found on the [documentation](docs/dataset.md) page.
+
 ## Prediction
+
+    python3 main.py pour l'approche modele
+    python3 main_lstm.py pour l'approche ML
+    python3 plot_graph.py chemin_relatif_logs pour plots les figures surfaces
+    python3 plot_norme.py chemin_relatif_logs pour plots les figures normes
+
+## Contact
+For questions or more information, please contact:
+- Maxence Grand
+- Maxence.Grand@univ-grenoble-alpes.fr
+- Université Grenoble Alpes, Laboratoire d'Informatique de Grenoble, Equipes Marvin/M-PSI
