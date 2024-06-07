@@ -69,13 +69,7 @@ This experimental protocol was submitted to and validated by CERGA, the Grenoble
 
 ### Experimental setup
 
-### Eye-Tracking Devices
-
-#### Fovio FX3
-
-#### Tobii Pro 4C
-
-#### Pupil Core Glasses
+![Experimental Setup](pics/setup.jpg "Setup")
 
 ### Instructions
 
