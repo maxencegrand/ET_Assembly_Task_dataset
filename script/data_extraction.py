@@ -32,8 +32,9 @@ def main(argv):
                         DeviceFlow(user, figure)
                         ScreenMap(user, figure)
                         TableMap(user,figure)
-                    except:
-                        print("ERROR")
+                    except Exception:
+                        print(traceback.format_exc())
+                        # print("ERROR")
                 else:
                     print("\tNo Data for the figure")
         else:
