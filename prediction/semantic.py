@@ -11,10 +11,10 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 def generateTableZone():
     x0 = 0
@@ -29,7 +29,7 @@ def generateTableZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_table.csv', 'w', newline='') as file:
+    with open('csv/zone_table.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -47,7 +47,7 @@ def generateLeftZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_left.csv', 'w', newline='') as file:
+    with open('csv/zone_left.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -64,7 +64,7 @@ def generateMiddleZone():
         [x0, y0, x2, y2]
     ]
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_middle.csv', 'w', newline='') as file:
+    with open('csv/zone_middle.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -82,7 +82,7 @@ def generateRightZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_right.csv', 'w', newline='') as file:
+    with open('csv/zone_right.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -101,7 +101,7 @@ def generateBlueZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_blue.csv', 'w', newline='') as file:
+    with open('csv/zone_blue.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -119,7 +119,7 @@ def generateRedZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_red.csv', 'w', newline='') as file:
+    with open('csv/zone_red.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -137,7 +137,7 @@ def generateGreenZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_green.csv', 'w', newline='') as file:
+    with open('csv/zone_green.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -155,7 +155,7 @@ def generateYellowZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_yellow.csv', 'w', newline='') as file:
+    with open('csv/zone_yellow.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -173,7 +173,7 @@ def generateCarZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_car.csv', 'w', newline='') as file:
+    with open('csv/zone_car.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -191,7 +191,7 @@ def generateHouseZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_house.csv', 'w', newline='') as file:
+    with open('csv/zone_house.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -209,7 +209,7 @@ def generateScZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_sc.csv', 'w', newline='') as file:
+    with open('csv/zone_sc.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -227,7 +227,7 @@ def generateTbZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_tb.csv', 'w', newline='') as file:
+    with open('csv/zone_tb.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -245,7 +245,7 @@ def generateTcZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_tc.csv', 'w', newline='') as file:
+    with open('csv/zone_tc.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
@@ -263,7 +263,7 @@ def generateTsbZone():
     ]
 
     # Écrire les données dans le fichier CSV
-    with open('../csv/zone_tsb.csv', 'w', newline='') as file:
+    with open('csv/zone_tsb.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 

@@ -21,10 +21,10 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 
 # Permet de transformer de le format pour le type de device en int
@@ -338,7 +338,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 1],
                             world[i, 10 * indice + 2]
-                            
+
                         )
 
                         d2 = minDistanceRectangleGaze(
@@ -352,7 +352,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 3],
                             world[i, 10 * indice + 4]
-                            
+
                         )
 
                         d3 = minDistanceRectangleGaze(
@@ -366,7 +366,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 5],
                             world[i, 10 * indice + 6]
-                            
+
                         )
 
                         d4 = minDistanceRectangleGaze(
@@ -380,7 +380,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 7],
                             world[i, 10 * indice + 8]
-                            
+
                         )
 
                         d = max(0,min(d1,min(d2,min(d3,d4))))
@@ -403,7 +403,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 1],
                             world[i, 10 * indice + 2]
-                            
+
                         ) < d_min +0.1
                         or minDistanceRectangleGaze(
                             world[i, 10 * rect + 1],
@@ -416,7 +416,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 3],
                             world[i, 10 * indice + 4]
-                            
+
                         ) < d_min +0.1
                         or minDistanceRectangleGaze(
                             world[i, 10 * rect + 1],
@@ -429,7 +429,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 5],
                             world[i, 10 * indice + 6]
-                            
+
                         ) < d_min +0.1
                         or minDistanceRectangleGaze(
                             world[i, 10 * rect + 1],
@@ -442,7 +442,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 7],
                             world[i, 10 * indice + 8]
-                            
+
                         ) < d_min +0.1
                         ):
                             liste_adjacent_i.append(rect)
@@ -451,7 +451,7 @@ def listeRelease(world):
                     liste_adjacent_i = liste_adjacent[len(liste_release)]
                 liste_release.append(liste_adjacent_i)
     return liste_release
-                
+
 
 
 
@@ -506,7 +506,7 @@ def BlockToZoneID(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
     #Si le s4 coins sont dans la meme zone
     if id_x0 == id_x1 and id_x0 == id_x2 and id_x0 == id_x3:
         return [id_x0]
-    
+
     #Sinon on rajoute les zone contenant le centre du bloc (on regarde 4 points proche du centrepour si le centre est sur la jonction entre 2 zones => probeleme d'arrondi on aurait qu'une zone)
     else:
         x_mean = (x0 + x1 + x2 + x3) / 4
@@ -574,7 +574,7 @@ def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
     with open(nom_fichier + "/time.csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
-        
+
         # Écrire chaque sous-liste dans une ligne du fichier CSV
         for sous_liste in duree_execution:
             writer.writerow(sous_liste)
@@ -588,7 +588,7 @@ def loadLog(nom_fichier):
     duree_execution = []
     with open(nom_fichier + "/time.csv", 'r', newline='') as fichier_csv:
         reader = csv.reader(fichier_csv)
-        
+
         # Lire chaque ligne du fichier CSV
         for ligne in reader:
             # Convertir les éléments de la ligne en int si nécessaire
@@ -614,7 +614,7 @@ def savingTime(nom_dossier,participant,timestamp,type_time,duree):
 
     with open(nom_dossier + "/" + participant + str(timestamp) + "/time_" + type_time + ".csv", 'w', newline='') as fichier_csv:
         writer = csv.writer(fichier_csv)
-    
+
         writer.writerow(duree)
 
     return

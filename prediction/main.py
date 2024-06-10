@@ -21,10 +21,10 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
@@ -104,13 +104,13 @@ def parsingAllParticipantOneMethode():
     duree_execution = [[],[]]
 
 
-    
+
 
     liste_participant_mobile = []
     liste_participant_sitting = []
 
     for method_pos,method in enumerate(["mobile", "stationnary"]):
-        directory = "../../dataset/" + method + "/sitting/"
+        directory = "../dataset/" + method + "/sitting/"
         for entry in os.scandir(directory):
             if method == "mobile":
                 liste_participant_mobile.append(entry.path)
@@ -144,7 +144,7 @@ def parsingAllParticipantOneMethode():
             print(method)
             for number in side:
                 participant = number.numpy().decode('utf-8')
-                #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(participant).split("/")[-1])   
+                #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(participant).split("/")[-1])
                 for model in os.scandir(participant):
                     # verifie que les 2 fichiers existent
 
@@ -154,7 +154,7 @@ def parsingAllParticipantOneMethode():
 
                             print("---------------------------")
                             print("Partcipant :", str(model.path).split("/")[-2], str(model.path).split("/")[-1], method_pos)
-                            #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(model.path).split("/")[-2] + "/" + str(model.path).split("/")[-1])  
+                            #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(model.path).split("/")[-2] + "/" + str(model.path).split("/")[-1])
 
                             if  method_pos == 0:
                                 path = "mobile/sitting/"+str(model.path).split("/")[-2]+"/"+str(model.path).split("/")[-1]+"/"
@@ -171,7 +171,7 @@ def parsingAllParticipantOneMethode():
                             world = np.genfromtxt(
                                 str(model.path) + "/states.csv", delimiter=","
                             )
-                        
+
 
                             proba_juste = np.zeros((world.shape[0] - 1,2,nb_area_1))
                             #Pour chaque etat du monde
@@ -215,7 +215,7 @@ def parsingAllParticipantOneMethode():
                             nb_gaze = gaze_point.shape[0] - 1
 
                             timestamp_action = listeTimneAction(world)
-                            
+
 
                             all_feature = np.zeros((5, nb_gaze, nb_area_1))
                             probability_score = np.zeros((5, 2, nb_gaze, nb_area_1))
@@ -237,7 +237,7 @@ def parsingAllParticipantOneMethode():
 
                             temp_area_sliding_4 = np.zeros((5,2,nb_gaze))
                             temp_area_sliding_8 = np.zeros((5,2,nb_gaze))
-                            
+
                             temp_area_semantic_0 = np.zeros((5,2,nb_gaze))
                             temp_area_semantic_1 = np.zeros((5,2,nb_gaze))
                             temp_area_semantic_2 = np.zeros((5,2,nb_gaze))
@@ -247,7 +247,7 @@ def parsingAllParticipantOneMethode():
 
 
                             norme_array = np.zeros((nb_predi,2,nb_gaze))
-                            
+
                             for i in range(nb_gaze):
                                 temps_feature = time.time()
 
@@ -270,7 +270,7 @@ def parsingAllParticipantOneMethode():
                                     past_probability_score = probability_score[:,:,i-1,:]
                                 else:
                                     past_probability_score = probability_score[:,:,i,:]
-                                    
+
                                 new_probability,new_probability_score,new_indice = low_level_naif(feature,t,timestamp_action,indice,past_probability_score)
 
                                 for f in range(nb_predi):
@@ -289,7 +289,7 @@ def parsingAllParticipantOneMethode():
                                     else:
                                         norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - new_probability[f][0], ord=1)
                                         norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - new_probability[f][1], ord=1)
-                                        
+
 
 
                                 probability[:,:,i,:] = new_probability
@@ -297,7 +297,7 @@ def parsingAllParticipantOneMethode():
 
                                 temps_interpretation = time.time()
                                 area4max_indices,area8max_indices,area_best_4,area_best_8,semantic0,semantic1,semantic2,liste_predi_id = interpretation(new_probability,new_indice,world,str(model.path).split("/")[-1])
-                                
+
                                 temps_fin = time.time()
 
                                 temp_area4[:,:,i] = area4max_indices
@@ -313,8 +313,8 @@ def parsingAllParticipantOneMethode():
                                 temp_block[:,:,i] = liste_predi_id
 
                                 indice = new_indice
-                                
-                                
+
+
                                 diff_feature = temps_low_level - temps_feature
                                 diff_low_level = temps_interpretation - temps_low_level
                                 diff_interpretation = temps_fin - temps_interpretation
@@ -336,7 +336,7 @@ def parsingAllParticipantOneMethode():
                                 #savingFeature(nom_dossier,path,int(gaze_point[i+1,0]),all_feature)
                                 #savingProba(nom_dossier,path,int(gaze_point[i+1,0]),probability)
                                 #savingInterpretation(nom_dossier,path,int(gaze_point[i+1,0]),temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block)
-                            
+
                             print(new_indice)
 
                             result_area4 = np.zeros((5, 2, duree))
@@ -390,7 +390,7 @@ def parsingAllParticipantOneMethode():
 
                             total_nb_grasp[method_pos] = total_nb_grasp[method_pos] + (len(timestamp_action)-2)/2
                             total_nb_release[method_pos] = total_nb_release[method_pos] + (len(timestamp_action)-2)/2
-                            
+
                             nb_bloc = [nb_area_4,nb_area_8,nb_area_4,nb_area_8]
 
                             for position, predi in enumerate(area_prediction):
@@ -469,7 +469,7 @@ def parsingAllParticipantOneMethode():
                                         analyse_release,
                                         nb_analyse_release,
                                     ) = analyseSemanticBis(world, prediction, timestamp_action,str(model.path).split("/")[-1],lvl)
-                                    
+
                                     global_analyse_semantic_grasp[lvl][method_pos][position] = global_analyse_semantic_grasp[lvl][method_pos][position] + analyse_grasp
                                     global_analyse_semantic_release[lvl][method_pos][position] = global_analyse_semantic_release[lvl][method_pos][position] + analyse_release
 
@@ -485,7 +485,7 @@ def parsingAllParticipantOneMethode():
                                     analyse_release,
                                     nb_analyse_release,
                                 ) = analyseSituation(world, prediction, timestamp_action)
-                                
+
                                 global_analyse_grasp_block[method_pos][position] = global_analyse_grasp_block[method_pos][position] + analyse_grasp
                                 global_analyse_release_block[method_pos][position] = global_analyse_release_block[method_pos][position] + analyse_release
 

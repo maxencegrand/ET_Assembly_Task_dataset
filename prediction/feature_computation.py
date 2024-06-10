@@ -17,10 +17,10 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 
 
@@ -41,11 +41,11 @@ liste_data_t: liste des t correspondant a un gaze point non nul
 
 def parsingOneSituation(gaze_value):
 
-    feature = np.zeros((5, nb_area_1)) 
+    feature = np.zeros((5, nb_area_1))
 
     if str(gaze_value[1]) != "nan":
 
-            
+
 
         d_min = math.inf
         i_min = math.inf
@@ -74,14 +74,14 @@ def parsingOneSituation(gaze_value):
             zone_x_mean = (zone[1] + zone[5])/2
             zone_y_mean = (zone[2] + zone[6])/2
             d = math.sqrt((zone_x_mean - gaze_value[1])**2 + (zone_y_mean - gaze_value[2])**2)
-            
+
             feature[2, z] += (dist_max - d)/(dist_max)
             feature[3, z] += 1/(d)
 
             cote = -2*dist_min
 
             K = math.log2((dist_max) / (cote) + 1)
-            
+
             feature[4, z] += (K - math.log2((d) / (cote) + 1))/K
 
             if d < d_min:
@@ -90,7 +90,7 @@ def parsingOneSituation(gaze_value):
 
         feature[0, i_min] += 1
         feature[1, i_min] += (dist_max - d_min)/(dist_max - dist_min)
-        
+
     return (
         feature,
     )

@@ -26,10 +26,10 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
@@ -100,17 +100,17 @@ def parsingAllParticipantOneMethode():
     liste_participant_sitting = []
 
     for method_pos,method in enumerate(["mobile", "stationnary"]):
-        directory = "../../dataset/" + method + "/sitting/"
+        directory = "../dataset/" + method + "/sitting/"
         for entry in os.scandir(directory):
             if method == "mobile":
                 liste_participant_mobile.append(entry.path)
             else:
                 liste_participant_sitting.append(entry.path)
-    
+
     print(liste_participant_mobile)
 
     liste_seeds = liste_seed()
-    
+
     for seed in liste_seeds:
 
         print("seed", seed)
@@ -141,7 +141,7 @@ def parsingAllParticipantOneMethode():
 
 
         list_model = [[model0,model1,model2,model3,model4],[model5,model6,model7,model8,model9]]
-                    
+
         print(model0.summary())
 
         if backend.backend() == "tensorflow":
@@ -153,7 +153,7 @@ def parsingAllParticipantOneMethode():
         elif backend.backend() == "numpy":
             print("Numpy")
 
-        
+
 
         for method_pos,side in enumerate(right):
 
@@ -172,7 +172,7 @@ def parsingAllParticipantOneMethode():
 
                             print("---------------------------")
                             print("Partcipant :", str(model.path).split("/")[-2], str(model.path).split("/")[-1], method_pos)
-                                            
+
 
 
 
@@ -220,13 +220,13 @@ def parsingAllParticipantOneMethode():
                                                     print("Probleme")
                                                 proba_juste[t][1][x_release *24 + y_release] += 1 / taille_bloc
                                                 proba_juste[t - 1][1][x_release *24 + y_release] += 1 / taille_bloc
-                            
+
                             duree = int(max(world[-1,0], gaze_point[-1,0] ) - min(world[1,0], gaze_point[1,0] ) ) + 1
 
                             nb_gaze = gaze_point.shape[0] - 1
 
                             timestamp_action = listeTimneAction(world)
-                            
+
 
                             all_feature = np.zeros((5, nb_gaze, nb_area_1))
 
@@ -273,7 +273,7 @@ def parsingAllParticipantOneMethode():
                                 all_feature[:,i,:] = feature
 
                                 input_array = all_feature[:,max(0, i - input_dims + 1):i+1,:]
-                                
+
 
                                 if input_array.shape[1] < input_dims:
                                     #padding de 0 en avant de la 2eme dimension
@@ -291,23 +291,23 @@ def parsingAllParticipantOneMethode():
                                     if(max(0,new_indice - 1) % 2 == 0):
                                         norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - probability[f,0,i,:], ord=1)
                                         norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - probability[f,1,i,:], ord=1)
-                                        
+
 
                                     else:
                                         norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - probability[f,0,i,:], ord=1)
                                         norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - probability[f,1,i,:], ord=1)
 
                                 input_indice += 1
-                                    
+
                                 if indice != new_indice:
                                     input_array = np.zeros((nb_predi,input_dims,1152))
                                     input_indice = 0
 
-                                
+
 
 
                                 area4max_indices,area8max_indices,area_best_4,area_best_8,semantic0,semantic1,semantic2,liste_predi_id = interpretation(probability[:,:,i,:],new_indice,world,str(model.path).split("/")[-1],)
-                                
+
                                 temp_area4[:,:,i] = area4max_indices
                                 temp_area8[:,:,i] = area8max_indices
 
@@ -321,7 +321,7 @@ def parsingAllParticipantOneMethode():
                                 temp_block[:,:,i] = liste_predi_id
 
                                 indice = new_indice
-                                
+
                                 temps_fin = time.time()
                                 diff_temps = temps_fin - temps_debut
                                 liste_temps_exec.append(diff_temps)
@@ -338,7 +338,7 @@ def parsingAllParticipantOneMethode():
                             #savingFeature(nom_dossier,path,all_feature)
                             #savingProba(nom_dossier,path,probability)
                             #savingInterpretation(nom_dossier,path,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block)
-                            
+
 
                             result_area4 = np.zeros((5, 2, duree))
                             result_area8 = np.zeros((5, 2, duree))
@@ -392,7 +392,7 @@ def parsingAllParticipantOneMethode():
 
                             total_nb_grasp[method_pos] = total_nb_grasp[method_pos] + (len(timestamp_action)-2)/2
                             total_nb_release[method_pos] = total_nb_release[method_pos] + (len(timestamp_action)-2)/2
-                            
+
                             nb_bloc = [nb_area_4,nb_area_8,nb_area_4,nb_area_8]
 
                             for position, predi in enumerate(area_prediction):
@@ -470,7 +470,7 @@ def parsingAllParticipantOneMethode():
                                         analyse_release,
                                         nb_analyse_release,
                                     ) = analyseSemanticBis(world, prediction, timestamp_action,str(model.path).split("/")[-1],lvl)
-                                    
+
                                     global_analyse_semantic_grasp[lvl][method_pos][position] = global_analyse_semantic_grasp[lvl][method_pos][position] + analyse_grasp
                                     global_analyse_semantic_release[lvl][method_pos][position] = global_analyse_semantic_release[lvl][method_pos][position] + analyse_release
 
@@ -485,7 +485,7 @@ def parsingAllParticipantOneMethode():
                                     analyse_release,
                                     nb_analyse_release,
                                 ) = analyseSituation(world, prediction, timestamp_action)
-                                
+
                                 global_analyse_grasp_block[method_pos][position] = global_analyse_grasp_block[method_pos][position] + analyse_grasp
                                 global_analyse_release_block[method_pos][position] = global_analyse_release_block[method_pos][position] + analyse_release
 

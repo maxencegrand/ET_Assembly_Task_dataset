@@ -18,6 +18,12 @@ The dataset contains ocular data collected during the assembly of figures using 
 
 ## Prediction
 
+### Dependencies
+
+    pip3 install tensorflow
+
+### Getting Start
+
     python3 main.py pour l'approche modele
     python3 main_lstm.py pour l'approche ML
     python3 plot_graph.py chemin_relatif_logs pour plots les figures surfaces

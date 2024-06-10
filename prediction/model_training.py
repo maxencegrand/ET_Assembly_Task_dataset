@@ -28,10 +28,10 @@ nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
-array_zone1 = np.genfromtxt("../csv/zone_1x1.csv", delimiter=",")
-array_zone2 = np.genfromtxt("../csv/zone_2x2.csv", delimiter=",")
-array_zone4 = np.genfromtxt("../csv/zone_4x4.csv", delimiter=",")
-array_zone8 = np.genfromtxt("../csv/zone_8x8.csv", delimiter=",")
+array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
+array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
+array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
+array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 seeds = liste_seed()
 
@@ -69,7 +69,7 @@ def parsingAllParticipantOneMethode(seed):
                 liste_participant_mobile.append(entry.path)
             else:
                 liste_participant_sitting.append(entry.path)
-    
+
     print(liste_participant_mobile)
 
     left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8, seed = seed)
@@ -86,7 +86,7 @@ def parsingAllParticipantOneMethode(seed):
 
     liste_duree = []
 
-    for method_pos,side in enumerate(left):   
+    for method_pos,side in enumerate(left):
         nb_action = 0
         duree_max = 0
         """
@@ -97,18 +97,18 @@ def parsingAllParticipantOneMethode(seed):
             for model in os.scandir(participant):
                 #On vŕifie que le participant existe et est non problematique (bug dans dataset)
                 if not(participant.split("/")[-1] == "37931545" and str(model.path).split("/")[-1] == "tsb") and not(participant.split("/")[-1] == "30587763" and str(model.path).split("/")[-1] == "tsb") and os.path.exists(str(model.path) + "/table.csv") and os.path.exists(str(model.path) + "/states.csv"):
-                    
+
                     #On charge les données
                     gaze_point = np.genfromtxt(
                         model.path + "/table.csv", delimiter=","
                     )
-                    
+
                     world = np.genfromtxt(
                         model.path + "/states.csv", delimiter=","
                     )
 
 
-                    
+
                     #Compte de taille nombre d'action
                     compte = np.zeros((world.shape[0] - 1))
                     nb_action += world.shape[0] - 2
@@ -118,7 +118,7 @@ def parsingAllParticipantOneMethode(seed):
 
                     #On mesure la longueur de chaque action
                     for t in range(1,gaze_point.shape[0]):
-                        
+
                         t_gaze = gaze_point[t,0]
 
                         if indice < world.shape[0] - 2 and t_gaze >= world[indice+2,0]:
@@ -133,24 +133,24 @@ def parsingAllParticipantOneMethode(seed):
                     if duree_max < compte.max():
                         duree_max = compte.max()
                         print("Max:", str(model.path))
-                        
-                
 
-                
+
+
+
         sorted_data = sorted(liste_duree)
 
-        
 
 
 
 
-    
+
+
         # Trouvez l'indice correspondant à 90% des valeurs
         good_index = int(0.95 * len(sorted_data))
-        
+
         # Récupérez la valeur à cet indice
         good_size = int(sorted_data[good_index])
-        
+
         print("indice 95%",good_size)
 
         print(nb_action)
@@ -160,10 +160,10 @@ def parsingAllParticipantOneMethode(seed):
 
         print("UwUwUwUwU")
 
-        
 
 
-        
+
+
 
 
         """
@@ -189,7 +189,7 @@ def parsingAllParticipantOneMethode(seed):
             compteur_y_event = 0
 
             """
-            debut deuxieme passing 
+            debut deuxieme passing
             """
             for number in side:
                 participant = number.numpy().decode('utf-8')
@@ -230,8 +230,8 @@ def parsingAllParticipantOneMethode(seed):
                                         result, = parsingOneSituation(previous_data[u])
                                         training[compteur_event][u]  = result[k]
 
-                                    
-                                    
+
+
 
                         #construction de y_training
 
@@ -246,14 +246,14 @@ def parsingAllParticipantOneMethode(seed):
 
                                     taille_bloc = ((((id_block//3)%2)+1)*4)
 
-                                    #Pour t (grasp) 
+                                    #Pour t (grasp)
                                     #Passage coordonnees a emplacement tenon/coord matrice
                                     x0_grasp = round((48/largeur)*world[t, 10 * id_block + 1])
                                     y0_grasp = round((24/hauteur)*world[t, 10 * id_block + 2])
 
                                     x2_grasp = round((48/largeur)*world[t, 10 * id_block + 5])
                                     y2_grasp = round((48/largeur)*world[t, 10 * id_block + 6])
-                                    
+
                                     #on change l'emplacement du bloc par 1/taille du bloc
                                     for x_grasp in range(x0_grasp,x2_grasp):
                                         for y_grasp in range(y0_grasp,y2_grasp):
@@ -270,10 +270,10 @@ def parsingAllParticipantOneMethode(seed):
                                     for x_release in range(x0_release,x2_release):
                                         for y_release in range(y0_release,y2_release):
                                             y_training[compteur_y_event + t - 1][x_release *24 + y_release] += 1 / taille_bloc
-                            
+
 
                         compteur_y_event += world.shape[0] - 2
-        
+
 
             # Définir la forme de l'entrée
             input_layer = Input(shape=(int(good_size), nb_area_1))
@@ -299,7 +299,7 @@ def parsingAllParticipantOneMethode(seed):
 
 
     return
-    
+
 
 
 if __name__ == "__main__":
