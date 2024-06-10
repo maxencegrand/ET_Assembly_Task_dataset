@@ -1,4 +1,4 @@
-#!/home/maxence/Documents/ET_Assembly_Task_dataset/prediction/environnement_prediction/bin/python3
+#!/home/maxence/Documents/ET_Assembly_Task_dataset/prediction/environnement_prediction/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

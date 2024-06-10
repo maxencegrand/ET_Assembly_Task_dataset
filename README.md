@@ -18,16 +18,27 @@ The dataset contains ocular data collected during the assembly of figures using 
 
 ## Prediction
 
-### Dependencies
+### Dependencies and requirements
 
-    pip3 install tensorflow
+Without python env
+
+    python version>=3.9.2
+    pip install -r prediction/requirements.txt
+
+With python env
+
+    python -m venv prediction/environnement_prediction
+    source prediction/environnement_prediction/bin/activate
+    pip install -r prediction/requirements.txt
+
 
 ### Getting Start
 
-    python3 main.py pour l'approche modele
-    python3 main_lstm.py pour l'approche ML
-    python3 plot_graph.py chemin_relatif_logs pour plots les figures surfaces
-    python3 plot_norme.py chemin_relatif_logs pour plots les figures normes
+    cd prediction
+    python main.py # Model Based Approach
+    python main_lstm.py # ML Based Approach
+    python plot_graph.py path/to/the/log/files # Plot Surface Figures
+    python plot_norme.py path/to/the/log/files # Plot Norme Figures
 
 ## Contact
 For questions or more information, please contact:
