@@ -25,18 +25,26 @@ array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 
 
 """
-parsingOneSituation prend les gaze point d'un participant pour une figure et retourne les poids pour tout t ainsi que l'ensemble des timestamps auquels il y a une action.
+parsingOneSituation prend les gaze point d'un participant pour une figure et
+retourne les poids pour tout t ainsi que l'ensemble des timestamps auquels
+il y a une action.
 
 Input
 
-gaze_point: np.array(x,3) correspond a l'ensemble des donnes present dans le fichier tables.csv
-world: np.array(k,241) correspond a l'ensemble des donnes present dans le fichier states.csv
+gaze_point: np.array(x,3) correspond a l'ensemble des donnes
+present dans le fichier tables.csv
+world: np.array(k,241) correspond a l'ensemble des donnes present dans le fichier
+ states.csv
 
 Output
 
-feature: np.array(5,d,nb_tenon), poid pour les 5 manieres de calculer, pour tout t dans la duree de l'assamblage, pour chaque tenon
-timestamp_action: liste des t correspondant aux evenements, avec 0 et le t final inclus
-liste_data_t: liste des t correspondant a un gaze point non nul
+feature: np.array(5,d,nb_tenon),
+    poid pour les 5 manieres de calculer,
+    pour tout t dans la duree de l'assamblage,
+    pour chaque tenon
+    timestamp_action: liste des t correspondant aux evenements,
+    avec 0 et le t final inclus
+    liste_data_t: liste des t correspondant a un gaze point non nul
 """
 
 def parsingOneSituation(gaze_value):

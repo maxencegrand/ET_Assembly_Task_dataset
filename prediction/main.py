@@ -7,20 +7,24 @@ from datetime import datetime
 os.environ['KERAS_BACKEND'] = 'torch'
 import keras
 
+## TO REMOVE !!!
 plot_1 = False
 analyse = True
 plot_analyse = False
 
+# Table dimension
 largeur = 76
 hauteur = 38
 dist_min = -largeur/(2*48)
 
+# Nb Fixe Zone
 taille_zone = 1
 nb_area_1 = int((48/1)*(24/1))
 nb_area_2 = int((48/2)*(24/2))
 nb_area_4 = int((48/4)*(24/4))
 nb_area_8 = int((48/8)*(24/8))
 
+# Read Zone
 array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
 array_zone4 = np.genfromtxt("csv/zone_4x4.csv", delimiter=",")
@@ -34,7 +38,10 @@ from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog,l
 from seed import liste_seed
 
 """
-parsingOneSituation parcours la liste des participants, et pour chaque type de capteur (mobile/fixe), pour chaque participant, pour chaque figure, fait les differentes etapes menant aux predictions .
+parsingOneSituation parcours la liste des participants,
+et pour chaque type de capteur (mobile/fixe),
+pour chaque participant, pour chaque figure,
+fait les differentes etapes menant aux predictions .
 
 Input
 
@@ -60,10 +67,14 @@ def parsingAllParticipantOneMethode():
     os.mkdir(nom_dossier+"/mobile/sitting/")
     os.mkdir(nom_dossier+"/stationnary/sitting/")
 
+    # Number of Features
     nb_predi = 5
 
-    liste_analyse_methode_grasp_temps = [[[] for _ in range(nb_predi)] for _ in range(2)]
-    liste_analyse_methode_release_temps = [[[] for _ in range(nb_predi)] for _ in range(2)]
+    # Initialize results arrays
+    liste_analyse_methode_grasp_temps =
+        [[[] for _ in range(nb_predi)] for _ in range(2)]
+    liste_analyse_methode_release_temps =
+        [[[] for _ in range(nb_predi)] for _ in range(2)]
 
     total_nb_grasp = [0 for _ in range(2)]
     total_nb_release = [0 for _ in range(2)]
@@ -104,8 +115,8 @@ def parsingAllParticipantOneMethode():
     duree_execution = [[],[]]
 
 
-
-
+    # Initialize participants distribution
+    # through training/validation/testing dataset
     liste_participant_mobile = []
     liste_participant_sitting = []
 
@@ -117,16 +128,25 @@ def parsingAllParticipantOneMethode():
             else:
                 liste_participant_sitting.append(entry.path)
 
-    liste_seeds = liste_seed()
+    liste_seeds = liste_seed() # Run seeds
     print("seed:",liste_seeds)
 
     for seed in liste_seeds:
         print("seed", seed)
-        left_mobile, right_mobile = keras.utils.split_dataset(np.array(liste_participant_mobile), left_size=0.8, shuffle=True, seed = int(seed))
+        #Split dataset
+        left_mobile, right_mobile =
+            keras.utils.split_dataset(
+                np.array(liste_participant_mobile),
+                left_size=0.8, shuffle=True, seed = int(seed))
+
         left_mobile_numpy = list(left_mobile)
         right_mobile_numpy = list(right_mobile)
 
-        left_sitting, right_sitting = keras.utils.split_dataset(np.array(liste_participant_sitting), left_size=0.8, shuffle=True, seed = int(seed))
+        left_sitting, right_sitting =
+            keras.utils.split_dataset(
+                np.array(liste_participant_sitting),
+                left_size=0.8, shuffle=True, seed = int(seed))
+
         left_sitting_numpy = list(left_sitting)
         right_sitting_numpy = list(right_sitting)
 
@@ -148,6 +168,7 @@ def parsingAllParticipantOneMethode():
                 for model in os.scandir(participant):
                     # verifie que les 2 fichiers existent
 
+                    # TO REMOVE after fix annotations errors
                     if not(str(model.path).split("/")[-2] == "30587763" and str(model.path).split("/")[-1] == "tsb") and os.path.exists(
                             str(model.path) + "/table.csv"
                         ) and os.path.exists(str(model.path) + "/states.csv"):
@@ -173,12 +194,13 @@ def parsingAllParticipantOneMethode():
                             )
 
 
+                            # Ground truth / Label
                             proba_juste = np.zeros((world.shape[0] - 1,2,nb_area_1))
                             #Pour chaque etat du monde
                             for t in range(1,world.shape[0]):
                                 #Pour chaque bloc
                                 for id_block in range(24):
-                                    #Si le bloc est grasp
+                                    #Si le bloc est held
                                     if world[t, 10 * id_block + 10] == 1:
 
                                         taille_bloc = ((((id_block//3)%2)+1)*4)
@@ -259,7 +281,7 @@ def parsingAllParticipantOneMethode():
 
                                 (
                                 feature,
-                                ) = parsingOneSituation(gaze_value)
+                                ) = parsingOneSituation(gaze_value) # Compute feat
 
 
                                 all_feature[:,i,:] = feature
@@ -271,12 +293,23 @@ def parsingAllParticipantOneMethode():
                                 else:
                                     past_probability_score = probability_score[:,:,i,:]
 
-                                new_probability,new_probability_score,new_indice = low_level_naif(feature,t,timestamp_action,indice,past_probability_score)
+                                new_probability,new_probability_score,new_indice =
+                                    low_level_naif(
+                                        feature,
+                                        t,
+                                        timestamp_action,
+                                        indice, # World state index
+                                        past_probability_score # Previous feat sum
+                                    )
 
                                 for f in range(nb_predi):
                                     if(max(0,new_indice - 1) % 2 == 0):
-                                        norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - new_probability[f][0], ord=1)
-                                        norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - new_probability[f][1], ord=1)
+                                        norme_array[f,0,i] += np.linalg.norm(
+                                            proba_juste[new_indice - 1][0] - new_probability[f][0],
+                                            ord=1)
+                                        norme_array[f,1,i] += np.linalg.norm(
+                                            proba_juste[new_indice - 1][1] - new_probability[f][1],
+                                            ord=1)
 
                                         #print(np.sum(proba_juste[new_indice - 1][0]))
                                         #print(np.sum(new_probability[f][0]))
@@ -287,16 +320,34 @@ def parsingAllParticipantOneMethode():
                                         #print("---")
 
                                     else:
-                                        norme_array[f,0,i] += np.linalg.norm(proba_juste[new_indice - 1][0] - new_probability[f][0], ord=1)
-                                        norme_array[f,1,i] += np.linalg.norm(proba_juste[new_indice - 1][1] - new_probability[f][1], ord=1)
+                                        norme_array[f,0,i] += np.linalg.norm(
+                                            proba_juste[new_indice - 1][0] - new_probability[f][0],
+                                            ord=1)
+                                        norme_array[f,1,i] += np.linalg.norm(
+                                            proba_juste[new_indice - 1][1] - new_probability[f][1],
+                                            ord=1)
 
 
 
-                                probability[:,:,i,:] = new_probability
-                                probability_score[:,:,i,:] = new_probability_score
+                                probability[:,:,i,:] = new_probability # Proba
+                                probability_score[:,:,i,:] = new_probability_score # Feat sum
 
                                 temps_interpretation = time.time()
-                                area4max_indices,area8max_indices,area_best_4,area_best_8,semantic0,semantic1,semantic2,liste_predi_id = interpretation(new_probability,new_indice,world,str(model.path).split("/")[-1])
+                                
+                                [
+                                    area4max_indices,
+                                    area8max_indices,
+                                    area_best_4,
+                                    area_best_8,
+                                    semantic0,
+                                    semantic1,
+                                    semantic2,
+                                    liste_predi_id ] =
+                                        interpretation(
+                                            new_probability,
+                                            new_indice,
+                                            world,
+                                            str(model.path).split("/")[-1])
 
                                 temps_fin = time.time()
 
