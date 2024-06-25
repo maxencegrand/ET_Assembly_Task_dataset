@@ -1,8 +1,6 @@
 import numpy as np
 
 
-
-
 def liste_seed():
     # Définir la plage de valeurs pour les graines
     min_seed = 1
@@ -14,6 +12,4 @@ def liste_seed():
     num_seeds = 5
     selected_seeds = np.random.randint(min_seed, max_seed, size=num_seeds)
 
-
     return selected_seeds
-

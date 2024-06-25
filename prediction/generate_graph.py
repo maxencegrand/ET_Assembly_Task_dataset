@@ -13,11 +13,10 @@ if __name__ == "__main__":
 
         print("Le nom du fichier fourni est:", nom_fichier)
 
-        results,nb_prediction,duree_execution = loadLog(nom_fichier)
+        results, nb_prediction, duree_execution = loadLog(nom_fichier)
 
-        results = results.reshape(28,2,nb_predi,6001)
-        nb_prediction = nb_prediction.reshape(28,2,6001)
-
+        results = results.reshape(28, 2, nb_predi, 6001)
+        nb_prediction = nb_prediction.reshape(28, 2, 6001)
 
         area4_grasp_weak = results[0]
         area4_release_weak = results[4]
@@ -55,7 +54,6 @@ if __name__ == "__main__":
         norme_grasp = results[26]
         norme_release = results[27]
 
-
         nb_area4_grasp_weak = nb_prediction[0]
         nb_area4_release_weak = nb_prediction[4]
         nb_area4_grasp_strong = nb_prediction[8]
@@ -92,13 +90,10 @@ if __name__ == "__main__":
         nb_norme_grasp = nb_prediction[26]
         nb_norme_release = nb_prediction[27]
 
+        linestyles = ["-", "--", "-.", ":", (0, (3, 2, 1, 2, 1, 2))]
 
-        linestyles = ["-","--","-.",":",(0, (3, 2, 1, 2, 1, 2))]
-
-        color = ["blue","orange","green","red","purple"]
-        style = [" dashed","dotted","densely dotted","densely dashed","dash dot"]
-
-
+        color = ["blue", "orange", "green", "red", "purple"]
+        style = [" dashed", "dotted", "densely dotted", "densely dashed", "dash dot"]
 
         with open("mon_graphe.tex", "w") as fichier:
             # Commencer l'écriture
@@ -109,7 +104,7 @@ if __name__ == "__main__":
             fichier.write("\\begin{document}\n")
             fichier.write("\\begin{figure}[htbp]\n")
             fichier.write("\\centering\n")
-            
+
             for ind in range(2):
                 fichier.write("\\begin{subfigure}{0.45\\textwidth}\n")
                 fichier.write("\\centering\n")
@@ -129,11 +124,30 @@ if __name__ == "__main__":
 
                 fichier.write("% Lignes\n")
 
-                for i in range(0,3000,25):
+                for i in range(0, 3000, 25):
                     for f in range(5):
                         pass
-                        fichier.write("\\draw["+str(color[f])+", "+str(style[f])+"] ("+str((i-3000)/1000)+","+str((norme_grasp[ind][f][i]/nb_norme_grasp[ind][i])*3)+") -- ("+str((i+25-3000)/1000)+","+str((norme_grasp[ind][f][i+25]/nb_norme_grasp[ind][i+25])*3)+");\n")
-
+                        fichier.write(
+                            "\\draw["
+                            + str(color[f])
+                            + ", "
+                            + str(style[f])
+                            + "] ("
+                            + str((i - 3000) / 1000)
+                            + ","
+                            + str((norme_grasp[ind][f][i] / nb_norme_grasp[ind][i]) * 3)
+                            + ") -- ("
+                            + str((i + 25 - 3000) / 1000)
+                            + ","
+                            + str(
+                                (
+                                    norme_grasp[ind][f][i + 25]
+                                    / nb_norme_grasp[ind][i + 25]
+                                )
+                                * 3
+                            )
+                            + ");\n"
+                        )
 
                 fichier.write("\\end{tikzpicture}\n")
                 fichier.write("\\caption{Courbes de différentes couleurs et formes.}\n")
@@ -158,17 +172,41 @@ if __name__ == "__main__":
 
                 fichier.write("% Lignes\n")
 
-                for i in range(0,3000,25):
+                for i in range(0, 3000, 25):
                     for f in range(5):
                         pass
-                        fichier.write("\\draw["+str(color[f])+", "+str(style[f])+"] ("+str((i-3000)/1000)+","+str((norme_release[ind][f][i]/nb_norme_release[ind][i])*3)+") -- ("+str((i+25-3000)/1000)+","+str((norme_release[ind][f][i+25]/nb_norme_release[ind][i+25])*3)+");\n")
-
+                        fichier.write(
+                            "\\draw["
+                            + str(color[f])
+                            + ", "
+                            + str(style[f])
+                            + "] ("
+                            + str((i - 3000) / 1000)
+                            + ","
+                            + str(
+                                (norme_release[ind][f][i] / nb_norme_release[ind][i])
+                                * 3
+                            )
+                            + ") -- ("
+                            + str((i + 25 - 3000) / 1000)
+                            + ","
+                            + str(
+                                (
+                                    norme_release[ind][f][i + 25]
+                                    / nb_norme_release[ind][i + 25]
+                                )
+                                * 3
+                            )
+                            + ");\n"
+                        )
 
                 fichier.write("\\end{tikzpicture}\n")
                 fichier.write("\\caption{Courbes de différentes couleurs et formes.}\n")
                 fichier.write("\\end{subfigure}\n")
-                
-            fichier.write("\\caption{Graphiques avec courbes de différentes couleurs et formes.}\n")
+
+            fichier.write(
+                "\\caption{Graphiques avec courbes de différentes couleurs et formes.}\n"
+            )
             fichier.write("\\end{figure}\n")
             fichier.write("\\end{document}\n")
 

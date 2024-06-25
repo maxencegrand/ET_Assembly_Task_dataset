@@ -8,13 +8,13 @@ plot_analyse = False
 
 largeur = 76
 hauteur = 38
-dist_min = -largeur/(2*48)
+dist_min = -largeur / (2 * 48)
 
 taille_zone = 1
-nb_area_1 = int((48/1)*(24/1))
-nb_area_2 = int((48/2)*(24/2))
-nb_area_4 = int((48/4)*(24/4))
-nb_area_8 = int((48/8)*(24/8))
+nb_area_1 = int((48 / 1) * (24 / 1))
+nb_area_2 = int((48 / 2) * (24 / 2))
+nb_area_4 = int((48 / 4) * (24 / 4))
+nb_area_8 = int((48 / 8) * (24 / 8))
 
 array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
@@ -28,30 +28,45 @@ low_level_naif prend les poids de feature extraction et renvoi les probabilites 
 Input
 
 feature: np.array(5,d,nb_tenon), poid pour les 5 manieres de calculer, pour tout t dans la duree de l'assamblage, pour chaque tenon
+timestamp: int correspond a au timestamp actuel
 timestamp_action: liste des t correspondant aux evenements, avec 0 et le t final inclus
+past_probability_score: probabilité a l'instant precedent
 
 Output
 
 probability: np.array((5, 2, duration, nb_area_1)) probabilite qu'un bloc tenon soit important selon les 5 manieres de calculer, sur la duree d'un assamblage, pour tous les tenons. La dimension 2 correspond aux reset grasp ou reset release
 """
-def low_level_naif(feature,timestamp,timestamp_action,timestamp_indice,past_probability_score):
 
+
+def low_level_naif(
+    feature, timestamp, timestamp_action, timestamp_indice, past_probability_score
+):
+    # probabilité
     new_probability = np.zeros((5, 2, nb_area_1))
+    # somme des indicateurs
     new_probability_score = np.zeros((5, 2, nb_area_1))
 
-    #print("------")
-    #print(timestamp_indice)
-    #print(timestamp_action)
-    #print(timestamp)
+    # Si on est le 1er gaze point apres un event (pour reset la somme)
+    if (
+        timestamp_indice < len(timestamp_action) - 1
+        and timestamp >= timestamp_action[timestamp_indice]
+    ):
 
-    if timestamp_indice < len(timestamp_action)-1 and timestamp >= timestamp_action[timestamp_indice]:
-
-
-        new_probability_score[0, (timestamp_indice + 1) % 2] = past_probability_score[0, (timestamp_indice + 1) % 2] + feature[0]
-        new_probability_score[1, (timestamp_indice + 1) % 2] = past_probability_score[1, (timestamp_indice + 1) % 2] + feature[1]
-        new_probability_score[2, (timestamp_indice + 1) % 2] = past_probability_score[2, (timestamp_indice + 1) % 2] + feature[2]
-        new_probability_score[3, (timestamp_indice + 1) % 2] = past_probability_score[3, (timestamp_indice + 1) % 2] + feature[3]
-        new_probability_score[4, (timestamp_indice + 1) % 2] = past_probability_score[4, (timestamp_indice + 1) % 2] + feature[4]
+        new_probability_score[0, (timestamp_indice + 1) % 2] = (
+            past_probability_score[0, (timestamp_indice + 1) % 2] + feature[0]
+        )
+        new_probability_score[1, (timestamp_indice + 1) % 2] = (
+            past_probability_score[1, (timestamp_indice + 1) % 2] + feature[1]
+        )
+        new_probability_score[2, (timestamp_indice + 1) % 2] = (
+            past_probability_score[2, (timestamp_indice + 1) % 2] + feature[2]
+        )
+        new_probability_score[3, (timestamp_indice + 1) % 2] = (
+            past_probability_score[3, (timestamp_indice + 1) % 2] + feature[3]
+        )
+        new_probability_score[4, (timestamp_indice + 1) % 2] = (
+            past_probability_score[4, (timestamp_indice + 1) % 2] + feature[4]
+        )
 
         new_probability_score[0, timestamp_indice % 2] = feature[0]
         new_probability_score[1, timestamp_indice % 2] = feature[1]
@@ -61,6 +76,7 @@ def low_level_naif(feature,timestamp,timestamp_action,timestamp_indice,past_prob
 
         timestamp_indice += 1
 
+    # Sinon
     else:
 
         new_probability_score[0, 0] = past_probability_score[0, 0] + feature[0]
@@ -75,21 +91,21 @@ def low_level_naif(feature,timestamp,timestamp_action,timestamp_indice,past_prob
         new_probability_score[3, 1] = past_probability_score[3, 1] + feature[3]
         new_probability_score[4, 1] = past_probability_score[4, 1] + feature[4]
 
-
-
-
-
     for m in range(5):
-        if np.sum(new_probability_score[m,0]) > 0:
-            new_probability[m, 0] = new_probability_score[m, 0]/np.sum(new_probability_score[m, 0])
+        if np.sum(new_probability_score[m, 0]) > 0:
+            new_probability[m, 0] = new_probability_score[m, 0] / np.sum(
+                new_probability_score[m, 0]
+            )
 
         else:
-            new_probability[m, 0] = np.ones((nb_area_1))/nb_area_1
+            new_probability[m, 0] = np.ones((nb_area_1)) / nb_area_1
 
-        if np.sum(new_probability_score[m,1]) > 0:
-            new_probability[m, 1] = new_probability_score[m, 1]/np.sum(new_probability_score[m, 1])
+        if np.sum(new_probability_score[m, 1]) > 0:
+            new_probability[m, 1] = new_probability_score[m, 1] / np.sum(
+                new_probability_score[m, 1]
+            )
 
         else:
-            new_probability[m, 1] = np.ones((nb_area_1))/nb_area_1
+            new_probability[m, 1] = np.ones((nb_area_1)) / nb_area_1
 
     return new_probability, new_probability_score, timestamp_indice

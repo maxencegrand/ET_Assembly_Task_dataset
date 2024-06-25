@@ -2,7 +2,8 @@ import numpy as np
 import math
 import time
 import os
-os.environ['KERAS_BACKEND'] = 'torch'
+
+os.environ["KERAS_BACKEND"] = "torch"
 import keras
 
 from keras.models import Sequential
@@ -15,13 +16,13 @@ plot_analyse = False
 
 largeur = 76
 hauteur = 38
-dist_min = -largeur/(2*48)
+dist_min = -largeur / (2 * 48)
 
 taille_zone = 1
-nb_area_1 = int((48/1)*(24/1))
-nb_area_2 = int((48/2)*(24/2))
-nb_area_4 = int((48/4)*(24/4))
-nb_area_8 = int((48/8)*(24/8))
+nb_area_1 = int((48 / 1) * (24 / 1))
+nb_area_2 = int((48 / 2) * (24 / 2))
+nb_area_4 = int((48 / 4) * (24 / 4))
+nb_area_8 = int((48 / 8) * (24 / 8))
 
 array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
@@ -41,34 +42,39 @@ Output
 
 probability: np.array((5, 2, duration, nb_area_1)) probabilite qu'un bloc tenon soit important selon les 5 manieres de calculer, sur la duree d'un assamblage, pour tous les tenons. La dimension 2 correspond aux reset grasp ou reset release
 """
-def low_level_lstm(input_array,model,timestamp,timestamp_action,timestamp_indice):
 
-    duree,table = input_array.shape
 
-    input_array = input_array.reshape((1,duree,table))
+def low_level_lstm(input_array, model, timestamp, timestamp_action, timestamp_indice):
+
+    duree, table = input_array.shape
+
+    input_array = input_array.reshape((1, duree, table))
 
     t1 = time.time()
     model_result = model.predict(input_array, verbose=0)
-    t2 =time.time()
+    t2 = time.time()
 
-    new_probability = np.zeros((2,model_result.shape[1]))
+    new_probability = np.zeros((2, model_result.shape[1]))
     new_probability[0] = model_result
     new_probability[1] = model_result
 
-    #print(timestamp, timestamp_action[timestamp_indice])
+    # print(timestamp, timestamp_action[timestamp_indice])
 
-    if timestamp_indice < len(timestamp_action)-1 and timestamp >= timestamp_action[timestamp_indice]:
+    if (
+        timestamp_indice < len(timestamp_action) - 1
+        and timestamp >= timestamp_action[timestamp_indice]
+    ):
 
         timestamp_indice += 1
 
     if np.sum(new_probability[0]) > 0:
-        new_probability[0] = new_probability[0]/np.sum(new_probability[0])
+        new_probability[0] = new_probability[0] / np.sum(new_probability[0])
     else:
-        new_probability[0] = np.ones((nb_area_1))/nb_area_1
+        new_probability[0] = np.ones((nb_area_1)) / nb_area_1
 
     if np.sum(new_probability[1]) > 0:
-        new_probability[1] = new_probability[1]/np.sum(new_probability[1])
+        new_probability[1] = new_probability[1] / np.sum(new_probability[1])
     else:
-        new_probability[1] = np.ones((nb_area_1))/nb_area_1
+        new_probability[1] = np.ones((nb_area_1)) / nb_area_1
 
     return new_probability, timestamp_indice

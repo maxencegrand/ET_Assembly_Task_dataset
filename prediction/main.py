@@ -4,25 +4,20 @@ import os
 import time
 from datetime import datetime
 
-os.environ['KERAS_BACKEND'] = 'torch'
+os.environ["KERAS_BACKEND"] = "torch"
 import keras
-
-## TO REMOVE !!!
-plot_1 = False
-analyse = True
-plot_analyse = False
 
 # Table dimension
 largeur = 76
 hauteur = 38
-dist_min = -largeur/(2*48)
+dist_min = -largeur / (2 * 48)
 
 # Nb Fixe Zone
 taille_zone = 1
-nb_area_1 = int((48/1)*(24/1))
-nb_area_2 = int((48/2)*(24/2))
-nb_area_4 = int((48/4)*(24/4))
-nb_area_8 = int((48/8)*(24/8))
+nb_area_1 = int((48 / 1) * (24 / 1))
+nb_area_2 = int((48 / 2) * (24 / 2))
+nb_area_4 = int((48 / 4) * (24 / 4))
+nb_area_8 = int((48 / 8) * (24 / 8))
 
 # Read Zone
 array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
@@ -33,8 +28,30 @@ array_zone8 = np.genfromtxt("csv/zone_8x8.csv", delimiter=",")
 from feature_computation import parsingOneSituation
 from low_lvl_naif import low_level_naif
 from interpretation import interpretation
-from analyse import analyseSituation,analyseFixeAreaWeak,analyseFixeAreaStrong,analyseSlidingAreaWeak,analyseSlidingAreaStrong,analyseMethod,trueSemantic,analyseSemantic, analyseNorme, analyseSemanticBis
-from tools import quadrillageRelease,quadrillageGrasp,liste_tenon_bloc,saveLog,listeTimneAction,CurrentWorld,savingTime,savingFeature,savingProba,savingInterpretation
+from analyse import (
+    analyseSituation,
+    analyseFixeAreaWeak,
+    analyseFixeAreaStrong,
+    analyseSlidingAreaWeak,
+    analyseSlidingAreaStrong,
+    analyseMethod,
+    trueSemantic,
+    analyseSemantic,
+    analyseNorme,
+    analyseSemanticBis,
+)
+from tools import (
+    quadrillageRelease,
+    quadrillageGrasp,
+    liste_tenon_bloc,
+    saveLog,
+    listeTimneAction,
+    CurrentWorld,
+    savingTime,
+    savingFeature,
+    savingProba,
+    savingInterpretation,
+)
 from seed import liste_seed
 
 """
@@ -42,15 +59,19 @@ parsingOneSituation parcours la liste des participants,
 et pour chaque type de capteur (mobile/fixe),
 pour chaque participant, pour chaque figure,
 fait les differentes etapes menant aux predictions .
+Les resultats sont enregistres dans un dossier de logs/ 
+avec le timestamp comme nom
 
 Input
-
+-----
 None
 
 Output
-
+-----
 None
 """
+
+
 def parsingAllParticipantOneMethode():
 
     # Obtention de la date et de l'heure actuelle
@@ -61,48 +82,50 @@ def parsingAllParticipantOneMethode():
 
     os.mkdir(nom_dossier)
 
-    os.mkdir(nom_dossier+"/mobile")
-    os.mkdir(nom_dossier+"/stationnary")
+    os.mkdir(nom_dossier + "/mobile")
+    os.mkdir(nom_dossier + "/stationnary")
 
-    os.mkdir(nom_dossier+"/mobile/sitting/")
-    os.mkdir(nom_dossier+"/stationnary/sitting/")
+    os.mkdir(nom_dossier + "/mobile/sitting/")
+    os.mkdir(nom_dossier + "/stationnary/sitting/")
 
     # Number of Features
     nb_predi = 5
 
-    # Initialize results arrays
-    liste_analyse_methode_grasp_temps =
-        [[[] for _ in range(nb_predi)] for _ in range(2)]
-    liste_analyse_methode_release_temps =
-        [[[] for _ in range(nb_predi)] for _ in range(2)]
+    # Initialise l'emsemble des array permettant de stocker les résultats
+    liste_analyse_methode_grasp_temps = [
+        [[] for _ in range(nb_predi)] for _ in range(2)
+    ]
+    liste_analyse_methode_release_temps = [
+        [[] for _ in range(nb_predi)] for _ in range(2)
+    ]
 
     total_nb_grasp = [0 for _ in range(2)]
     total_nb_release = [0 for _ in range(2)]
 
-    global_analyse_grasp_area_weak = np.zeros((4,2,nb_predi,6001))
-    global_nb_analyse_grasp_area_weak = np.zeros((4,2,6001))
-    global_analyse_release_area_weak = np.zeros((4,2,nb_predi,6001))
-    global_nb_analyse_release_area_weak = np.zeros((4,2,6001))
+    global_analyse_grasp_area_weak = np.zeros((4, 2, nb_predi, 6001))
+    global_nb_analyse_grasp_area_weak = np.zeros((4, 2, 6001))
+    global_analyse_release_area_weak = np.zeros((4, 2, nb_predi, 6001))
+    global_nb_analyse_release_area_weak = np.zeros((4, 2, 6001))
 
-    global_analyse_grasp_area_strong = np.zeros((4,2,nb_predi,6001))
-    global_nb_analyse_grasp_area_strong = np.zeros((4,2,6001))
-    global_analyse_release_area_strong = np.zeros((4,2,nb_predi,6001))
-    global_nb_analyse_release_area_strong = np.zeros((4,2,6001))
+    global_analyse_grasp_area_strong = np.zeros((4, 2, nb_predi, 6001))
+    global_nb_analyse_grasp_area_strong = np.zeros((4, 2, 6001))
+    global_analyse_release_area_strong = np.zeros((4, 2, nb_predi, 6001))
+    global_nb_analyse_release_area_strong = np.zeros((4, 2, 6001))
 
-    global_analyse_semantic_grasp = np.zeros((4,2,nb_predi,6001))
-    global_nb_analyse_semantic_grasp = np.zeros((4,2,6001))
-    global_analyse_semantic_release = np.zeros((4,2,nb_predi,6001))
-    global_nb_analyse_semantic_release = np.zeros((4,2,6001))
+    global_analyse_semantic_grasp = np.zeros((4, 2, nb_predi, 6001))
+    global_nb_analyse_semantic_grasp = np.zeros((4, 2, 6001))
+    global_analyse_semantic_release = np.zeros((4, 2, nb_predi, 6001))
+    global_nb_analyse_semantic_release = np.zeros((4, 2, 6001))
 
-    global_analyse_grasp_block = np.zeros((2,nb_predi,6001))
-    global_nb_analyse_grasp_block = np.zeros((2,6001))
-    global_analyse_release_block = np.zeros((2,nb_predi,6001))
-    global_nb_analyse_release_block = np.zeros((2,6001))
+    global_analyse_grasp_block = np.zeros((2, nb_predi, 6001))
+    global_nb_analyse_grasp_block = np.zeros((2, 6001))
+    global_analyse_release_block = np.zeros((2, nb_predi, 6001))
+    global_nb_analyse_release_block = np.zeros((2, 6001))
 
-    global_analyse_norme_grasp = np.zeros((2,nb_predi,6001))
-    global_nb_analyse_norme_grasp = np.zeros((2,6001))
-    global_analyse_norme_release = np.zeros((2,nb_predi,6001))
-    global_nb_analyse_norme_release = np.zeros((2,6001))
+    global_analyse_norme_grasp = np.zeros((2, nb_predi, 6001))
+    global_nb_analyse_norme_grasp = np.zeros((2, 6001))
+    global_analyse_norme_release = np.zeros((2, nb_predi, 6001))
+    global_nb_analyse_norme_release = np.zeros((2, 6001))
 
     nb_analyse = 0
 
@@ -112,15 +135,13 @@ def parsingAllParticipantOneMethode():
     nb_norme_grasp = 0
     nb_norme_release = 0
 
-    duree_execution = [[],[]]
+    duree_execution = [[], []]
 
-
-    # Initialize participants distribution
-    # through training/validation/testing dataset
+    # recupere la liste des participants
     liste_participant_mobile = []
     liste_participant_sitting = []
 
-    for method_pos,method in enumerate(["mobile", "stationnary"]):
+    for method_pos, method in enumerate(["mobile", "stationnary"]):
         directory = "../dataset/" + method + "/sitting/"
         for entry in os.scandir(directory):
             if method == "mobile":
@@ -128,438 +149,608 @@ def parsingAllParticipantOneMethode():
             else:
                 liste_participant_sitting.append(entry.path)
 
-    liste_seeds = liste_seed() # Run seeds
-    print("seed:",liste_seeds)
+    liste_seeds = liste_seed()  # Run seeds
 
+    # Pour chaque seed
     for seed in liste_seeds:
         print("seed", seed)
-        #Split dataset
-        left_mobile, right_mobile =
-            keras.utils.split_dataset(
-                np.array(liste_participant_mobile),
-                left_size=0.8, shuffle=True, seed = int(seed))
+        # Split les participant en 80-20
+        left_mobile, right_mobile = keras.utils.split_dataset(
+            np.array(liste_participant_mobile),
+            left_size=0.8,
+            shuffle=True,
+            seed=int(seed),
+        )
 
         left_mobile_numpy = list(left_mobile)
         right_mobile_numpy = list(right_mobile)
 
-        left_sitting, right_sitting =
-            keras.utils.split_dataset(
-                np.array(liste_participant_sitting),
-                left_size=0.8, shuffle=True, seed = int(seed))
+        left_sitting, right_sitting = keras.utils.split_dataset(
+            np.array(liste_participant_sitting),
+            left_size=0.8,
+            shuffle=True,
+            seed=int(seed),
+        )
 
         left_sitting_numpy = list(left_sitting)
         right_sitting_numpy = list(right_sitting)
 
-        left = [left_mobile_numpy,left_sitting_numpy]
-        right = [right_mobile_numpy,right_sitting_numpy]
+        left = [left_mobile_numpy, left_sitting_numpy]
+        right = [right_mobile_numpy, right_sitting_numpy]
 
-        # On parcours la liste des dossiers correspondant aux participants
-        #for method_pos,method in enumerate(["mobile", "stationnary"]):
-        for method_pos,side in enumerate(right):
+        # On parcours les 20% des participants
+        for method_pos, side in enumerate(right):
 
             if method_pos == 0:
                 method = "mobile"
             else:
                 method = "stationnary"
-            print(method)
+
+            # On parcours les figures faitent par les participants
             for number in side:
-                participant = number.numpy().decode('utf-8')
-                #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(participant).split("/")[-1])
+                participant = number.numpy().decode("utf-8")
+                # os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(participant).split("/")[-1])
                 for model in os.scandir(participant):
                     # verifie que les 2 fichiers existent
 
-                    # TO REMOVE after fix annotations errors
-                    if not(str(model.path).split("/")[-2] == "30587763" and str(model.path).split("/")[-1] == "tsb") and os.path.exists(
-                            str(model.path) + "/table.csv"
-                        ) and os.path.exists(str(model.path) + "/states.csv"):
+                    # On vérifie que les fichiers existent
+                    if os.path.exists(
+                        str(model.path) + "/table.csv"
+                    ) and os.path.exists(str(model.path) + "/states.csv"):
+                        # Affiche le participant et la figure traiter actuellement
+                        print("---------------------------")
+                        print(
+                            "Partcipant :",
+                            str(model.path).split("/")[-2],
+                            str(model.path).split("/")[-1],
+                            method_pos,
+                        )
 
-                            print("---------------------------")
-                            print("Partcipant :", str(model.path).split("/")[-2], str(model.path).split("/")[-1], method_pos)
-                            #os.mkdir(nom_dossier + "/" + method + "/" + "sitting/" + str(model.path).split("/")[-2] + "/" + str(model.path).split("/")[-1])
-
-                            if  method_pos == 0:
-                                path = "mobile/sitting/"+str(model.path).split("/")[-2]+"/"+str(model.path).split("/")[-1]+"/"
-
-                            else:
-                                path = "stationnary/sitting/"+str(model.path).split("/")[-2]+"/"+str(model.path).split("/")[-1]+"/"
-
-
-                            # charge les deux fichiers dans des np.array
-                            gaze_point = np.genfromtxt(
-                                str(model.path) + "/table.csv", delimiter=","
+                        if method_pos == 0:
+                            path = (
+                                "mobile/sitting/"
+                                + str(model.path).split("/")[-2]
+                                + "/"
+                                + str(model.path).split("/")[-1]
+                                + "/"
                             )
 
-                            world = np.genfromtxt(
-                                str(model.path) + "/states.csv", delimiter=","
+                        else:
+                            path = (
+                                "stationnary/sitting/"
+                                + str(model.path).split("/")[-2]
+                                + "/"
+                                + str(model.path).split("/")[-1]
+                                + "/"
                             )
 
+                        # charge les deux fichiers dans des np.array
+                        gaze_point = np.genfromtxt(
+                            str(model.path) + "/table.csv", delimiter=","
+                        )
 
-                            # Ground truth / Label
-                            proba_juste = np.zeros((world.shape[0] - 1,2,nb_area_1))
-                            #Pour chaque etat du monde
-                            for t in range(1,world.shape[0]):
-                                #Pour chaque bloc
-                                for id_block in range(24):
-                                    #Si le bloc est held
-                                    if world[t, 10 * id_block + 10] == 1:
+                        world = np.genfromtxt(
+                            str(model.path) + "/states.csv", delimiter=","
+                        )
 
-                                        taille_bloc = ((((id_block//3)%2)+1)*4)
+                        # Ground truth / Label
+                        proba_juste = np.zeros((world.shape[0] - 1, 2, nb_area_1))
+                        # Pour chaque etat du monde
+                        for t in range(1, world.shape[0]):
+                            # Pour chaque bloc
+                            for id_block in range(24):
+                                # Si le bloc est held
+                                if world[t, 10 * id_block + 10] == 1:
 
-                                        x0_grasp = round((48/largeur)*world[t, 10 * id_block + 1])
-                                        y0_grasp = round((24/hauteur)*world[t, 10 * id_block + 2])
+                                    taille_bloc = (((id_block // 3) % 2) + 1) * 4
 
-                                        x2_grasp = round((48/largeur)*world[t, 10 * id_block + 5])
-                                        y2_grasp = round((48/largeur)*world[t, 10 * id_block + 6])
-
-                                        for x_grasp in range(x0_grasp,x2_grasp):
-                                            for y_grasp in range(y0_grasp,y2_grasp):
-                                                if t-2 <0:
-                                                    print("bdm;lbdfklnbdnfkl")
-                                                proba_juste[t - 2][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
-                                                proba_juste[t - 1][0][x_grasp *24 + y_grasp] += 1 / taille_bloc
-
-                                        x0_release = round((48/largeur)*world[t+1, 10 * id_block + 1])
-                                        y0_release = round((24/hauteur)*world[t+1, 10 * id_block + 2])
-
-                                        x2_release = round((48/largeur)*world[t+1, 10 * id_block + 5])
-                                        y2_release = round((48/largeur)*world[t+1, 10 * id_block + 6])
-
-                                        for x_release in range(x0_release,x2_release):
-                                            for y_release in range(y0_release,y2_release):
-                                                if t == world.shape[0]:
-                                                    print("Probleme")
-                                                proba_juste[t][1][x_release *24 + y_release] += 1 / taille_bloc
-                                                proba_juste[t - 1][1][x_release *24 + y_release] += 1 / taille_bloc
-
-
-                            duree = int(max(world[-1,0], gaze_point[-1,0] ) - min(world[1,0], gaze_point[1,0] ) ) + 1
-
-                            nb_gaze = gaze_point.shape[0] - 1
-
-                            timestamp_action = listeTimneAction(world)
-
-
-                            all_feature = np.zeros((5, nb_gaze, nb_area_1))
-                            probability_score = np.zeros((5, 2, nb_gaze, nb_area_1))
-                            probability = np.zeros((5, 2, nb_gaze, nb_area_1))
-
-                            t_init = world[1,0]
-
-                            indice = 0
-
-                            liste_t_value = []
-
-                            liste_temps_feature = []
-                            liste_temps_low_level = []
-                            liste_temps_interpretation = []
-                            liste_temps_total = []
-
-                            temp_area4 = np.zeros((5,2,nb_gaze))
-                            temp_area8 = np.zeros((5,2,nb_gaze))
-
-                            temp_area_sliding_4 = np.zeros((5,2,nb_gaze))
-                            temp_area_sliding_8 = np.zeros((5,2,nb_gaze))
-
-                            temp_area_semantic_0 = np.zeros((5,2,nb_gaze))
-                            temp_area_semantic_1 = np.zeros((5,2,nb_gaze))
-                            temp_area_semantic_2 = np.zeros((5,2,nb_gaze))
-
-
-                            temp_block = np.zeros((5,2,nb_gaze))
-
-
-                            norme_array = np.zeros((nb_predi,2,nb_gaze))
-
-                            for i in range(nb_gaze):
-                                temps_feature = time.time()
-
-                                current_world = CurrentWorld(gaze_point[i, 0], world)
-
-                                gaze_value = gaze_point [i + 1]
-                                t = gaze_value[0] - t_init
-                                liste_t_value.append(t)
-
-                                (
-                                feature,
-                                ) = parsingOneSituation(gaze_value) # Compute feat
-
-
-                                all_feature[:,i,:] = feature
-
-                                temps_low_level = time.time()
-
-                                if i > 0:
-                                    past_probability_score = probability_score[:,:,i-1,:]
-                                else:
-                                    past_probability_score = probability_score[:,:,i,:]
-
-                                new_probability,new_probability_score,new_indice =
-                                    low_level_naif(
-                                        feature,
-                                        t,
-                                        timestamp_action,
-                                        indice, # World state index
-                                        past_probability_score # Previous feat sum
+                                    x0_grasp = round(
+                                        (48 / largeur) * world[t, 10 * id_block + 1]
+                                    )
+                                    y0_grasp = round(
+                                        (24 / hauteur) * world[t, 10 * id_block + 2]
                                     )
 
-                                for f in range(nb_predi):
-                                    if(max(0,new_indice - 1) % 2 == 0):
-                                        norme_array[f,0,i] += np.linalg.norm(
-                                            proba_juste[new_indice - 1][0] - new_probability[f][0],
-                                            ord=1)
-                                        norme_array[f,1,i] += np.linalg.norm(
-                                            proba_juste[new_indice - 1][1] - new_probability[f][1],
-                                            ord=1)
+                                    x2_grasp = round(
+                                        (48 / largeur) * world[t, 10 * id_block + 5]
+                                    )
+                                    y2_grasp = round(
+                                        (48 / largeur) * world[t, 10 * id_block + 6]
+                                    )
 
-                                        #print(np.sum(proba_juste[new_indice - 1][0]))
-                                        #print(np.sum(new_probability[f][0]))
-                                        #print(norme_array[f,0,i])
-                                        #print(np.sum(proba_juste[new_indice - 1][1]))
-                                        #print(np.sum(new_probability[f][1]))
-                                        #print(norme_array[f,1,i])
-                                        #print("---")
+                                    for x_grasp in range(x0_grasp, x2_grasp):
+                                        for y_grasp in range(y0_grasp, y2_grasp):
+                                            proba_juste[t - 2][0][
+                                                x_grasp * 24 + y_grasp
+                                            ] += (1 / taille_bloc)
+                                            proba_juste[t - 1][0][
+                                                x_grasp * 24 + y_grasp
+                                            ] += (1 / taille_bloc)
 
-                                    else:
-                                        norme_array[f,0,i] += np.linalg.norm(
-                                            proba_juste[new_indice - 1][0] - new_probability[f][0],
-                                            ord=1)
-                                        norme_array[f,1,i] += np.linalg.norm(
-                                            proba_juste[new_indice - 1][1] - new_probability[f][1],
-                                            ord=1)
+                                    x0_release = round(
+                                        (48 / largeur) * world[t + 1, 10 * id_block + 1]
+                                    )
+                                    y0_release = round(
+                                        (24 / hauteur) * world[t + 1, 10 * id_block + 2]
+                                    )
 
+                                    x2_release = round(
+                                        (48 / largeur) * world[t + 1, 10 * id_block + 5]
+                                    )
+                                    y2_release = round(
+                                        (48 / largeur) * world[t + 1, 10 * id_block + 6]
+                                    )
 
+                                    for x_release in range(x0_release, x2_release):
+                                        for y_release in range(y0_release, y2_release):
+                                            proba_juste[t][1][
+                                                x_release * 24 + y_release
+                                            ] += (1 / taille_bloc)
+                                            proba_juste[t - 1][1][
+                                                x_release * 24 + y_release
+                                            ] += (1 / taille_bloc)
 
-                                probability[:,:,i,:] = new_probability # Proba
-                                probability_score[:,:,i,:] = new_probability_score # Feat sum
+                        duree = (
+                            int(
+                                max(world[-1, 0], gaze_point[-1, 0])
+                                - min(world[1, 0], gaze_point[1, 0])
+                            )
+                            + 1
+                        )
 
-                                temps_interpretation = time.time()
-                                
-                                [
-                                    area4max_indices,
-                                    area8max_indices,
-                                    area_best_4,
-                                    area_best_8,
-                                    semantic0,
-                                    semantic1,
-                                    semantic2,
-                                    liste_predi_id ] =
-                                        interpretation(
-                                            new_probability,
-                                            new_indice,
-                                            world,
-                                            str(model.path).split("/")[-1])
+                        nb_gaze = gaze_point.shape[0] - 1
 
-                                temps_fin = time.time()
+                        # recupere la liste des timestamp des evenements
+                        timestamp_action = listeTimneAction(world)
 
-                                temp_area4[:,:,i] = area4max_indices
-                                temp_area8[:,:,i] = area8max_indices
+                        all_feature = np.zeros((5, nb_gaze, nb_area_1))
+                        probability_score = np.zeros((5, 2, nb_gaze, nb_area_1))
+                        probability = np.zeros((5, 2, nb_gaze, nb_area_1))
 
-                                temp_area_sliding_4[:,:,i] = area_best_4
-                                temp_area_sliding_8[:,:,i] = area_best_8
+                        t_init = world[1, 0]
 
-                                temp_area_semantic_0[:,:,i] = semantic0
-                                temp_area_semantic_1[:,:,i] = semantic1
-                                temp_area_semantic_2[:,:,i] = semantic2
+                        indice = 0
 
-                                temp_block[:,:,i] = liste_predi_id
+                        liste_t_value = []
 
-                                indice = new_indice
+                        liste_temps_feature = []
+                        liste_temps_low_level = []
+                        liste_temps_interpretation = []
+                        liste_temps_total = []
 
+                        temp_area4 = np.zeros((5, 2, nb_gaze))
+                        temp_area8 = np.zeros((5, 2, nb_gaze))
 
-                                diff_feature = temps_low_level - temps_feature
-                                diff_low_level = temps_interpretation - temps_low_level
-                                diff_interpretation = temps_fin - temps_interpretation
-                                diff_total = temps_fin - temps_feature
+                        temp_area_sliding_4 = np.zeros((5, 2, nb_gaze))
+                        temp_area_sliding_8 = np.zeros((5, 2, nb_gaze))
 
-                                liste_temps_feature = [diff_feature]
-                                liste_temps_low_level = [diff_low_level]
-                                liste_temps_interpretation = [diff_interpretation]
-                                liste_temps_total = [diff_total]
+                        temp_area_semantic_0 = np.zeros((5, 2, nb_gaze))
+                        temp_area_semantic_1 = np.zeros((5, 2, nb_gaze))
+                        temp_area_semantic_2 = np.zeros((5, 2, nb_gaze))
 
+                        temp_block = np.zeros((5, 2, nb_gaze))
 
+                        norme_array = np.zeros((nb_predi, 2, nb_gaze))
 
-                                #os.mkdir(nom_dossier + "/" + path + "/" + str(int(gaze_point[i+1,0])))
+                        # On parcours les positions du regard dans l'ordre
+                        for i in range(nb_gaze):
+                            temps_feature = time.time()
+                            # Recupere l'etat du monde correspondant a ce gaze point
+                            current_world = CurrentWorld(gaze_point[i, 0], world)
 
-                                #savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"feature",liste_temps_feature)
-                                #savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"low level",liste_temps_low_level)
-                                #savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"interpretation",liste_temps_interpretation)
-                                #savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"total",liste_temps_total)
-                                #savingFeature(nom_dossier,path,int(gaze_point[i+1,0]),all_feature)
-                                #savingProba(nom_dossier,path,int(gaze_point[i+1,0]),probability)
-                                #savingInterpretation(nom_dossier,path,int(gaze_point[i+1,0]),temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block)
+                            gaze_value = gaze_point[i + 1]
+                            t = gaze_value[0] - t_init
+                            liste_t_value.append(t)
 
-                            print(new_indice)
+                            # calcul les differents indicateurs
+                            (feature,) = parsingOneSituation(gaze_value)  # Compute feat
 
-                            result_area4 = np.zeros((5, 2, duree))
-                            result_area8 = np.zeros((5, 2, duree))
-                            result_sliding_area4 = np.zeros((5, 2, duree))
-                            result_sliding_area8 = np.zeros((5, 2, duree))
-                            result_semantic_0 = np.zeros((5, 2, duree))
-                            result_semantic_1 = np.zeros((5, 2, duree))
-                            result_semantic_2 = np.zeros((5, 2, duree))
-                            result_block = np.zeros((5, 2, duree))
+                            all_feature[:, i, :] = feature
 
-                            result_norme = np.zeros((5, 2, duree))
+                            temps_low_level = time.time()
 
-                            time_indice = 0
+                            if i > 0:
+                                past_probability_score = probability_score[
+                                    :, :, i - 1, :
+                                ]
+                            else:
+                                past_probability_score = probability_score[:, :, i, :]
 
-                            for t in range(duree):
-                                if time_indice < len(liste_t_value) and t == liste_t_value[time_indice]:
+                            # A partir des indicateurs on calcul la probabilité des tenons de zone
+                            # new_indice correspond a l'etat du monde, si new_indice = indice on a pas changer l'etat du monde
+                            new_probability, new_probability_score, new_indice = (
+                                low_level_naif(
+                                    feature,
+                                    t,
+                                    timestamp_action,
+                                    indice,  # World state index
+                                    past_probability_score,  # Previous feat sum
+                                )
+                            )
 
-                                    result_area4[:,:,t] = temp_area4[:,:,time_indice]
-                                    result_area8[:,:,t] = temp_area8[:,:,time_indice]
-                                    result_sliding_area4[:,:,t] = temp_area_sliding_4[:,:,time_indice]
-                                    result_sliding_area8[:,:,t] = temp_area_sliding_8[:,:,time_indice]
-                                    result_semantic_0[:,:,t] = temp_area_semantic_0[:,:,time_indice]
-                                    result_semantic_1[:,:,t] = temp_area_semantic_1[:,:,time_indice]
-                                    result_semantic_2[:,:,t] = temp_area_semantic_2[:,:,time_indice]
-                                    result_block[:,:,t] = temp_block[:,:,time_indice]
+                            # Pour chaque predi on fait la diff entre le resultat obtenu et le ground truth
+                            for f in range(nb_predi):
+                                norme_array[f, 0, i] += np.linalg.norm(
+                                    proba_juste[max(0, new_indice - 1)][0]
+                                    - new_probability[f][0],
+                                    ord=1,
+                                )
+                                norme_array[f, 1, i] += np.linalg.norm(
+                                    proba_juste[max(0, new_indice - 1)][1]
+                                    - new_probability[f][1],
+                                    ord=1,
+                                )
 
-                                    result_norme[:,:,t] = norme_array[:,:,time_indice]
+                            probability[:, :, i, :] = new_probability  # Proba
+                            probability_score[:, :, i, :] = (
+                                new_probability_score  # Feat sum
+                            )
 
-                                    time_indice += 1
+                            temps_interpretation = time.time()
 
-                                else:
-                                    result_area4[:,:,t] = result_area4[:,:,t-1]
-                                    result_area8[:,:,t] = result_area8[:,:,t-1]
-                                    result_sliding_area4[:,:,t] = result_sliding_area4[:,:,t-1]
-                                    result_sliding_area8[:,:,t] = result_sliding_area8[:,:,t-1]
-                                    result_semantic_0[:,:,t] = result_semantic_0[:,:,t-1]
-                                    result_semantic_1[:,:,t] = result_semantic_1[:,:,t-1]
-                                    result_semantic_2[:,:,t] = result_semantic_2[:,:,t-1]
-                                    result_block[:,:,t] = result_block[:,:,t-1]
+                            # Retourne l'indice de la meilleure surface pour les différentes surfaces
+                            [
+                                area4max_indices,
+                                area8max_indices,
+                                area_best_4,
+                                area_best_8,
+                                semantic0,
+                                semantic1,
+                                semantic2,
+                                liste_predi_id,
+                            ] = interpretation(
+                                new_probability,
+                                new_indice,
+                                world,
+                                str(model.path).split("/")[-1],
+                            )
 
-                                    result_norme[:,:,t] = result_norme[:,:,t-1]
+                            temps_fin = time.time()
 
-                            area_prediction = [result_area4,result_area8,result_sliding_area4,result_sliding_area8]
+                            temp_area4[:, :, i] = area4max_indices
+                            temp_area8[:, :, i] = area8max_indices
 
-                            block_prediction = result_block
+                            temp_area_sliding_4[:, :, i] = area_best_4
+                            temp_area_sliding_8[:, :, i] = area_best_8
 
-                            # Durée d'exécution en secondes
+                            temp_area_semantic_0[:, :, i] = semantic0
+                            temp_area_semantic_1[:, :, i] = semantic1
+                            temp_area_semantic_2[:, :, i] = semantic2
 
-                            duree_execution[method_pos].append(diff_total)
+                            temp_block[:, :, i] = liste_predi_id
 
-                            total_nb_grasp[method_pos] = total_nb_grasp[method_pos] + (len(timestamp_action)-2)/2
-                            total_nb_release[method_pos] = total_nb_release[method_pos] + (len(timestamp_action)-2)/2
+                            indice = new_indice
 
-                            nb_bloc = [nb_area_4,nb_area_8,nb_area_4,nb_area_8]
+                            diff_feature = temps_low_level - temps_feature
+                            diff_low_level = temps_interpretation - temps_low_level
+                            diff_interpretation = temps_fin - temps_interpretation
+                            diff_total = temps_fin - temps_feature
 
-                            for position, predi in enumerate(area_prediction):
-                                liste_good_release_zones = quadrillageRelease(world,nb_bloc[position])
-                                liste_good_grasp_zones = quadrillageGrasp(world,nb_bloc[position])
-                                if position < len(area_prediction)/2:
-                                    for posi,quadr in enumerate(predi):
+                            liste_temps_feature = [diff_feature]
+                            liste_temps_low_level = [diff_low_level]
+                            liste_temps_interpretation = [diff_interpretation]
+                            liste_temps_total = [diff_total]
 
-                                        (
-                                        analyse_area_grasp,
-                                        nb_analyse_area_grasp,
-                                        analyse_area_release,
-                                        nb_analyse_area_release
-                                        ) = analyseFixeAreaWeak(quadr, liste_good_grasp_zones, liste_good_release_zones,timestamp_action,nb_bloc[position])
+                            # os.mkdir(nom_dossier + "/" + path + "/" + str(int(gaze_point[i+1,0])))
 
-                                        global_analyse_grasp_area_weak[position][method_pos][posi] += analyse_area_grasp
-                                        global_analyse_release_area_weak[position][method_pos][posi] += analyse_area_release
+                            # savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"feature",liste_temps_feature)
+                            # savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"low level",liste_temps_low_level)
+                            # savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"interpretation",liste_temps_interpretation)
+                            # savingTime(nom_dossier,path,int(gaze_point[i+1,0]),"total",liste_temps_total)
+                            # savingFeature(nom_dossier,path,int(gaze_point[i+1,0]),all_feature)
+                            # savingProba(nom_dossier,path,int(gaze_point[i+1,0]),probability)
+                            # savingInterpretation(nom_dossier,path,int(gaze_point[i+1,0]),temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block)
 
-                                        (
-                                        analyse_area_grasp,
-                                        nb_analyse_area_grasp,
-                                        analyse_area_release,
-                                        nb_analyse_area_release
-                                        ) = analyseFixeAreaStrong(quadr,liste_good_grasp_zones,liste_good_release_zones,timestamp_action,nb_bloc[position])
+                        print(new_indice)
 
-                                        global_analyse_grasp_area_strong[position][method_pos][posi] += analyse_area_grasp
-                                        global_analyse_release_area_strong[position][method_pos][posi] += analyse_area_release
+                        result_area4 = np.zeros((5, 2, duree))
+                        result_area8 = np.zeros((5, 2, duree))
+                        result_sliding_area4 = np.zeros((5, 2, duree))
+                        result_sliding_area8 = np.zeros((5, 2, duree))
+                        result_semantic_0 = np.zeros((5, 2, duree))
+                        result_semantic_1 = np.zeros((5, 2, duree))
+                        result_semantic_2 = np.zeros((5, 2, duree))
+                        result_block = np.zeros((5, 2, duree))
 
-                                    global_nb_analyse_grasp_area_weak[position][method_pos] += nb_analyse_area_grasp
-                                    global_nb_analyse_release_area_weak[position][method_pos] += nb_analyse_area_release
+                        result_norme = np.zeros((5, 2, duree))
 
-                                    global_nb_analyse_grasp_area_strong[position][method_pos] += nb_analyse_area_grasp
-                                    global_nb_analyse_release_area_strong[position][method_pos] += nb_analyse_area_release
+                        time_indice = 0
 
-                                else:
+                        # On passe des timestamps des mesures a une valeur par ms
+                        for t in range(duree):
+                            if (
+                                time_indice < len(liste_t_value)
+                                and t == liste_t_value[time_indice]
+                            ):
 
-                                    for posi,quadr in enumerate(predi):
+                                result_area4[:, :, t] = temp_area4[:, :, time_indice]
+                                result_area8[:, :, t] = temp_area8[:, :, time_indice]
+                                result_sliding_area4[:, :, t] = temp_area_sliding_4[
+                                    :, :, time_indice
+                                ]
+                                result_sliding_area8[:, :, t] = temp_area_sliding_8[
+                                    :, :, time_indice
+                                ]
+                                result_semantic_0[:, :, t] = temp_area_semantic_0[
+                                    :, :, time_indice
+                                ]
+                                result_semantic_1[:, :, t] = temp_area_semantic_1[
+                                    :, :, time_indice
+                                ]
+                                result_semantic_2[:, :, t] = temp_area_semantic_2[
+                                    :, :, time_indice
+                                ]
+                                result_block[:, :, t] = temp_block[:, :, time_indice]
 
-                                        (
-                                        analyse_area_grasp,
-                                        nb_analyse_area_grasp,
-                                        analyse_area_release,
-                                        nb_analyse_area_release
-                                        ) = analyseSlidingAreaWeak(quadr, liste_good_grasp_zones, liste_good_release_zones,timestamp_action,nb_bloc[position])
+                                result_norme[:, :, t] = norme_array[:, :, time_indice]
 
-                                        global_analyse_grasp_area_weak[position][method_pos][posi] += analyse_area_grasp
-                                        global_analyse_release_area_weak[position][method_pos][posi] += analyse_area_release
+                                time_indice += 1
 
-                                        (
-                                        analyse_area_grasp,
-                                        nb_analyse_area_grasp,
-                                        analyse_area_release,
-                                        nb_analyse_area_release
-                                        ) = analyseSlidingAreaStrong(quadr,liste_good_grasp_zones,liste_good_release_zones,timestamp_action,nb_bloc[position])
+                            else:
+                                result_area4[:, :, t] = result_area4[:, :, t - 1]
+                                result_area8[:, :, t] = result_area8[:, :, t - 1]
+                                result_sliding_area4[:, :, t] = result_sliding_area4[
+                                    :, :, t - 1
+                                ]
+                                result_sliding_area8[:, :, t] = result_sliding_area8[
+                                    :, :, t - 1
+                                ]
+                                result_semantic_0[:, :, t] = result_semantic_0[
+                                    :, :, t - 1
+                                ]
+                                result_semantic_1[:, :, t] = result_semantic_1[
+                                    :, :, t - 1
+                                ]
+                                result_semantic_2[:, :, t] = result_semantic_2[
+                                    :, :, t - 1
+                                ]
+                                result_block[:, :, t] = result_block[:, :, t - 1]
 
-                                        global_analyse_grasp_area_strong[position][method_pos][posi] += analyse_area_grasp
-                                        global_analyse_release_area_strong[position][method_pos][posi] += analyse_area_release
+                                result_norme[:, :, t] = result_norme[:, :, t - 1]
 
-                                    global_nb_analyse_grasp_area_weak[position][method_pos] += nb_analyse_area_grasp
-                                    global_nb_analyse_release_area_weak[position][method_pos] += nb_analyse_area_release
+                        area_prediction = [
+                            result_area4,
+                            result_area8,
+                            result_sliding_area4,
+                            result_sliding_area8,
+                        ]
 
-                                    global_nb_analyse_grasp_area_strong[position][method_pos] += nb_analyse_area_grasp
-                                    global_nb_analyse_release_area_strong[position][method_pos] += nb_analyse_area_release
+                        block_prediction = result_block
 
+                        # Durée d'exécution en secondes
 
-                            result_semantic_1b = np.where(result_semantic_1 == 2, 0, result_semantic_1)
+                        duree_execution[method_pos].append(diff_total)
 
-                            list_semantic = [result_semantic_0, result_semantic_1, result_semantic_2, result_semantic_1b]
+                        # Analyse des résultats
 
-                            for lvl,semantic in enumerate(list_semantic):
-                                for position, prediction in enumerate(semantic):
-                                    # Analyse max min dist
+                        total_nb_grasp[method_pos] = (
+                            total_nb_grasp[method_pos] + (len(timestamp_action) - 2) / 2
+                        )
+                        total_nb_release[method_pos] = (
+                            total_nb_release[method_pos]
+                            + (len(timestamp_action) - 2) / 2
+                        )
+
+                        nb_bloc = [nb_area_4, nb_area_8, nb_area_4, nb_area_8]
+
+                        for position, predi in enumerate(area_prediction):
+                            liste_good_release_zones = quadrillageRelease(
+                                world, nb_bloc[position]
+                            )
+                            liste_good_grasp_zones = quadrillageGrasp(
+                                world, nb_bloc[position]
+                            )
+                            if position < len(area_prediction) / 2:
+                                for posi, quadr in enumerate(predi):
+
                                     (
-                                        analyse_grasp,
-                                        nb_analyse_grasp,
-                                        analyse_release,
-                                        nb_analyse_release,
-                                    ) = analyseSemanticBis(world, prediction, timestamp_action,str(model.path).split("/")[-1],lvl)
+                                        analyse_area_grasp,
+                                        nb_analyse_area_grasp,
+                                        analyse_area_release,
+                                        nb_analyse_area_release,
+                                    ) = analyseFixeAreaWeak(
+                                        quadr,
+                                        liste_good_grasp_zones,
+                                        liste_good_release_zones,
+                                        timestamp_action,
+                                        nb_bloc[position],
+                                    )
 
-                                    global_analyse_semantic_grasp[lvl][method_pos][position] = global_analyse_semantic_grasp[lvl][method_pos][position] + analyse_grasp
-                                    global_analyse_semantic_release[lvl][method_pos][position] = global_analyse_semantic_release[lvl][method_pos][position] + analyse_release
+                                    global_analyse_grasp_area_weak[position][
+                                        method_pos
+                                    ][posi] += analyse_area_grasp
+                                    global_analyse_release_area_weak[position][
+                                        method_pos
+                                    ][posi] += analyse_area_release
 
-                                global_nb_analyse_semantic_grasp[lvl][method_pos] += nb_analyse_grasp
-                                global_nb_analyse_semantic_release[lvl][method_pos] += nb_analyse_release
+                                    (
+                                        analyse_area_grasp,
+                                        nb_analyse_area_grasp,
+                                        analyse_area_release,
+                                        nb_analyse_area_release,
+                                    ) = analyseFixeAreaStrong(
+                                        quadr,
+                                        liste_good_grasp_zones,
+                                        liste_good_release_zones,
+                                        timestamp_action,
+                                        nb_bloc[position],
+                                    )
 
+                                    global_analyse_grasp_area_strong[position][
+                                        method_pos
+                                    ][posi] += analyse_area_grasp
+                                    global_analyse_release_area_strong[position][
+                                        method_pos
+                                    ][posi] += analyse_area_release
 
-                            for position, prediction in enumerate(block_prediction):
+                                global_nb_analyse_grasp_area_weak[position][
+                                    method_pos
+                                ] += nb_analyse_area_grasp
+                                global_nb_analyse_release_area_weak[position][
+                                    method_pos
+                                ] += nb_analyse_area_release
+
+                                global_nb_analyse_grasp_area_strong[position][
+                                    method_pos
+                                ] += nb_analyse_area_grasp
+                                global_nb_analyse_release_area_strong[position][
+                                    method_pos
+                                ] += nb_analyse_area_release
+
+                            else:
+
+                                for posi, quadr in enumerate(predi):
+
+                                    (
+                                        analyse_area_grasp,
+                                        nb_analyse_area_grasp,
+                                        analyse_area_release,
+                                        nb_analyse_area_release,
+                                    ) = analyseSlidingAreaWeak(
+                                        quadr,
+                                        liste_good_grasp_zones,
+                                        liste_good_release_zones,
+                                        timestamp_action,
+                                        nb_bloc[position],
+                                    )
+
+                                    global_analyse_grasp_area_weak[position][
+                                        method_pos
+                                    ][posi] += analyse_area_grasp
+                                    global_analyse_release_area_weak[position][
+                                        method_pos
+                                    ][posi] += analyse_area_release
+
+                                    (
+                                        analyse_area_grasp,
+                                        nb_analyse_area_grasp,
+                                        analyse_area_release,
+                                        nb_analyse_area_release,
+                                    ) = analyseSlidingAreaStrong(
+                                        quadr,
+                                        liste_good_grasp_zones,
+                                        liste_good_release_zones,
+                                        timestamp_action,
+                                        nb_bloc[position],
+                                    )
+
+                                    global_analyse_grasp_area_strong[position][
+                                        method_pos
+                                    ][posi] += analyse_area_grasp
+                                    global_analyse_release_area_strong[position][
+                                        method_pos
+                                    ][posi] += analyse_area_release
+
+                                global_nb_analyse_grasp_area_weak[position][
+                                    method_pos
+                                ] += nb_analyse_area_grasp
+                                global_nb_analyse_release_area_weak[position][
+                                    method_pos
+                                ] += nb_analyse_area_release
+
+                                global_nb_analyse_grasp_area_strong[position][
+                                    method_pos
+                                ] += nb_analyse_area_grasp
+                                global_nb_analyse_release_area_strong[position][
+                                    method_pos
+                                ] += nb_analyse_area_release
+
+                        result_semantic_1b = np.where(
+                            result_semantic_1 == 2, 0, result_semantic_1
+                        )
+
+                        list_semantic = [
+                            result_semantic_0,
+                            result_semantic_1,
+                            result_semantic_2,
+                            result_semantic_1b,
+                        ]
+
+                        for lvl, semantic in enumerate(list_semantic):
+                            for position, prediction in enumerate(semantic):
                                 # Analyse max min dist
                                 (
                                     analyse_grasp,
                                     nb_analyse_grasp,
                                     analyse_release,
                                     nb_analyse_release,
-                                ) = analyseSituation(world, prediction, timestamp_action)
+                                ) = analyseSemanticBis(
+                                    world,
+                                    prediction,
+                                    timestamp_action,
+                                    str(model.path).split("/")[-1],
+                                    lvl,
+                                )
 
-                                global_analyse_grasp_block[method_pos][position] = global_analyse_grasp_block[method_pos][position] + analyse_grasp
-                                global_analyse_release_block[method_pos][position] = global_analyse_release_block[method_pos][position] + analyse_release
+                                global_analyse_semantic_grasp[lvl][method_pos][
+                                    position
+                                ] = (
+                                    global_analyse_semantic_grasp[lvl][method_pos][
+                                        position
+                                    ]
+                                    + analyse_grasp
+                                )
+                                global_analyse_semantic_release[lvl][method_pos][
+                                    position
+                                ] = (
+                                    global_analyse_semantic_release[lvl][method_pos][
+                                        position
+                                    ]
+                                    + analyse_release
+                                )
 
-                            global_nb_analyse_grasp_block[method_pos] += nb_analyse_grasp
-                            global_nb_analyse_release_block[method_pos] += nb_analyse_release
+                            global_nb_analyse_semantic_grasp[lvl][
+                                method_pos
+                            ] += nb_analyse_grasp
+                            global_nb_analyse_semantic_release[lvl][
+                                method_pos
+                            ] += nb_analyse_release
 
-                            print("analyse")
-                            for position in range(nb_predi):
-                                (
-                                    analyse_grasp,
-                                    nb_analyse_grasp,
-                                    analyse_release,
-                                    nb_analyse_release,
-                                ) = analyseNorme(result_norme[position], timestamp_action)
+                        for position, prediction in enumerate(block_prediction):
+                            # Analyse max min dist
+                            (
+                                analyse_grasp,
+                                nb_analyse_grasp,
+                                analyse_release,
+                                nb_analyse_release,
+                            ) = analyseSituation(world, prediction, timestamp_action)
 
-                                global_analyse_norme_grasp[method_pos][position] += analyse_grasp
-                                global_analyse_norme_release[method_pos][position] += analyse_release
+                            global_analyse_grasp_block[method_pos][position] = (
+                                global_analyse_grasp_block[method_pos][position]
+                                + analyse_grasp
+                            )
+                            global_analyse_release_block[method_pos][position] = (
+                                global_analyse_release_block[method_pos][position]
+                                + analyse_release
+                            )
 
-                            global_nb_analyse_norme_grasp[method_pos] += nb_analyse_grasp
-                            global_nb_analyse_norme_release[method_pos] += nb_analyse_release
+                        global_nb_analyse_grasp_block[method_pos] += nb_analyse_grasp
+                        global_nb_analyse_release_block[
+                            method_pos
+                        ] += nb_analyse_release
 
+                        print("analyse")
+                        for position in range(nb_predi):
+                            (
+                                analyse_grasp,
+                                nb_analyse_grasp,
+                                analyse_release,
+                                nb_analyse_release,
+                            ) = analyseNorme(result_norme[position], timestamp_action)
 
-    results = np.zeros((28,2,nb_predi,6001))
+                            global_analyse_norme_grasp[method_pos][
+                                position
+                            ] += analyse_grasp
+                            global_analyse_norme_release[method_pos][
+                                position
+                            ] += analyse_release
+
+                        global_nb_analyse_norme_grasp[method_pos] += nb_analyse_grasp
+                        global_nb_analyse_norme_release[
+                            method_pos
+                        ] += nb_analyse_release
+
+    results = np.zeros((28, 2, nb_predi, 6001))
 
     results[0] = global_analyse_grasp_area_weak[0]
     results[1] = global_analyse_grasp_area_weak[1]
@@ -590,7 +781,7 @@ def parsingAllParticipantOneMethode():
     results[26] = global_analyse_norme_grasp
     results[27] = global_analyse_norme_release
 
-    nb_prediction = np.zeros((28,2,6001))
+    nb_prediction = np.zeros((28, 2, 6001))
 
     nb_prediction[0] = global_nb_analyse_grasp_area_weak[0]
     nb_prediction[1] = global_nb_analyse_grasp_area_weak[1]
@@ -621,9 +812,7 @@ def parsingAllParticipantOneMethode():
     nb_prediction[26] = global_nb_analyse_norme_grasp
     nb_prediction[27] = global_nb_analyse_norme_release
 
-    nom_dossier = saveLog(nom_dossier,results,nb_prediction,duree_execution)
-
-
+    nom_dossier = saveLog(nom_dossier, results, nb_prediction, duree_execution)
 
 
 if __name__ == "__main__":

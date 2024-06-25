@@ -13,13 +13,13 @@ plot_analyse = False
 
 largeur = 76
 hauteur = 38
-dist_min = -largeur/(2*48)
+dist_min = -largeur / (2 * 48)
 
 taille_zone = 1
-nb_area_1 = int((48/1)*(24/1))
-nb_area_2 = int((48/2)*(24/2))
-nb_area_4 = int((48/4)*(24/4))
-nb_area_8 = int((48/8)*(24/8))
+nb_area_1 = int((48 / 1) * (24 / 1))
+nb_area_2 = int((48 / 2) * (24 / 2))
+nb_area_4 = int((48 / 4) * (24 / 4))
+nb_area_8 = int((48 / 8) * (24 / 8))
 
 array_zone1 = np.genfromtxt("csv/zone_1x1.csv", delimiter=",")
 array_zone2 = np.genfromtxt("csv/zone_2x2.csv", delimiter=",")
@@ -132,14 +132,14 @@ def moreCloseRectangle(current_world, xp, yp):
 
     for rect in range(0, 24):
         id = rect
-        x1 = current_world[ 10 * rect + 1]
-        y1 = current_world[ 10 * rect + 2]
-        x2 = current_world[ 10 * rect + 3]
-        y2 = current_world[ 10 * rect + 4]
-        x3 = current_world[ 10 * rect + 5]
-        y3 = current_world[ 10 * rect + 6]
-        x4 = current_world[ 10 * rect + 7]
-        y4 = current_world[ 10 * rect + 8]
+        x1 = current_world[10 * rect + 1]
+        y1 = current_world[10 * rect + 2]
+        x2 = current_world[10 * rect + 3]
+        y2 = current_world[10 * rect + 4]
+        x3 = current_world[10 * rect + 5]
+        y3 = current_world[10 * rect + 6]
+        x4 = current_world[10 * rect + 7]
+        y4 = current_world[10 * rect + 8]
 
         d = minDistanceRectangleGaze(x1, y1, x2, y2, x3, y3, x4, y4, xp, yp)
 
@@ -154,7 +154,7 @@ def moreCloseRectangle(current_world, xp, yp):
 # output : - bool : True si un bloc est attrape, sinon False
 def isHolding(current_world):
     for indice in range(24):
-        if current_world[ 10 * indice + 10] == 1:
+        if current_world[10 * indice + 10] == 1:
             return True
     return False
 
@@ -224,66 +224,66 @@ def timeGraspRelease(world, last_time):
 
 def adjacent(current_world, i, j):
 
-    i_x0 = current_world[ 10 * i + 1]
-    i_y0 = current_world[ 10 * i + 2]
-    i_x1 = current_world[ 10 * i + 3]
-    i_y1 = current_world[ 10 * i + 4]
-    i_x2 = current_world[ 10 * i + 5]
-    i_y2 = current_world[ 10 * i + 6]
-    i_x3 = current_world[ 10 * i + 7]
-    i_y3 = current_world[ 10 * i + 8]
+    i_x0 = current_world[10 * i + 1]
+    i_y0 = current_world[10 * i + 2]
+    i_x1 = current_world[10 * i + 3]
+    i_y1 = current_world[10 * i + 4]
+    i_x2 = current_world[10 * i + 5]
+    i_y2 = current_world[10 * i + 6]
+    i_x3 = current_world[10 * i + 7]
+    i_y3 = current_world[10 * i + 8]
 
-    j_x0 = current_world[ 10 * j + 1]
-    j_y0 = current_world[ 10 * j + 2]
-    j_x1 = current_world[ 10 * j + 3]
-    j_y1 = current_world[ 10 * j + 4]
-    j_x2 = current_world[ 10 * j + 5]
-    j_y2 = current_world[ 10 * j + 6]
-    j_x3 = current_world[ 10 * j + 7]
-    j_y3 = current_world[ 10 * j + 8]
+    j_x0 = current_world[10 * j + 1]
+    j_y0 = current_world[10 * j + 2]
+    j_x1 = current_world[10 * j + 3]
+    j_y1 = current_world[10 * j + 4]
+    j_x2 = current_world[10 * j + 5]
+    j_y2 = current_world[10 * j + 6]
+    j_x3 = current_world[10 * j + 7]
+    j_y3 = current_world[10 * j + 8]
 
     count = 0
 
     d_j_0 = minDistanceRectangleGaze(
         i_x0, i_y0, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, j_x0, j_y0
     )
-    if d_j_0  <= 0:
+    if d_j_0 <= 0:
         count += 1
     d_j_1 = minDistanceRectangleGaze(
         i_x0, i_y0, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, j_x1, j_y1
     )
-    if d_j_1  <= 0:
+    if d_j_1 <= 0:
         count += 1
     d_j_2 = minDistanceRectangleGaze(
         i_x0, i_y0, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, j_x2, j_y2
     )
-    if d_j_2  <= 0:
+    if d_j_2 <= 0:
         count += 1
     d_j_3 = minDistanceRectangleGaze(
         i_x0, i_y0, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, j_x3, j_y3
     )
-    if d_j_3  <= 0:
+    if d_j_3 <= 0:
         count += 1
 
     d_i_0 = minDistanceRectangleGaze(
         j_x0, j_y0, j_x1, j_y1, j_x2, j_y2, j_x3, j_y3, i_x0, i_y0
     )
-    if d_i_0  <= 0:
+    if d_i_0 <= 0:
         count += 1
     d_i_1 = minDistanceRectangleGaze(
         j_x0, j_y0, j_x1, j_y1, j_x2, j_y2, j_x3, j_y3, i_x1, i_y1
     )
-    if d_i_1  <= 0:
+    if d_i_1 <= 0:
         count += 1
     d_i_2 = minDistanceRectangleGaze(
         j_x0, j_y0, j_x1, j_y1, j_x2, j_y2, j_x3, j_y3, i_x2, i_y2
     )
-    if d_i_2  <= 0:
+    if d_i_2 <= 0:
         count += 1
     d_i_3 = minDistanceRectangleGaze(
         j_x0, j_y0, j_x1, j_y1, j_x2, j_y2, j_x3, j_y3, i_x3, i_y3
     )
-    if d_i_3  <= 0:
+    if d_i_3 <= 0:
         count += 1
 
     if count > 2:
@@ -307,13 +307,12 @@ def listeAdjacentRelease(world):
             if world[i - 1, 10 * indice + 10] == 1:
                 liste_adjacent_i = []
                 for rect in range(24):
-                    if rect != indice and adjacent(
-                        world[i], rect, indice
-                    ):
+                    if rect != indice and adjacent(world[i], rect, indice):
                         liste_adjacent_i.append(rect)
                 liste_adjacent.append(liste_adjacent_i)
 
     return liste_adjacent
+
 
 def listeRelease(world):
     liste_release = []
@@ -337,8 +336,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 7],
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 1],
-                            world[i, 10 * indice + 2]
-
+                            world[i, 10 * indice + 2],
                         )
 
                         d2 = minDistanceRectangleGaze(
@@ -351,8 +349,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 7],
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 3],
-                            world[i, 10 * indice + 4]
-
+                            world[i, 10 * indice + 4],
                         )
 
                         d3 = minDistanceRectangleGaze(
@@ -365,8 +362,7 @@ def listeRelease(world):
                             world[i, 10 * rect + 7],
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 5],
-                            world[i, 10 * indice + 6]
-
+                            world[i, 10 * indice + 6],
                         )
 
                         d4 = minDistanceRectangleGaze(
@@ -379,11 +375,10 @@ def listeRelease(world):
                             world[i, 10 * rect + 7],
                             world[i, 10 * rect + 8],
                             world[i, 10 * indice + 7],
-                            world[i, 10 * indice + 8]
-
+                            world[i, 10 * indice + 8],
                         )
 
-                        d = max(0,min(d1,min(d2,min(d3,d4))))
+                        d = max(0, min(d1, min(d2, min(d3, d4))))
 
                         if d < d_min:
                             d_min = d
@@ -392,58 +387,59 @@ def listeRelease(world):
 
                 if d_min > 0:
                     for rect in range(24):
-                        if rect != indice and (minDistanceRectangleGaze(
-                            world[i, 10 * rect + 1],
-                            world[i, 10 * rect + 2],
-                            world[i, 10 * rect + 3],
-                            world[i, 10 * rect + 4],
-                            world[i, 10 * rect + 5],
-                            world[i, 10 * rect + 6],
-                            world[i, 10 * rect + 7],
-                            world[i, 10 * rect + 8],
-                            world[i, 10 * indice + 1],
-                            world[i, 10 * indice + 2]
-
-                        ) < d_min +0.1
-                        or minDistanceRectangleGaze(
-                            world[i, 10 * rect + 1],
-                            world[i, 10 * rect + 2],
-                            world[i, 10 * rect + 3],
-                            world[i, 10 * rect + 4],
-                            world[i, 10 * rect + 5],
-                            world[i, 10 * rect + 6],
-                            world[i, 10 * rect + 7],
-                            world[i, 10 * rect + 8],
-                            world[i, 10 * indice + 3],
-                            world[i, 10 * indice + 4]
-
-                        ) < d_min +0.1
-                        or minDistanceRectangleGaze(
-                            world[i, 10 * rect + 1],
-                            world[i, 10 * rect + 2],
-                            world[i, 10 * rect + 3],
-                            world[i, 10 * rect + 4],
-                            world[i, 10 * rect + 5],
-                            world[i, 10 * rect + 6],
-                            world[i, 10 * rect + 7],
-                            world[i, 10 * rect + 8],
-                            world[i, 10 * indice + 5],
-                            world[i, 10 * indice + 6]
-
-                        ) < d_min +0.1
-                        or minDistanceRectangleGaze(
-                            world[i, 10 * rect + 1],
-                            world[i, 10 * rect + 2],
-                            world[i, 10 * rect + 3],
-                            world[i, 10 * rect + 4],
-                            world[i, 10 * rect + 5],
-                            world[i, 10 * rect + 6],
-                            world[i, 10 * rect + 7],
-                            world[i, 10 * rect + 8],
-                            world[i, 10 * indice + 7],
-                            world[i, 10 * indice + 8]
-
-                        ) < d_min +0.1
+                        if rect != indice and (
+                            minDistanceRectangleGaze(
+                                world[i, 10 * rect + 1],
+                                world[i, 10 * rect + 2],
+                                world[i, 10 * rect + 3],
+                                world[i, 10 * rect + 4],
+                                world[i, 10 * rect + 5],
+                                world[i, 10 * rect + 6],
+                                world[i, 10 * rect + 7],
+                                world[i, 10 * rect + 8],
+                                world[i, 10 * indice + 1],
+                                world[i, 10 * indice + 2],
+                            )
+                            < d_min + 0.1
+                            or minDistanceRectangleGaze(
+                                world[i, 10 * rect + 1],
+                                world[i, 10 * rect + 2],
+                                world[i, 10 * rect + 3],
+                                world[i, 10 * rect + 4],
+                                world[i, 10 * rect + 5],
+                                world[i, 10 * rect + 6],
+                                world[i, 10 * rect + 7],
+                                world[i, 10 * rect + 8],
+                                world[i, 10 * indice + 3],
+                                world[i, 10 * indice + 4],
+                            )
+                            < d_min + 0.1
+                            or minDistanceRectangleGaze(
+                                world[i, 10 * rect + 1],
+                                world[i, 10 * rect + 2],
+                                world[i, 10 * rect + 3],
+                                world[i, 10 * rect + 4],
+                                world[i, 10 * rect + 5],
+                                world[i, 10 * rect + 6],
+                                world[i, 10 * rect + 7],
+                                world[i, 10 * rect + 8],
+                                world[i, 10 * indice + 5],
+                                world[i, 10 * indice + 6],
+                            )
+                            < d_min + 0.1
+                            or minDistanceRectangleGaze(
+                                world[i, 10 * rect + 1],
+                                world[i, 10 * rect + 2],
+                                world[i, 10 * rect + 3],
+                                world[i, 10 * rect + 4],
+                                world[i, 10 * rect + 5],
+                                world[i, 10 * rect + 6],
+                                world[i, 10 * rect + 7],
+                                world[i, 10 * rect + 8],
+                                world[i, 10 * indice + 7],
+                                world[i, 10 * indice + 8],
+                            )
+                            < d_min + 0.1
                         ):
                             liste_adjacent_i.append(rect)
 
@@ -453,80 +449,99 @@ def listeRelease(world):
     return liste_release
 
 
-
-
-
-
-def quadrillageGrasp(world,nb_bloc):
+def quadrillageGrasp(world, nb_bloc):
     l = []
     for i in range(1, world.shape[0] - 1):
         for indice in range(24):
             if world[i + 1, 10 * indice + 10] == 1:
-                l.append([world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8]])
+                l.append(
+                    [
+                        world[i, 10 * indice + 1],
+                        world[i, 10 * indice + 2],
+                        world[i, 10 * indice + 3],
+                        world[i, 10 * indice + 4],
+                        world[i, 10 * indice + 5],
+                        world[i, 10 * indice + 6],
+                        world[i, 10 * indice + 7],
+                        world[i, 10 * indice + 8],
+                    ]
+                )
 
     return l
 
-def quadrillageRelease(world,nb_bloc):
+
+def quadrillageRelease(world, nb_bloc):
     l = []
     for i in range(2, world.shape[0]):
         for indice in range(24):
             if world[i - 1, 10 * indice + 10] == 1:
-                l.append([world[i, 10 * indice + 1], world[i, 10 * indice + 2], world[i, 10 * indice + 3], world[i, 10 * indice + 4], world[i, 10 * indice + 5], world[i, 10 * indice + 6], world[i, 10 * indice + 7], world[i, 10 * indice + 8]])
+                l.append(
+                    [
+                        world[i, 10 * indice + 1],
+                        world[i, 10 * indice + 2],
+                        world[i, 10 * indice + 3],
+                        world[i, 10 * indice + 4],
+                        world[i, 10 * indice + 5],
+                        world[i, 10 * indice + 6],
+                        world[i, 10 * indice + 7],
+                        world[i, 10 * indice + 8],
+                    ]
+                )
 
     return l
 
-def BlockToZoneID(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
 
-    nb_bloc_x = int(2*math.sqrt(nb_bloc/2))
-    nb_bloc_y = int(math.sqrt(nb_bloc/2))
+def BlockToZoneID(x0, y0, x1, y1, x2, y2, x3, y3, nb_bloc):
+
+    nb_bloc_x = int(2 * math.sqrt(nb_bloc / 2))
+    nb_bloc_y = int(math.sqrt(nb_bloc / 2))
 
     taille = 48 / nb_bloc_x
 
+    # id bloc contenant x0,y0
+    bloc_x0 = int((48 * x0 / largeur) // taille)
+    bloc_y0 = int((24 * y0 / hauteur) // taille)
+    id_x0 = nb_bloc_y * bloc_x0 + bloc_y0
 
-    #id bloc contenant x0,y0
-    bloc_x0 = int((48*x0/largeur) // taille)
-    bloc_y0 = int((24*y0/hauteur) // taille)
-    id_x0 = nb_bloc_y*bloc_x0 + bloc_y0
+    # id bloc contenant x1,y1
+    bloc_x1 = int((48 * x1 / largeur) // taille)
+    bloc_y1 = int((24 * y1 / hauteur) // taille)
+    id_x1 = nb_bloc_y * bloc_x1 + bloc_y1
 
-    #id bloc contenant x1,y1
-    bloc_x1 = int((48*x1/largeur) // taille)
-    bloc_y1 = int((24*y1/hauteur) // taille)
-    id_x1 = nb_bloc_y*bloc_x1 + bloc_y1
+    # id bloc contenant x2,y2
+    bloc_x2 = int((48 * x2 / largeur) // taille)
+    bloc_y2 = int((24 * y2 / hauteur) // taille)
+    id_x2 = nb_bloc_y * bloc_x2 + bloc_y2
 
-    #id bloc contenant x2,y2
-    bloc_x2 = int((48*x2/largeur) // taille)
-    bloc_y2 = int((24*y2/hauteur) // taille)
-    id_x2 = nb_bloc_y*bloc_x2 + bloc_y2
+    # id bloc contenant x3,y3
+    bloc_x3 = int((48 * x3 / largeur) // taille)
+    bloc_y3 = int((24 * y3 / hauteur) // taille)
+    id_x3 = nb_bloc_y * bloc_x3 + bloc_y3
 
-    #id bloc contenant x3,y3
-    bloc_x3 = int((48*x3/largeur) // taille)
-    bloc_y3 = int((24*y3/hauteur) // taille)
-    id_x3 = nb_bloc_y*bloc_x3 + bloc_y3
-
-    #Si le s4 coins sont dans la meme zone
+    # Si le s4 coins sont dans la meme zone
     if id_x0 == id_x1 and id_x0 == id_x2 and id_x0 == id_x3:
         return [id_x0]
 
-    #Sinon on rajoute les zone contenant le centre du bloc (on regarde 4 points proche du centrepour si le centre est sur la jonction entre 2 zones => probeleme d'arrondi on aurait qu'une zone)
+    # Sinon on rajoute les zone contenant le centre du bloc (on regarde 4 points proche du centrepour si le centre est sur la jonction entre 2 zones => probeleme d'arrondi on aurait qu'une zone)
     else:
         x_mean = (x0 + x1 + x2 + x3) / 4
         y_mean = (y0 + y1 + y2 + y3) / 4
 
-        bloc_x_mean_0 = int((48*(x_mean - 0.1)/largeur) // taille)
-        bloc_y_mean_0 = int((24*(y_mean - 0.1)/hauteur) // taille)
-        id_x_mean_0 = nb_bloc_y*bloc_x_mean_0 + bloc_y_mean_0
+        bloc_x_mean_0 = int((48 * (x_mean - 0.1) / largeur) // taille)
+        bloc_y_mean_0 = int((24 * (y_mean - 0.1) / hauteur) // taille)
+        id_x_mean_0 = nb_bloc_y * bloc_x_mean_0 + bloc_y_mean_0
 
-        bloc_x_mean_1 = int((48*(x_mean + 0.1)/largeur) // taille)
-        bloc_y_mean_1 = int((24*(y_mean - 0.1)/hauteur) // taille)
-        id_x_mean_1 = nb_bloc_y*bloc_x_mean_1 + bloc_y_mean_1
+        bloc_x_mean_1 = int((48 * (x_mean + 0.1) / largeur) // taille)
+        bloc_y_mean_1 = int((24 * (y_mean - 0.1) / hauteur) // taille)
+        id_x_mean_1 = nb_bloc_y * bloc_x_mean_1 + bloc_y_mean_1
 
-        bloc_x_mean_2 = int((48*(x_mean + 0.1)/largeur) // taille)
-        bloc_y_mean_2 = int((24*(y_mean + 0.1)/hauteur) // taille)
-        id_x_mean_2 = nb_bloc_y*bloc_x_mean_2 + bloc_y_mean_2
+        bloc_x_mean_2 = int((48 * (x_mean + 0.1) / largeur) // taille)
+        bloc_y_mean_2 = int((24 * (y_mean + 0.1) / hauteur) // taille)
+        id_x_mean_2 = nb_bloc_y * bloc_x_mean_2 + bloc_y_mean_2
 
-        bloc_x_mean_3 = int((48*(x_mean - 0.1)/largeur) // taille)
-        bloc_y_mean_3 = int((24*(y_mean + 0.1)/hauteur) // taille)
-        id_x_mean_3 = nb_bloc_y*bloc_x_mean_3 + bloc_y_mean_3
+        bloc_x_mean_3 = int((48 * (x_mean - 0.1) / largeur) // taille)
+        bloc_y_mean_3 = int((24 * (y_mean + 0.1) / hauteur) // taille)
+        id_x_mean_3 = nb_bloc_y * bloc_x_mean_3 + bloc_y_mean_3
 
         l = [id_x_mean_0]
 
@@ -542,37 +557,38 @@ def BlockToZoneID(x0,y0,x1,y1,x2,y2,x3,y3,nb_bloc):
         return l
 
 
-
-
-
-
-
-
-#Liste des tenons (pour zone 1x1) sur lesquelles sont les blocs
+# Liste des tenons (pour zone 1x1) sur lesquelles sont les blocs
 def liste_tenon_bloc(world):
 
-    liste_result = [[[] for _ in range(24)] for _ in range(world.shape[0]-1)]
+    liste_result = [[[] for _ in range(24)] for _ in range(world.shape[0] - 1)]
 
-    for i in range(1,world.shape[0]):
+    for i in range(1, world.shape[0]):
         for r in range(24):
-            x0 = round((48/largeur) * world[i, r*10 + 1])
-            y0 = round((24/hauteur) * world[i, r*10 + 2])
-            x2 = round((48/largeur) * world[i, r*10 + 5])
-            y2 = round((24/hauteur) * world[i, r*10 + 6])
+            x0 = round((48 / largeur) * world[i, r * 10 + 1])
+            y0 = round((24 / hauteur) * world[i, r * 10 + 2])
+            x2 = round((48 / largeur) * world[i, r * 10 + 5])
+            y2 = round((24 / hauteur) * world[i, r * 10 + 6])
 
-            for x in range(x0,x2):
-                for y in range(y0,y2):
-                    liste_result[i-1][r].append(x*24 + y)
+            for x in range(x0, x2):
+                for y in range(y0, y2):
+                    liste_result[i - 1][r].append(x * 24 + y)
 
     return liste_result
 
 
-def saveLog(nom_fichier,results,nb_prediction,duree_execution):
+def saveLog(nom_fichier, results, nb_prediction, duree_execution):
 
-    np.savetxt(nom_fichier + "/results.csv", results.reshape(28,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_fichier + "/nb_prediction.csv", nb_prediction.reshape(28,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(
+        nom_fichier + "/results.csv", results.reshape(28, -1), delimiter=",", fmt="%.4f"
+    )
+    np.savetxt(
+        nom_fichier + "/nb_prediction.csv",
+        nb_prediction.reshape(28, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
 
-    with open(nom_fichier + "/time.csv", 'w', newline='') as fichier_csv:
+    with open(nom_fichier + "/time.csv", "w", newline="") as fichier_csv:
         writer = csv.writer(fichier_csv)
 
         # Écrire chaque sous-liste dans une ligne du fichier CSV
@@ -581,12 +597,13 @@ def saveLog(nom_fichier,results,nb_prediction,duree_execution):
 
     return nom_fichier
 
+
 def loadLog(nom_fichier):
     results = np.genfromtxt(nom_fichier + "/results.csv", delimiter=",")
     nb_prediction = np.genfromtxt(nom_fichier + "/nb_prediction.csv", delimiter=",")
-    #duree_execution = np.genfromtxt(nom_fichier + "_time.csv", delimiter=",")
+    # duree_execution = np.genfromtxt(nom_fichier + "_time.csv", delimiter=",")
     duree_execution = []
-    with open(nom_fichier + "/time.csv", 'r', newline='') as fichier_csv:
+    with open(nom_fichier + "/time.csv", "r", newline="") as fichier_csv:
         reader = csv.reader(fichier_csv)
 
         # Lire chaque ligne du fichier CSV
@@ -595,53 +612,105 @@ def loadLog(nom_fichier):
             ligne = [float(element) for element in ligne]
             # Ajouter la ligne lue à la liste de données lues
             duree_execution.append(ligne)
-    return results,nb_prediction,duree_execution
-
+    return results, nb_prediction, duree_execution
 
 
 def listeTimneAction(world):
     liste = []
-    t_init = world [1,0]
-    for t in range(1,world.shape[0]):
-        t = world[t,0]
-        liste.append(int(t - t_init))
+    t_init = world[1, 0]
+    for t in range(1, world.shape[0]):
+        k = world[t, 0]
+        liste.append(int(k - t_init))
 
     return liste
 
 
-def savingTime(nom_dossier,participant,timestamp,type_time,duree):
+def savingTime(nom_dossier, participant, timestamp, type_time, duree):
 
-
-    with open(nom_dossier + "/" + participant + str(timestamp) + "/time_" + type_time + ".csv", 'w', newline='') as fichier_csv:
+    with open(
+        nom_dossier
+        + "/"
+        + participant
+        + str(timestamp)
+        + "/time_"
+        + type_time
+        + ".csv",
+        "w",
+        newline="",
+    ) as fichier_csv:
         writer = csv.writer(fichier_csv)
 
         writer.writerow(duree)
 
     return
 
-def savingFeature(nom_dossier,participant,timestamp,feature):
 
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/"  + "feature.csv", feature[:,:,:].reshape(5,-1), delimiter=',',fmt='%.4f')
+def savingFeature(nom_dossier, participant, timestamp, feature):
+
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/" + "feature.csv",
+        feature[:, :, :].reshape(5, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
 
     return
 
-def savingProba(nom_dossier,participant,timestamp,proba):
 
+def savingProba(nom_dossier, participant, timestamp, proba):
 
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/probability.csv", proba.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/probability.csv",
+        proba.reshape(10, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
 
     return
 
-def savingInterpretation(nom_dossier,participant,timestamp,temp_area4,temp_area8,temp_area_sliding_4,temp_area_sliding_8,temp_block):
 
+def savingInterpretation(
+    nom_dossier,
+    participant,
+    timestamp,
+    temp_area4,
+    temp_area8,
+    temp_area_sliding_4,
+    temp_area_sliding_8,
+    temp_block,
+):
 
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/inter_area4.csv",
+        temp_area4.reshape(10, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/inter_area8.csv",
+        temp_area8.reshape(10, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
 
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area4.csv", temp_area4.reshape(10,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area8.csv", temp_area8.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/inter_area_sliding.csv",
+        temp_area_sliding_4.reshape(10, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/inter_area_sliding.csv",
+        temp_area_sliding_8.reshape(10, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
 
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area_sliding.csv", temp_area_sliding_4.reshape(10,-1), delimiter=',',fmt='%.4f')
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_area_sliding.csv", temp_area_sliding_8.reshape(10,-1), delimiter=',',fmt='%.4f')
-
-    np.savetxt(nom_dossier + "/" + participant + str(timestamp) + "/inter_block.csv", temp_block.reshape(10,-1), delimiter=',',fmt='%.4f')
+    np.savetxt(
+        nom_dossier + "/" + participant + str(timestamp) + "/inter_block.csv",
+        temp_block.reshape(10, -1),
+        delimiter=",",
+        fmt="%.4f",
+    )
 
     return

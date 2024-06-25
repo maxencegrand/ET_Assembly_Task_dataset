@@ -2,63 +2,103 @@ from tools import loadLog
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+
+
 def main(argument):
     print("Le nom du fichier fourni est:", argument)
 
-def showComparaisonAlgorithm(results, nb_results, linestyles,list_name,method,action,random_min,random_max):
-        plt.close()
-        fig, ax = plt.subplots(1, 2)
-        
-        for ind in [0,1]:
 
-            ax[ind].set_xticks(list(ax[ind].get_xticks()) + [-3000,-2000,-1000,0])
+def showComparaisonAlgorithm(
+    results, nb_results, linestyles, list_name, method, action, random_min, random_max
+):
+    plt.close()
+    fig, ax = plt.subplots(1, 2)
 
-            ax[ind].plot(np.arange(-3000,3001,25),results[ind][0][::25]/nb_results[ind][::25], linestyle = linestyles[0] , label = list_name[0])
-            ax[ind].plot(np.arange(-3000,3001,25),results[ind][1][::25]/nb_results[ind][::25], linestyle = linestyles[1] , label = list_name[1])
-            ax[ind].plot(np.arange(-3000,3001,25),results[ind][2][::25]/nb_results[ind][::25], linestyle = linestyles[2] , label = list_name[2])
-            ax[ind].plot(np.arange(-3000,3001,25),results[ind][3][::25]/nb_results[ind][::25], linestyle = linestyles[3] , label = list_name[3])
-            ax[ind].plot(np.arange(-3000,3001,25),results[ind][4][::25]/nb_results[ind][::25], linestyle = linestyles[4] , label = list_name[4])
+    for ind in [0, 1]:
 
-            indice = FindX(results[ind][2]/nb_results[ind])
-            if indice >= 0:
-                ax[ind].vlines(x=indice - 3000 ,ymin=0,ymax=100,label = "50%", linestyle = linestyles[2], color = "g")
-                ax[ind].set_xticks(list(ax[ind].get_xticks()) + [indice - 3000])
+        ax[ind].set_xticks(list(ax[ind].get_xticks()) + [-3000, -2000, -1000, 0])
 
-            ax[ind].set_title(method[ind],fontsize = 24)
-        
+        ax[ind].plot(
+            np.arange(-3000, 3001, 25),
+            results[ind][0][::25] / nb_results[ind][::25],
+            linestyle=linestyles[0],
+            label=list_name[0],
+        )
+        ax[ind].plot(
+            np.arange(-3000, 3001, 25),
+            results[ind][1][::25] / nb_results[ind][::25],
+            linestyle=linestyles[1],
+            label=list_name[1],
+        )
+        ax[ind].plot(
+            np.arange(-3000, 3001, 25),
+            results[ind][2][::25] / nb_results[ind][::25],
+            linestyle=linestyles[2],
+            label=list_name[2],
+        )
+        ax[ind].plot(
+            np.arange(-3000, 3001, 25),
+            results[ind][3][::25] / nb_results[ind][::25],
+            linestyle=linestyles[3],
+            label=list_name[3],
+        )
+        ax[ind].plot(
+            np.arange(-3000, 3001, 25),
+            results[ind][4][::25] / nb_results[ind][::25],
+            linestyle=linestyles[4],
+            label=list_name[4],
+        )
 
-        box = ax[0].get_position()
-        ax[0].set_position([box.x0, box.y0 + box.height * 0.1,
-                        box.width, box.height * 0.9])
-        
-        box = ax[1].get_position()
-        ax[1].set_position([box.x0, box.y0 + box.height * 0.1,
-                        box.width, box.height * 0.9])
+        indice = FindX(results[ind][2] / nb_results[ind])
+        if indice >= 0:
+            ax[ind].vlines(
+                x=indice - 3000,
+                ymin=0,
+                ymax=100,
+                label="50%",
+                linestyle=linestyles[2],
+                color="g",
+            )
+            ax[ind].set_xticks(list(ax[ind].get_xticks()) + [indice - 3000])
 
-        # Put a legend below current axis
-        ax[0].legend(loc='upper center', bbox_to_anchor=(1.1, -0.05),
-                fancybox=True, shadow=True, ncol=6, fontsize = 20) 
+        ax[ind].set_title(method[ind], fontsize=24)
 
-        ax[0].axis(xmin=-3000, xmax=0, ymin=1.3, ymax=2)
-        ax[1].axis(xmin=-3000, xmax=0, ymin=1.3, ymax=2)
-        
-        ax[0].set_xlabel('Time (ms)', fontsize = 22) 
-        ax[0].set_ylabel('Percentage of good prediction', fontsize = 22) 
+    box = ax[0].get_position()
+    ax[0].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
 
-        ax[1].set_xlabel('Time (ms)', fontsize = 22) 
-        ax[1].set_ylabel('Percentage of good prediction', fontsize = 22) 
+    box = ax[1].get_position()
+    ax[1].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
 
-        
-        #fig.suptitle(action,fontsize = 30)
+    # Put a legend below current axis
+    ax[0].legend(
+        loc="upper center",
+        bbox_to_anchor=(1.1, -0.05),
+        fancybox=True,
+        shadow=True,
+        ncol=6,
+        fontsize=20,
+    )
 
+    ax[0].axis(xmin=-3000, xmax=0, ymin=1.3, ymax=2)
+    ax[1].axis(xmin=-3000, xmax=0, ymin=1.3, ymax=2)
 
-        plt.show()
+    ax[0].set_xlabel("Time (ms)", fontsize=22)
+    ax[0].set_ylabel("Percentage of good prediction", fontsize=22)
+
+    ax[1].set_xlabel("Time (ms)", fontsize=22)
+    ax[1].set_ylabel("Percentage of good prediction", fontsize=22)
+
+    # fig.suptitle(action,fontsize = 30)
+
+    plt.show()
+
 
 def FindX(array):
     for i in range(array.shape[0]):
         if array[i] >= 0.5:
             return i
     return -1
+
 
 if __name__ == "__main__":
     # Vérifier si un argument a été fourni
@@ -70,11 +110,10 @@ if __name__ == "__main__":
         nom_fichier = sys.argv[1]
         main(nom_fichier)
 
-        results,nb_prediction,duree_execution = loadLog(nom_fichier)
+        results, nb_prediction, duree_execution = loadLog(nom_fichier)
 
-        results = results.reshape(28,2,nb_predi,6001)
-        nb_prediction = nb_prediction.reshape(28,2,6001)
-
+        results = results.reshape(28, 2, nb_predi, 6001)
+        nb_prediction = nb_prediction.reshape(28, 2, 6001)
 
         area4_grasp_weak = results[0]
         area4_release_weak = results[4]
@@ -112,7 +151,6 @@ if __name__ == "__main__":
         norme_grasp = results[26]
         norme_release = results[27]
 
-
         nb_area4_grasp_weak = nb_prediction[0]
         nb_area4_release_weak = nb_prediction[4]
         nb_area4_grasp_strong = nb_prediction[8]
@@ -149,9 +187,37 @@ if __name__ == "__main__":
         nb_norme_grasp = nb_prediction[26]
         nb_norme_release = nb_prediction[27]
 
+        linestyles = ["-", "--", "-.", ":", (0, (3, 2, 1, 2, 1, 2))]
 
-        linestyles = ["-","--","-.",":",(0, (3, 2, 1, 2, 1, 2))]
-
-
-        showComparaisonAlgorithm(norme_grasp,nb_norme_grasp,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Grasp",0,0)
-        showComparaisonAlgorithm(norme_release,nb_norme_release,linestyles,["OT_Count","OT_Distance","AT_Linear_Dist","AT_Inverse_Dist","AT_Fitts"],["Mobile","Stationnary"],"Norme for Release",0,0)
+        showComparaisonAlgorithm(
+            norme_grasp,
+            nb_norme_grasp,
+            linestyles,
+            [
+                "OT_Count",
+                "OT_Distance",
+                "AT_Linear_Dist",
+                "AT_Inverse_Dist",
+                "AT_Fitts",
+            ],
+            ["Mobile", "Stationnary"],
+            "Norme for Grasp",
+            0,
+            0,
+        )
+        showComparaisonAlgorithm(
+            norme_release,
+            nb_norme_release,
+            linestyles,
+            [
+                "OT_Count",
+                "OT_Distance",
+                "AT_Linear_Dist",
+                "AT_Inverse_Dist",
+                "AT_Fitts",
+            ],
+            ["Mobile", "Stationnary"],
+            "Norme for Release",
+            0,
+            0,
+        )
