@@ -176,13 +176,18 @@ def trouverEmplacement(xp, yp):
     return x_min, y_min, d_min
 
 
+#Renvoi l'etat du monde au temps timestamp
+#input: timestamp: int : correspond au timestamp pour lequel on veut l'etat du monde
+#       world: array[*,241]: correspond a l'ensemble des etats du monde
+#ouput: array de 241 valeur correspondant a l'etat du monde
 def CurrentWorld(timestamp, world):
     for i in range(2, world.shape[0]):
         if world[i - 1, 0] <= timestamp and timestamp < world[i, 0]:
             return world[i - 1]
     return world[-1]
 
-
+#Renvoi la liste des blocs pris ainsi que le timestamp auquel ils sont pris
+#input: world : array[-,241] : correspond a l'ensemble des etats du monde
 def listeHolding(world):
     liste = []
     liste_t = []
@@ -194,7 +199,9 @@ def listeHolding(world):
 
     return liste, liste_t
 
-
+#
+#
+#
 def timeGraspRelease(world, last_time):
     time_grasp = 0
     time_release = 0
@@ -221,7 +228,10 @@ def timeGraspRelease(world, last_time):
 
     return time_grasp, time_release
 
-
+#renvoi vrai si les blocs i et j sont adjacents, faux sinon
+#current_world: array[241]
+#i,j : int: id de bloc
+#output: bool
 def adjacent(current_world, i, j):
 
     i_x0 = current_world[10 * i + 1]
@@ -299,7 +309,7 @@ def adjacent(current_world, i, j):
 
     return False
 
-
+#renvoi pour chaque etat du monde la liste de bloc adjacent au bloc posé par l'humain
 def listeAdjacentRelease(world):
     liste_adjacent = []
     for i in range(2, world.shape[0]):
@@ -310,10 +320,9 @@ def listeAdjacentRelease(world):
                     if rect != indice and adjacent(world[i], rect, indice):
                         liste_adjacent_i.append(rect)
                 liste_adjacent.append(liste_adjacent_i)
-
     return liste_adjacent
 
-
+#renvoi pour chaque etat du monde la liste de bloc de reference lors des releases
 def listeRelease(world):
     liste_release = []
 
@@ -448,7 +457,7 @@ def listeRelease(world):
                 liste_release.append(liste_adjacent_i)
     return liste_release
 
-
+#renvoi les coordonnées des blocs grasp
 def quadrillageGrasp(world, nb_bloc):
     l = []
     for i in range(1, world.shape[0] - 1):
@@ -469,7 +478,7 @@ def quadrillageGrasp(world, nb_bloc):
 
     return l
 
-
+#renvoi les coordonnées des blocs release
 def quadrillageRelease(world, nb_bloc):
     l = []
     for i in range(2, world.shape[0]):
@@ -490,7 +499,7 @@ def quadrillageRelease(world, nb_bloc):
 
     return l
 
-
+#renvoi la surface reguliere contigue dans laquelle se situe le bloc dent on donne les coordonnees en entrée
 def BlockToZoneID(x0, y0, x1, y1, x2, y2, x3, y3, nb_bloc):
 
     nb_bloc_x = int(2 * math.sqrt(nb_bloc / 2))
@@ -575,7 +584,7 @@ def liste_tenon_bloc(world):
 
     return liste_result
 
-
+#Sauvegarde les resultats dans le dossier nom_fichier
 def saveLog(nom_fichier, results, nb_prediction, duree_execution):
 
     np.savetxt(
@@ -597,7 +606,7 @@ def saveLog(nom_fichier, results, nb_prediction, duree_execution):
 
     return nom_fichier
 
-
+#Charge les resultats du dossier nom_fichier
 def loadLog(nom_fichier):
     results = np.genfromtxt(nom_fichier + "/results.csv", delimiter=",")
     nb_prediction = np.genfromtxt(nom_fichier + "/nb_prediction.csv", delimiter=",")
@@ -614,7 +623,7 @@ def loadLog(nom_fichier):
             duree_execution.append(ligne)
     return results, nb_prediction, duree_execution
 
-
+#Renvoi la durée entre 2 evenements pour toutes les evenements d'un assemblage
 def listeTimneAction(world):
     liste = []
     t_init = world[1, 0]
@@ -624,7 +633,7 @@ def listeTimneAction(world):
 
     return liste
 
-
+#Sauvergarde la durée d'exec
 def savingTime(nom_dossier, participant, timestamp, type_time, duree):
 
     with open(
@@ -644,7 +653,7 @@ def savingTime(nom_dossier, participant, timestamp, type_time, duree):
 
     return
 
-
+#Sauvergarde la durée d'exec pour calcul indicateur
 def savingFeature(nom_dossier, participant, timestamp, feature):
 
     np.savetxt(
@@ -656,7 +665,7 @@ def savingFeature(nom_dossier, participant, timestamp, feature):
 
     return
 
-
+#Sauvergarde la durée d'exec pour calcul bas niveau
 def savingProba(nom_dossier, participant, timestamp, proba):
 
     np.savetxt(
@@ -668,7 +677,7 @@ def savingProba(nom_dossier, participant, timestamp, proba):
 
     return
 
-
+#Sauvergarde la durée d'exec pour calcul haut niveau
 def savingInterpretation(
     nom_dossier,
     participant,
