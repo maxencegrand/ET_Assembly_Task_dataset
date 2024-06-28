@@ -32,7 +32,11 @@ Results are available in Modele_5_seed and ML_5_seeds (for ML just the Norme is 
 
 The 2 main file are results.csv and nb_prediction.csv
 
+These files can be open with loadLogs from tools.py
+
 ### results.csv
+
+array 2 dimensions have to be reshape with array = array.reshape(28, 2, nb_predi, 6001) in order to have 4 dimensions
 
 This file contains the number of correct predictions for the different eye tracker, for grasp/release, for the different surfaces and for the different features.
 
@@ -84,6 +88,8 @@ axis 2: size = 5, corresponds to the differents feature
 axis 3: size = 6001, corresponds to the time relative to the event under consideration. 6001 value for looking 3 seconds before and 3 seconds after.
 
 ### nb_prediction.csv
+
+array 2 dimensions have to be reshape with array = array.reshape(28, 2, 6001) in order to have 3 dimensions
 
 This file contains the number of predictions for the different eye tracker, for grasp/release and for the different surfaces.
 
