@@ -101,7 +101,10 @@ def parsingAllParticipantOneMethode():
 
     total_nb_grasp = [0 for _ in range(2)]
     total_nb_release = [0 for _ in range(2)]
-
+    #4 pour taille 4/8 avec permissive/stricte
+    #2 pour head-mounted/remote
+    #nb_predi = nb feature
+    #6001 pour 3 sec avant/apres l'event
     global_analyse_grasp_area_weak = np.zeros((4, 2, nb_predi, 6001))
     global_nb_analyse_grasp_area_weak = np.zeros((4, 2, 6001))
     global_analyse_release_area_weak = np.zeros((4, 2, nb_predi, 6001))
@@ -280,7 +283,7 @@ def parsingAllParticipantOneMethode():
                                     y2_release = round(
                                         (48 / largeur) * world[t + 1, 10 * id_block + 6]
                                     )
-
+                                    #On parcours les tenons du bloc
                                     for x_release in range(x0_release, x2_release):
                                         for y_release in range(y0_release, y2_release):
                                             proba_juste[t][1][
@@ -303,9 +306,9 @@ def parsingAllParticipantOneMethode():
                         # recupere la liste des timestamp des evenements
                         timestamp_action = listeTimneAction(world)
 
-                        all_feature = np.zeros((5, nb_gaze, nb_area_1))
-                        probability_score = np.zeros((5, 2, nb_gaze, nb_area_1))
-                        probability = np.zeros((5, 2, nb_gaze, nb_area_1))
+                        all_feature = np.zeros((nb_predi, nb_gaze, nb_area_1))
+                        probability_score = np.zeros((nb_predi, 2, nb_gaze, nb_area_1))
+                        probability = np.zeros((nb_predi, 2, nb_gaze, nb_area_1))
 
                         t_init = world[1, 0]
 
@@ -313,22 +316,19 @@ def parsingAllParticipantOneMethode():
 
                         liste_t_value = []
 
-                        liste_temps_feature = []
-                        liste_temps_low_level = []
-                        liste_temps_interpretation = []
-                        liste_temps_total = []
+                        #Stock les meilleure surfaces pour chaque timestamp
 
-                        temp_area4 = np.zeros((5, 2, nb_gaze))
-                        temp_area8 = np.zeros((5, 2, nb_gaze))
+                        temp_area4 = np.zeros((nb_predi, 2, nb_gaze))
+                        temp_area8 = np.zeros((nb_predi, 2, nb_gaze))
 
-                        temp_area_sliding_4 = np.zeros((5, 2, nb_gaze))
-                        temp_area_sliding_8 = np.zeros((5, 2, nb_gaze))
+                        temp_area_sliding_4 = np.zeros((nb_predi, 2, nb_gaze))
+                        temp_area_sliding_8 = np.zeros((nb_predi, 2, nb_gaze))
 
-                        temp_area_semantic_0 = np.zeros((5, 2, nb_gaze))
-                        temp_area_semantic_1 = np.zeros((5, 2, nb_gaze))
-                        temp_area_semantic_2 = np.zeros((5, 2, nb_gaze))
+                        temp_area_semantic_0 = np.zeros((nb_predi, 2, nb_gaze))
+                        temp_area_semantic_1 = np.zeros((nb_predi, 2, nb_gaze))
+                        temp_area_semantic_2 = np.zeros((nb_predi, 2, nb_gaze))
 
-                        temp_block = np.zeros((5, 2, nb_gaze))
+                        temp_block = np.zeros((nb_predi, 2, nb_gaze))
 
                         norme_array = np.zeros((nb_predi, 2, nb_gaze))
 
@@ -349,6 +349,7 @@ def parsingAllParticipantOneMethode():
 
                             temps_low_level = time.time()
 
+                            #On recupère la somme des indicateurs depuis le dernier evenement
                             if i > 0:
                                 past_probability_score = probability_score[
                                     :, :, i - 1, :
@@ -407,6 +408,7 @@ def parsingAllParticipantOneMethode():
 
                             temps_fin = time.time()
 
+                            #Les variables temp_ ont une valeur par mesure du capteur, on met la meilleur surface correspondant au timestamp
                             temp_area4[:, :, i] = area4max_indices
                             temp_area8[:, :, i] = area8max_indices
 
@@ -419,6 +421,7 @@ def parsingAllParticipantOneMethode():
 
                             temp_block[:, :, i] = liste_predi_id
 
+                            #indice de l'etat du monde
                             indice = new_indice
 
                             diff_feature = temps_low_level - temps_feature
@@ -443,20 +446,21 @@ def parsingAllParticipantOneMethode():
 
                         print(new_indice)
 
-                        result_area4 = np.zeros((5, 2, duree))
-                        result_area8 = np.zeros((5, 2, duree))
-                        result_sliding_area4 = np.zeros((5, 2, duree))
-                        result_sliding_area8 = np.zeros((5, 2, duree))
-                        result_semantic_0 = np.zeros((5, 2, duree))
-                        result_semantic_1 = np.zeros((5, 2, duree))
-                        result_semantic_2 = np.zeros((5, 2, duree))
-                        result_block = np.zeros((5, 2, duree))
+                        #permet d'avoir les meilleurs surface pour chaque ms
+                        result_area4 = np.zeros((nb_predi, 2, duree))
+                        result_area8 = np.zeros((nb_predi, 2, duree))
+                        result_sliding_area4 = np.zeros((nb_predi, 2, duree))
+                        result_sliding_area8 = np.zeros((nb_predi, 2, duree))
+                        result_semantic_0 = np.zeros((nb_predi, 2, duree))
+                        result_semantic_1 = np.zeros((nb_predi, 2, duree))
+                        result_semantic_2 = np.zeros((nb_predi, 2, duree))
+                        result_block = np.zeros((nb_predi, 2, duree))
 
-                        result_norme = np.zeros((5, 2, duree))
+                        result_norme = np.zeros((nb_predi, 2, duree))
 
                         time_indice = 0
 
-                        # On passe des timestamps des mesures a une valeur par ms
+                        # On passe des resultat pour chaque timestamp des mesures a une valeur par ms
                         for t in range(duree):
                             if (
                                 time_indice < len(liste_t_value)
@@ -532,7 +536,7 @@ def parsingAllParticipantOneMethode():
                         )
 
                         nb_bloc = [nb_area_4, nb_area_8, nb_area_4, nb_area_8]
-
+                        #Analyse zone reguliere contigue
                         for position, predi in enumerate(area_prediction):
                             liste_good_release_zones = quadrillageRelease(
                                 world, nb_bloc[position]
